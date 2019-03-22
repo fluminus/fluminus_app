@@ -1,5 +1,7 @@
 # randomword_app
 
+[![Build Status](https://travis-ci.org/le0tan/randomword_app.svg?branch=master)](https://travis-ci.org/le0tan/randomword_app)
+
 A new Flutter project that generates random words for you
 
 ## Getting Started
