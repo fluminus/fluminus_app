@@ -9,6 +9,9 @@ class App extends StatelessWidget {
     return MaterialApp(
       title: 'Random Words',
       home: RandomWords(),
+      theme: ThemeData(
+        primaryColor: Colors.white,
+      ),
     );
   }
 }
@@ -21,14 +24,52 @@ class RandomWords extends StatefulWidget {
 class _randomWordsState extends State<RandomWords> {
   final _suggestions = <WordPair>[];
   final _biggerFont = const TextStyle(fontSize: 18.0);
+  final Set<WordPair> _saved = Set();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text("Random Word Generator"),
+        actions: <Widget>[
+          IconButton(
+            icon: const Icon(Icons.list),
+            onPressed: _pushSaved,
+          ),
+        ],
       ),
       body: _buildSuggestions(),
     );
+  }
+
+  void _pushSaved() {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (BuildContext context) {
+          final Iterable<ListTile> tiles = _saved.map(
+              (WordPair pair) {
+                return ListTile(
+                  title: Text(pair.asPascalCase, style: _biggerFont,),
+                );
+              }
+          );
+          final List<Widget> divided = ListTile
+            .divideTiles(
+              context: context,
+              tiles: tiles,
+            )
+            .toList();
+          return Scaffold(
+            appBar: AppBar(
+              title: const Text('Save suggestions'),
+            ),
+            body: ListView(
+              children: divided,
+            ),
+          );
+        },
+      )
+    );
+
   }
 
   Widget _buildSuggestions() {
@@ -46,11 +87,25 @@ class _randomWordsState extends State<RandomWords> {
   }
 
   Widget _buildRow(WordPair pair) {
+    final bool isSaved = _saved.contains(pair) ? true : false;
     return ListTile(
       title: Text(
         pair.asPascalCase,
         style: _biggerFont,
       ),
+      trailing: Icon(
+        isSaved ? Icons.favorite : Icons.favorite_border,
+        color: isSaved ? Colors.red : null,
+      ),
+      onTap: () {
+        setState(() {
+          if(isSaved) {
+            _saved.remove(pair);
+          } else {
+            _saved.add(pair);
+          }
+        });
+      },
     );
   }
 }
