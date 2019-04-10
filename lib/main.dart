@@ -29,7 +29,7 @@ class MyApp extends StatelessWidget {
             future: photos,
             builder: (context, snapshot) {
               if (snapshot.hasData) {
-                return Text(snapshot.data[0].thumbnailUrl);
+                return createListView(context, snapshot);
               } else if (snapshot.hasError) {
                 return Text("${snapshot.error}");
               }
@@ -43,14 +43,14 @@ class MyApp extends StatelessWidget {
   }
 
   Widget createListView(BuildContext context, AsyncSnapshot snapshot) {
-    List<String> values = snapshot.data;
+    List<Photos> values = snapshot.data;
     return new ListView.builder(
         itemCount: values.length,
         itemBuilder: (BuildContext context, int index) {
           return new Column(
             children: <Widget>[
               new ListTile(
-                title: new Text(values[index]),
+                title: Image.network(values[index].thumbnailUrl),
               ),
               new Divider(height: 2.0,),
             ],
