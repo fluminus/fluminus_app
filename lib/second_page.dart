@@ -4,8 +4,20 @@ import 'luminus_api.dart';
 class Second extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    Future<List<Module>> modules = (new API()).modules(new Auth());
+
     return new Container(
-      child: createListView(context)
+      child: FutureBuilder<List<Module>>(
+        future: modules,
+        builder: (context, snapshot) {
+          if(snapshot.hasData) {
+            return createListView(context, snapshot);
+          } else if(snapshot.hasError) {
+            return Text("Error");
+          }
+          return CircularProgressIndicator();
+        },
+      )
     );
   }
 
@@ -24,13 +36,13 @@ class Second extends StatelessWidget {
     );
   }
 
-  Widget createListView(BuildContext context) {
-    List<Module> modules = (new API()).modules(new Auth());
+  Widget createListView(BuildContext context, AsyncSnapshot snapshot) {
+    List<Module> values = snapshot.data;
     return new ListView.builder(
-      itemCount: modules.length,
+      itemCount: values.length,
       itemBuilder: (BuildContext context, int index) {
         return new Column(
-          children: <Widget>[createCardWidget(modules[index])],
+          children: <Widget>[createCardWidget(values[index])],
         );
       },
     );

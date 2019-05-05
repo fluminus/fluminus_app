@@ -1,5 +1,5 @@
 class API {
-  List<Module> modules(Auth auth) {
+  Future<List<Module>> modules(Auth auth) async {
     List<Module> dummy = new List();
     for(int i=0;i<20;i++) {
       dummy.add(new Module());
