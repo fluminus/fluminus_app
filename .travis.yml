@@ -10,6 +10,7 @@ addons:
       - libstdc++6
       - fonts-droid
 before_script:
+  - cp .env_travis .env
   - git clone https://github.com/flutter/flutter.git -b beta
   - ./flutter/bin/flutter doctor
 script:
