@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+
 import 'first_page.dart' as first;
 import 'second_page.dart' as second;
 import 'third_page.dart' as third;
 
-void main() {
+Future main() async {
+  await DotEnv().load();
   runApp(new MaterialApp(
     home: new MyTabs()
   ));

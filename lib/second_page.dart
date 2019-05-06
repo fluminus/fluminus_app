@@ -1,21 +1,31 @@
 import 'package:flutter/material.dart';
-import 'luminus_api.dart';
+
+import 'luminus_api/module_response.dart';
+
+import 'data.dart' as Data;
 
 class Second extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    Future<List<Module>> modules = (new API()).modules(new Auth());
-
     return new Container(
       child: FutureBuilder<List<Module>>(
-        future: modules,
+        future: Data.getModules(),
         builder: (context, snapshot) {
           if(snapshot.hasData) {
             return createListView(context, snapshot);
           } else if(snapshot.hasError) {
-            return Text("Error");
+            return Text(snapshot.error.toString());
           }
-          return CircularProgressIndicator();
+          return Center(
+            child: Column(
+              children: <Widget>[
+                Padding(
+                  padding: const EdgeInsets.all(30.0),
+                  child: CircularProgressIndicator(),
+                ),
+              ],
+            ),
+          );
         },
       )
     );
@@ -28,8 +38,8 @@ class Second extends StatelessWidget {
         children: <Widget>[
           ListTile(
             leading: Icon(Icons.class_),
-            title: Text(module.toString()),
-            subtitle: Text(module.description),
+            title: Text(module.name),
+            subtitle: Text(module.courseName),
           ),
         ],
       ),
