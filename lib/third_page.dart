@@ -20,31 +20,36 @@ class _ThirdState extends State<Third> {
     });
 
     return Container(
+      color: Colors.white,
       child: new SingleChildScrollView(
-          child: Column(
-        children: <Widget>[
-          Stack(
-            children: <Widget>[
-              CardScrollWidget(currentPage),
-              Positioned.fill(
-                child: PageView.builder(
-                  itemCount: images.length,
-                  controller: controller,
-                  reverse: true,
-                  itemBuilder: (context, index) {
-                    // make the cards clickable
-                    return InkWell(
-                      child: Container(),
-                      onTap: () {
-                        print(index);
-                      },
-                    );
-                  },
-                ),
-              )
-            ],
-          ),
-        ],
+          child: Padding(
+        padding: const EdgeInsets.fromLTRB(
+            8.0, 35.0, 8.0, 20000.0), // try and fix this number later
+        child: Column(
+          children: <Widget>[
+            Stack(
+              children: <Widget>[
+                CardScrollWidget(currentPage),
+                Positioned.fill(
+                  child: PageView.builder(
+                    itemCount: images.length,
+                    controller: controller,
+                    reverse: true,
+                    itemBuilder: (context, index) {
+                      // make the cards clickable
+                      return InkWell(
+                        child: Container(),
+                        onTap: () {
+                          print(index);
+                        },
+                      );
+                    },
+                  ),
+                )
+              ],
+            ),
+          ],
+        ),
       )),
     );
   }

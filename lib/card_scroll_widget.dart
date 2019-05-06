@@ -73,7 +73,7 @@ class CardScrollWidget extends StatelessWidget {
                               child: Text(title[i],
                                   style: TextStyle(
                                       color: Colors.white,
-                                      fontSize: 25.0,
+                                      fontSize: 20.0,
                                       fontFamily: "SF-Pro-Text-Regular")),
                             ),
                             SizedBox(

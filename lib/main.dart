@@ -1,61 +1,71 @@
 import 'package:flutter/material.dart';
+import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'module_page.dart';
+import 'profile_page.dart';
+import 'third_page.dart';
 
-import 'first_page.dart' as first;
-import 'second_page.dart' as second;
-import 'third_page.dart' as third;
+/**
+ * Disabling the scroll glow.
+ * Source: https://stackoverflow.com/questions/51119795/how-to-remove-scroll-glow/51119796#51119796
+ */
+class MyBehavior extends ScrollBehavior {
+  @override
+  Widget buildViewportChrome(
+      BuildContext context, Widget child, AxisDirection axisDirection) {
+    return child;
+  }
+}
 
-Future main() async {
-  await DotEnv().load();
-  runApp(new MaterialApp(
-    home: new MyTabs()
+void main() async {
+  await DotEnv().load('.env');
+  runApp(MaterialApp(
+    builder: (context, child) {
+      return ScrollConfiguration(behavior: MyBehavior(), child: child);
+    },
+    home: BottomNavBar(),
   ));
 }
 
-class MyTabs extends StatefulWidget {
+class BottomNavBar extends StatefulWidget {
   @override
-  MyTabsState createState() => new MyTabsState();
+  _BottomNavBarState createState() => _BottomNavBarState();
 }
 
-class MyTabsState extends State<MyTabs> with SingleTickerProviderStateMixin {
-
-  TabController controller;
-
-  @override
-  void initState() {
-    super.initState();
-    controller = new TabController(vsync: this, length: 3);
-  }
-
-  @override
-  void dispose() {
-    controller.dispose();
-    super.dispose();
-  }
+class _BottomNavBarState extends State<BottomNavBar> {
+  int _page = 0;
+  final _pageOptions = [
+    Third(),
+    ModulePage(),
+    ModulePage(),
+    ModulePage(),
+    ProfilePage()
+  ];
 
   @override
   Widget build(BuildContext context) {
-    return new Scaffold(
-      appBar: new AppBar(
-        title: new Text("Navbar test"), 
-        backgroundColor: Colors.deepOrange,
-        bottom: new TabBar(
-          controller: controller,
-          tabs: <Tab>[
-            new Tab(icon: new Icon(Icons.face)),
-            new Tab(text: "My Modules"),
-            new Tab(icon: new Icon(Icons.arrow_back)),
-          ]
-        )
-      ),
-      body: new TabBarView(
-        controller: controller,
-        children: <Widget>[
-          new first.First(),
-          new second.Second(),
-          new third.Third()
-        ]
-      )
-    );
+    return Scaffold(
+        bottomNavigationBar: CurvedNavigationBar(
+          index: 0,
+          height: 60.0,
+          items: <Widget>[
+            Icon(Icons.add, size: 30),
+            Icon(Icons.list, size: 30),
+            Icon(Icons.compare_arrows, size: 30),
+            Icon(Icons.call_split, size: 30),
+            Icon(Icons.perm_identity, size: 30),
+          ],
+          color: Colors.greenAccent,
+          buttonBackgroundColor: Colors.lightBlueAccent,
+          backgroundColor: Colors.white,
+          animationCurve: Curves.easeInOut,
+          animationDuration: Duration(milliseconds: 200),
+          onTap: (index) {
+            setState(() {
+              _page = index;
+            });
+          },
+        ),
+        body: _pageOptions[_page]);
   }
 }
