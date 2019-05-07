@@ -5,6 +5,9 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'announcement_response.dart';
 import 'module_response.dart';
 import 'profile_response.dart';
+import 'subdirectory_response.dart';
+import 'file_response.dart';
+import 'download_response.dart';
 
 main(List<String> args) async {
   Auth auth = new Auth(
@@ -54,6 +57,30 @@ class API {
     Map resp = await API.rawAPICall(auth: auth, path: "/profile");
     var profile = new Profile.fromJson(resp);
     return profile;
+  }
+
+  static Future<List<Directory>> getModuleDirectories(
+      Auth auth, Module module) async {
+    Map resp =
+        await API.rawAPICall(auth: auth, path: "/files/parentID/${module.id}");
+    return (new SubdirectoryResponse.fromJson(resp)).data;
+  }
+
+  static Future<List<Directory>> getSubdirectories(
+      Auth auth, Directory dir) async {
+    Map resp =
+        await API.rawAPICall(auth: auth, path: "/files/parentID/${dir.id}");
+    return (new SubdirectoryResponse.fromJson(resp)).data;
+  }
+
+  static Future<List<File>> getFilesFromDirectory(Auth auth, Directory dir) async {
+    Map resp = await API.rawAPICall(auth: auth, path: "/files/directoryID/${dir.id}/allowUpload/${dir.allowUpload}");
+    return (new FileResponse.fromJson(resp)).data;
+  }
+
+  static Future<String> getDownloadUrl(Auth auth, File file) async {
+    Map resp = await API.rawAPICall(auth: auth, path: "/files/download/id/${file.id}");
+    return (new DownloadResponse.fromJson(resp)).data;
   }
 }
 
