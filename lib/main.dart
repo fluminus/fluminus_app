@@ -6,6 +6,11 @@ import 'profile_page.dart';
 import 'file_page.dart';
 import 'third_page.dart';
 
+import 'luminus_api/download_response.dart';
+
+import 'package:open_file/open_file.dart';
+import 'package:path_provider/path_provider.dart';
+
 /// Disabling the scroll glow.
 /// Source: https://stackoverflow.com/questions/51119795/how-to-remove-scroll-glow/51119796#51119796
 class MyBehavior extends ScrollBehavior {
@@ -16,12 +21,40 @@ class MyBehavior extends ScrollBehavior {
   }
 }
 
-class SecondRoute extends StatelessWidget {
+class SecondRoute extends StatefulWidget {
+  @override
+  _SecondRouteState createState() => _SecondRouteState();
+}
+
+class _SecondRouteState extends State<SecondRoute> {
+  String _openResult = 'Unknown';
+
+  Future<void> openFile() async {
+    String dir = (await getApplicationDocumentsDirectory()).path;
+    final filePath = dir + '/dummy.pdf';
+    final message = await OpenFile.open(filePath);
+    setState(() {
+      _openResult = message;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text("Route test"),
+    return new Scaffold(
+      appBar: new AppBar(
+        title: Text('Plugin example app'),
+      ),
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            Text('open result: $_openResult\n'),
+            FlatButton(
+              child: Text('Tap to open file'),
+              onPressed: openFile,
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -68,6 +101,9 @@ class _BottomNavBarState extends State<BottomNavBar> {
                 child: Icon(Icons.add),
                 onPressed: () {
                   Navigator.push(context, MaterialPageRoute(builder: (context) {
+                    downloadFile(
+                        "https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf",
+                        "dummy.pdf");
                     return SecondRoute();
                   }));
                 },

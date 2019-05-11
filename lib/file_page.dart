@@ -47,6 +47,7 @@ class ModuleRootDirectoryPage extends StatelessWidget {
           InkWell(
             onTap: () => {
                   Navigator.push(context, MaterialPageRoute(builder: (context) {
+                    // TODO: For longer directory names this may overflow...
                     return SubdirectoryPage(
                         dir, module.name + ' - ' + dir.name);
                   }))
@@ -55,6 +56,7 @@ class ModuleRootDirectoryPage extends StatelessWidget {
               leading: Icon(Icons.class_),
               title: Text(dir.name),
               subtitle: Text(
+                // TODO: Parse the date and time into something meaningful
                 dir.lastUpdatedDate,
                 style: TextStyle(fontSize: 13.0),
               ),
@@ -122,6 +124,7 @@ class SubdirectoryPage extends StatelessWidget {
               leading: Icon(Icons.class_),
               title: Text(dir.name),
               subtitle: Text(
+                // TODO: Parse the date and time into something meaningful
                 dir.lastUpdatedDate,
                 style: TextStyle(fontSize: 13.0),
               ),
