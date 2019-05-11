@@ -1,7 +1,6 @@
 import 'luminus_api/luminus_api.dart';
 import 'luminus_api/module_response.dart';
 import 'luminus_api/profile_response.dart';
-import 'luminus_api/announcement_response.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 List<String> images = [

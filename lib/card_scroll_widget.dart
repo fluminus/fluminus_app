@@ -6,9 +6,9 @@ var cardAspectRatio = 12.0 / 16.0;
 var widgetAspectRatio = cardAspectRatio * 1.2;
 
 class CardScrollWidget extends StatelessWidget {
-  var currentPage;
-  var padding = 20.0;
-  var verticalInset = 20.0;
+  final double currentPage;
+  final double padding = 20.0;
+  final double verticalInset = 20.0;
 
   CardScrollWidget(this.currentPage);
 

@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
 import 'data.dart' as Data;
-import 'luminus_api/luminus_api.dart';
 import 'luminus_api/profile_response.dart';
 
 class ProfilePage extends StatefulWidget {

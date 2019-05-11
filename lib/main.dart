@@ -3,12 +3,11 @@ import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'module_page.dart';
 import 'profile_page.dart';
+import 'file_page.dart';
 import 'third_page.dart';
 
-/**
- * Disabling the scroll glow.
- * Source: https://stackoverflow.com/questions/51119795/how-to-remove-scroll-glow/51119796#51119796
- */
+/// Disabling the scroll glow.
+/// Source: https://stackoverflow.com/questions/51119795/how-to-remove-scroll-glow/51119796#51119796
 class MyBehavior extends ScrollBehavior {
   @override
   Widget buildViewportChrome(
@@ -17,9 +16,21 @@ class MyBehavior extends ScrollBehavior {
   }
 }
 
+class SecondRoute extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text("Route test"),
+      ),
+    );
+  }
+}
+
 void main() async {
   await DotEnv().load('.env');
   runApp(MaterialApp(
+    debugShowCheckedModeBanner: false,
     builder: (context, child) {
       return ScrollConfiguration(behavior: MyBehavior(), child: child);
     },
@@ -37,14 +48,31 @@ class _BottomNavBarState extends State<BottomNavBar> {
   final _pageOptions = [
     Third(),
     ModulePage(),
-    ModulePage(),
+    FilePage(),
     ModulePage(),
     ProfilePage()
   ];
+  bool showFloatingActionButton = true;
+  bool showCondition(int index) {
+    return index == 2;
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+        // appBar: AppBar(
+        //   title: Text(_page.toString()),
+        // ),
+        floatingActionButton: showFloatingActionButton
+            ? FloatingActionButton(
+                child: Icon(Icons.add),
+                onPressed: () {
+                  Navigator.push(context, MaterialPageRoute(builder: (context) {
+                    return SecondRoute();
+                  }));
+                },
+              )
+            : Container(),
         bottomNavigationBar: CurvedNavigationBar(
           index: 0,
           height: 60.0,
@@ -63,6 +91,10 @@ class _BottomNavBarState extends State<BottomNavBar> {
           onTap: (index) {
             setState(() {
               _page = index;
+              if (showCondition(index))
+                showFloatingActionButton = true;
+              else
+                showFloatingActionButton = false;
             });
           },
         ),
