@@ -1,10 +1,41 @@
 import 'package:flutter/material.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:dio/dio.dart';
 
 import 'luminus_api/module_response.dart';
 import 'luminus_api/file_response.dart';
 import 'luminus_api/luminus_api.dart';
 
 import 'data.dart' as Data;
+
+Widget createCardInkWellWidget(String title, String subtitle, Icon icon,
+    BuildContext context, Widget nextPage) {
+  return Padding(
+    padding: const EdgeInsets.only(left: 5.0, right: 5.0),
+    child: Card(
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: <Widget>[
+          InkWell(
+            onTap: () => {
+                  Navigator.push(context, MaterialPageRoute(builder: (context) {
+                    return nextPage;
+                  }))
+                },
+            child: ListTile(
+              leading: icon,
+              title: Text(title),
+              subtitle: Text(
+                subtitle,
+                style: TextStyle(fontSize: 13.0),
+              ),
+            ),
+          ),
+        ],
+      ),
+    ),
+  );
+}
 
 class ModuleRootDirectoryPage extends StatelessWidget {
   final Module module;
@@ -40,31 +71,9 @@ class ModuleRootDirectoryPage extends StatelessWidget {
   }
 
   Widget createDirectoryCardWidget(Directory dir, BuildContext context) {
-    return Card(
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: <Widget>[
-          InkWell(
-            onTap: () => {
-                  Navigator.push(context, MaterialPageRoute(builder: (context) {
-                    // TODO: For longer directory names this may overflow...
-                    return SubdirectoryPage(
-                        dir, module.name + ' - ' + dir.name);
-                  }))
-                },
-            child: ListTile(
-              leading: Icon(Icons.class_),
-              title: Text(dir.name),
-              subtitle: Text(
-                // TODO: Parse the date and time into something meaningful
-                dir.lastUpdatedDate,
-                style: TextStyle(fontSize: 13.0),
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
+    Widget nextPage = SubdirectoryPage(dir, module.name + ' - ' + dir.name);
+    return createCardInkWellWidget(
+        dir.name, dir.lastUpdatedDate, Icon(Icons.folder), context, nextPage);
   }
 
   Widget createListView(BuildContext context, AsyncSnapshot snapshot) {
@@ -80,9 +89,93 @@ class ModuleRootDirectoryPage extends StatelessWidget {
   }
 }
 
+class FileDownloadPage extends StatefulWidget {
+  @override
+  _FileDownloadPageState createState() => _FileDownloadPageState();
+}
+
+class _FileDownloadPageState extends State<FileDownloadPage> {
+  final imgUrl = "https://cdn.jsdelivr.net/gh/flutterchina/flutter-in-action@1.0/docs/imgs/book.jpg";
+  bool downloading = false;
+  var progressString = "";
+
+  @override
+  void initState() {
+    super.initState();
+
+    downloadFile();
+  }
+
+  Future<void> downloadFile() async {
+
+    Dio dio = Dio();
+    dio.options.baseUrl = 'https://cdn.jsdelivr.net';
+
+
+    try {
+      var dir = await getApplicationDocumentsDirectory();
+      print('asd');
+
+      await dio.download('/gh/flutterchina/flutter-in-action@1.0/docs/imgs/book.jpg', "${dir.path}/myimage.jpg",
+          onReceiveProgress: (rec, total) {
+        print("Rec: $rec , Total: $total");
+
+        setState(() {
+          downloading = true;
+          progressString = ((rec / total) * 100).toStringAsFixed(0) + "%";
+        });
+      });
+    } catch (e) {
+      print(e);
+    }
+
+    setState(() {
+      downloading = false;
+      progressString = "Completed";
+    });
+    print("Download completed");
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text("AppBar"),
+      ),
+      body: Center(
+        child: downloading
+            ? Container(
+                height: 120.0,
+                width: 200.0,
+                child: Card(
+                  color: Colors.black,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: <Widget>[
+                      CircularProgressIndicator(),
+                      SizedBox(
+                        height: 20.0,
+                      ),
+                      Text(
+                        "Downloading File: $progressString",
+                        style: TextStyle(
+                          color: Colors.white,
+                        ),
+                      )
+                    ],
+                  ),
+                ),
+              )
+            : Text("No Data"),
+      ),
+    );
+  }
+}
+
 class SubdirectoryPage extends StatelessWidget {
   final String title;
   final Directory parent;
+
   SubdirectoryPage(this.parent, this.title);
 
   @override
@@ -114,46 +207,17 @@ class SubdirectoryPage extends StatelessWidget {
   }
 
   Widget createDirectoryCardWidget(Directory dir, BuildContext context) {
-    return Card(
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: <Widget>[
-          InkWell(
-            onTap: () => {},
-            child: ListTile(
-              leading: Icon(Icons.class_),
-              title: Text(dir.name),
-              subtitle: Text(
-                // TODO: Parse the date and time into something meaningful
-                dir.lastUpdatedDate,
-                style: TextStyle(fontSize: 13.0),
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
+    // TODO: null is bad!
+    Widget nextPage = SubdirectoryPage(dir, dir.name);
+    return createCardInkWellWidget(
+        dir.name, dir.lastUpdatedDate, Icon(Icons.folder), context, nextPage);
   }
 
   Widget createFileCardWidget(File file, BuildContext context) {
-    return Card(
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: <Widget>[
-          InkWell(
-            onTap: () => {},
-            child: ListTile(
-              leading: Icon(Icons.class_),
-              title: Text(file.name),
-              subtitle: Text(
-                file.lastUpdatedDate,
-                style: TextStyle(fontSize: 13.0),
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
+    // TODO: null is bad!
+    Widget nextPage = FileDownloadPage();
+    return createCardInkWellWidget(file.name, file.lastUpdatedDate,
+        Icon(Icons.attach_file), context, nextPage);
   }
 
   Widget createListView(BuildContext context, AsyncSnapshot snapshot) {
@@ -175,8 +239,6 @@ class SubdirectoryPage extends StatelessWidget {
 }
 
 class FilePage extends StatelessWidget {
-  // var _listviewHeight = 1000.0;
-
   @override
   Widget build(BuildContext context) {
     return new Container(
