@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:dio/dio.dart';
+import 'package:open_file/open_file.dart';
 
 import 'luminus_api/module_response.dart';
 import 'luminus_api/file_response.dart';
@@ -90,33 +91,42 @@ class ModuleRootDirectoryPage extends StatelessWidget {
 }
 
 class FileDownloadPage extends StatefulWidget {
+  final File file;
+  final String filename;
+
+  FileDownloadPage(this.file, this.filename);
+
   @override
-  _FileDownloadPageState createState() => _FileDownloadPageState();
+  _FileDownloadPageState createState() {
+    Future<String> url = API.getDownloadUrl(Data.auth, file);
+    return _FileDownloadPageState(
+        url,
+        filename);
+  }
 }
 
 class _FileDownloadPageState extends State<FileDownloadPage> {
-  final imgUrl = "https://cdn.jsdelivr.net/gh/flutterchina/flutter-in-action@1.0/docs/imgs/book.jpg";
+  final Future<String> downloadUrl;
+  final String filename;
   bool downloading = false;
+  bool completed = false;
   var progressString = "";
+
+  _FileDownloadPageState(this.downloadUrl, this.filename);
 
   @override
   void initState() {
     super.initState();
-
     downloadFile();
   }
 
   Future<void> downloadFile() async {
-
     Dio dio = Dio();
-    dio.options.baseUrl = 'https://cdn.jsdelivr.net';
-
 
     try {
       var dir = await getApplicationDocumentsDirectory();
-      print('asd');
-
-      await dio.download('/gh/flutterchina/flutter-in-action@1.0/docs/imgs/book.jpg', "${dir.path}/myimage.jpg",
+      var url = await downloadUrl;
+      await dio.download(url, dir.path + '/' + filename,
           onReceiveProgress: (rec, total) {
         print("Rec: $rec , Total: $total");
 
@@ -131,6 +141,7 @@ class _FileDownloadPageState extends State<FileDownloadPage> {
 
     setState(() {
       downloading = false;
+      completed = true;
       progressString = "Completed";
     });
     print("Download completed");
@@ -140,7 +151,7 @@ class _FileDownloadPageState extends State<FileDownloadPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("AppBar"),
+        title: Text("File Download"),
       ),
       body: Center(
         child: downloading
@@ -148,7 +159,7 @@ class _FileDownloadPageState extends State<FileDownloadPage> {
                 height: 120.0,
                 width: 200.0,
                 child: Card(
-                  color: Colors.black,
+                  color: Colors.white,
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: <Widget>[
@@ -159,16 +170,32 @@ class _FileDownloadPageState extends State<FileDownloadPage> {
                       Text(
                         "Downloading File: $progressString",
                         style: TextStyle(
-                          color: Colors.white,
+                          color: Colors.black,
                         ),
                       )
                     ],
                   ),
                 ),
               )
-            : Text("No Data"),
+            : completed
+                ? Container(
+                    height: 120.0,
+                    width: 200.0,
+                    child: Column(children: <Widget>[
+                      RaisedButton(
+                        onPressed: openFile,
+                        child: Text("Open"),
+                      ),
+                      Text("Completed")
+                    ]))
+                : Text("Initializing"),
       ),
     );
+  }
+
+  Future<void> openFile() async {
+    var dir = await getApplicationDocumentsDirectory();
+    await OpenFile.open(dir.path + '/' + filename);
   }
 }
 
@@ -215,7 +242,7 @@ class SubdirectoryPage extends StatelessWidget {
 
   Widget createFileCardWidget(File file, BuildContext context) {
     // TODO: null is bad!
-    Widget nextPage = FileDownloadPage();
+    Widget nextPage = FileDownloadPage(file, file.fileName);
     return createCardInkWellWidget(file.name, file.lastUpdatedDate,
         Icon(Icons.attach_file), context, nextPage);
   }
