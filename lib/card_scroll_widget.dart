@@ -92,7 +92,7 @@ class CardScrollWidget extends StatelessWidget {
                                       fontFamily: "SF-Pro-Text-Regular")),
                             ),
                             Padding(
-                              padding: EdgeInsetsg.symmetric(
+                              padding: EdgeInsets>.symmetric(
                                   horizontal: 16.0, vertical: 8.0),
                               child: Text(announcements[i].description,
                                   style: TextStyle(
