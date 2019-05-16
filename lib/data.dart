@@ -1,3 +1,5 @@
+import 'package:randomword_app/luminus_api/announcement_response.dart';
+
 import 'luminus_api/luminus_api.dart';
 import 'luminus_api/module_response.dart';
 import 'luminus_api/profile_response.dart';
@@ -20,6 +22,7 @@ List<String> title = [
 Auth auth = new Auth(username: DotEnv().env['LUMINUS_USERNAME'], password: DotEnv().env['LUMINUS_PASSWORD']);
 List<Module> modules;
 Profile profile;
+List<Announcement> announcements = new List();
 
 Future<List<Module>> getModules() async {
   if(modules == null) {
@@ -42,3 +45,25 @@ Future<Profile> getProfile() async {
 void refreshProfile() async {
   profile = await API.getProfile(auth);
 }
+
+Future<List<Announcement>> getAnnouncements(Module module) async {
+  if(announcements == null) {
+    announcements = await API.getAnnouncements(auth, module);
+  }
+  return announcements;
+}
+
+Future<List<Announcement>> getAllAnnouncements() async {
+  getModules();
+  for (Module module in modules) {
+    print("called");
+    announcements.addAll(await API.getAnnouncements(auth, module));
+  }
+  //print(announcements.toString());
+  return announcements;
+}
+
+void refresAnnouncements(Module module) async {
+  announcements = await API.getAnnouncements(auth, module);
+}
+

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-
 import 'luminus_api/module_response.dart';
 
 import 'data.dart' as Data;
@@ -51,8 +50,10 @@ class ModulePage extends StatelessWidget {
     );
   }
 
+  static List<Module> values;
+
   Widget createListView(BuildContext context, AsyncSnapshot snapshot) {
-    List<Module> values = snapshot.data;
+    values = snapshot.data;
     return new ListView.builder(
       itemCount: values.length,
       itemBuilder: (BuildContext context, int index) {

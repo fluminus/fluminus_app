@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import 'data.dart';
+import 'package:randomword_app/luminus_api/announcement_response.dart';
 import 'dart:math';
+import 'data.dart' as Data;
 
 var cardAspectRatio = 12.0 / 16.0;
 var widgetAspectRatio = cardAspectRatio * 1.2;
@@ -9,11 +10,16 @@ class CardScrollWidget extends StatelessWidget {
   final double currentPage;
   final double padding = 20.0;
   final double verticalInset = 20.0;
+ 
+  
 
   CardScrollWidget(this.currentPage);
-
   @override
   Widget build(BuildContext context) {
+    //写得不太好这种方法虽然方便
+    Data.getAllAnnouncements();
+    List<Announcement> announcements = Data.announcements;
+    
     return new AspectRatio(
       aspectRatio: widgetAspectRatio,
       child: LayoutBuilder(builder: (context, contraints) {
@@ -30,8 +36,8 @@ class CardScrollWidget extends StatelessWidget {
         var horizontalInset = primaryCardLeft / 2;
 
         List<Widget> cardList = new List();
-
-        for (var i = 0; i < images.length; i++) {
+        
+        for (var i = 0; i < announcements.length; i++) {
           var delta = i - currentPage;
           bool isOnRight = delta > 0;
 
@@ -60,9 +66,9 @@ class CardScrollWidget extends StatelessWidget {
                   child: Stack(
                     fit: StackFit.expand,
                     children: <Widget>[
-                      Image.asset(images[i], fit: BoxFit.cover),
+                      Image.asset(Data.images[i%4], fit: BoxFit.cover),
                       Align(
-                        alignment: Alignment.bottomLeft,
+                        alignment: Alignment.topRight,
                         child: Column(
                           mainAxisSize: MainAxisSize.min,
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -70,10 +76,28 @@ class CardScrollWidget extends StatelessWidget {
                             Padding(
                               padding: EdgeInsets.symmetric(
                                   horizontal: 16.0, vertical: 8.0),
-                              child: Text(title[i],
+                              child: Text(announcements[i].title,
                                   style: TextStyle(
                                       color: Colors.white,
                                       fontSize: 20.0,
+                                      fontFamily: "SF-Pro-Text-Regular")),
+                            ),
+                            Padding(
+                              padding: EdgeInsets.symmetric(
+                                  horizontal: 16.0, vertical: 8.0),
+                              child: Text("Expire After:" + announcements[i].expireAfter.toString(),
+                                  style: TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 14.0,
+                                      fontFamily: "SF-Pro-Text-Regular")),
+                            ),
+                            Padding(
+                              padding: EdgeInsetsg.symmetric(
+                                  horizontal: 16.0, vertical: 8.0),
+                              child: Text(announcements[i].description,
+                                  style: TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 14.0,
                                       fontFamily: "SF-Pro-Text-Regular")),
                             ),
                             SizedBox(

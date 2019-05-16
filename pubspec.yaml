@@ -14,7 +14,7 @@ description: A new Flutter project that generates random words for you
 version: 1.0.0+1
 
 environment:
-  sdk: ">=2.1.0 <3.0.0"
+  sdk: ">=2.2.0 <3.0.0"
 
 dependencies:
   flutter:
@@ -28,6 +28,7 @@ dependencies:
   open_file: ^2.0.1+2
   dio: ^2.1.3
   curved_navigation_bar: ^0.2.1
+  luminus_api: ^0.1.1
 
 
   # The following adds the Cupertino Icons font to your application.
@@ -87,6 +88,14 @@ flutter:
     - family: CustomIcons
       fonts:
         - asset: assets/custom_icons.ttf
+    
+    - family: Roboto
+      fonts: 
+        - asset: assets/Roboto-Regular.ttf
+        - asset: assets/Roboto-Light.ttf
+        - asset: assets/Roboto-Thin.ttf
+        - asset: assets/Roboto-Bold.ttf
+
   #
   # For details regarding fonts from package dependencies,
   # see https://flutter.io/custom-fonts/#from-packages

@@ -2,12 +2,12 @@ import 'package:flutter/material.dart';
 import 'card_scroll_widget.dart';
 import 'data.dart';
 
-class Third extends StatefulWidget {
+class AnnouncementPage extends StatefulWidget {
   @override
-  _ThirdState createState() => new _ThirdState();
+  _APState createState() => new _APState();
 }
 
-class _ThirdState extends State<Third> {
+class _APState extends State<AnnouncementPage> {
   var currentPage = images.length - 1.0;
 
   @override
@@ -24,7 +24,7 @@ class _ThirdState extends State<Third> {
       child: new SingleChildScrollView(
           child: Padding(
         padding: const EdgeInsets.fromLTRB(
-            8.0, 35.0, 8.0, 20000.0), // try and fix this number later
+            8.0, 35.0, 8.0, 20.0), // try and fix this number later
         child: Column(
           children: <Widget>[
             Stack(
@@ -36,12 +36,13 @@ class _ThirdState extends State<Third> {
                     controller: controller,
                     reverse: true,
                     itemBuilder: (context, index) {
-                      // make the cards clickable
                       return InkWell(
                         child: Container(),
-                        onTap: () {
-                          print(index);
-                        },
+                        onLongPress: () {
+                          _selectDate();
+                          //for debug purpose
+                          print(selectedDate.toString());
+                        }
                       );
                     },
                   ),
@@ -52,5 +53,20 @@ class _ThirdState extends State<Third> {
         ),
       )),
     );
+  
+  }
+
+  DateTime selectedDate = DateTime.now();
+
+  Future<Null> _selectDate() async {
+    final DateTime pickedDate = await showDatePicker(
+        context: context,
+        initialDate: new DateTime.now(),
+        firstDate: new DateTime(2018,1,1),
+        lastDate: new DateTime(2019,12,31)
+    );
+    if(pickedDate != null) setState(() => selectedDate = pickedDate);
   }
 }
+
+

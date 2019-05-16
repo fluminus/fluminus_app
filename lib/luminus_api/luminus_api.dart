@@ -28,9 +28,9 @@ class API {
     String url;
     if (!isTest)
       url =
-          "${DotEnv().env['API_URL']}/api/v1/username/${auth.username}/password/${auth.password}${path}";
+          "${DotEnv().env['API_URL']}/api/v1/username/${auth.username}/password/${auth.password}$path";
     else {
-      url = "http://139.162.28.8:4001/api/v1/test${path}";
+      url = "http://139.162.28.8:4001/api/v1/test$path";
       print(url);
     }
     var response = await http.get(url);
