@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:randomword_app/luminus_api/announcement_response.dart';
+import 'package:luminus_api/luminus_api.dart';
 import 'dart:math';
 import 'data.dart' as Data;
 
@@ -92,7 +92,7 @@ class CardScrollWidget extends StatelessWidget {
                                       fontFamily: "SF-Pro-Text-Regular")),
                             ),
                             Padding(
-                              padding: EdgeInsets>.symmetric(
+                              padding: EdgeInsets.symmetric(
                                   horizontal: 16.0, vertical: 8.0),
                               child: Text(announcements[i].description,
                                   style: TextStyle(

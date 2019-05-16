@@ -3,9 +3,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:dio/dio.dart';
 import 'package:open_file/open_file.dart';
 
-import 'luminus_api/module_response.dart';
-import 'luminus_api/file_response.dart';
-import 'luminus_api/luminus_api.dart';
+import 'package:luminus_api/luminus_api.dart';
 
 import 'data.dart' as Data;
 
@@ -50,7 +48,7 @@ class ModuleRootDirectoryPage extends StatelessWidget {
         title: Text(module.name),
       ),
       body: FutureBuilder(
-        future: API.getModuleDirectories(API.myAuth, module),
+        future: API.getModuleDirectories(Data.auth, module),
         builder: (context, snapshot) {
           if (snapshot.hasData) {
             return createListView(context, snapshot);
@@ -99,9 +97,7 @@ class FileDownloadPage extends StatefulWidget {
   @override
   _FileDownloadPageState createState() {
     Future<String> url = API.getDownloadUrl(Data.auth, file);
-    return _FileDownloadPageState(
-        url,
-        filename);
+    return _FileDownloadPageState(url, filename);
   }
 }
 
@@ -212,7 +208,7 @@ class SubdirectoryPage extends StatelessWidget {
         title: Text(this.title),
       ),
       body: FutureBuilder(
-        future: API.getItemsFromDirectory(API.myAuth, parent),
+        future: API.getItemsFromDirectory(Data.auth, parent),
         builder: (context, snapshot) {
           if (snapshot.hasData) {
             return createListView(context, snapshot);
@@ -334,6 +330,7 @@ class FilePage extends StatelessWidget {
               padding: const EdgeInsets.fromLTRB(14.0, 40.0, 20.0, 20.0),
               child: Text('File Management',
                   style: TextStyle(
+                      color: Colors.black,
                       fontSize: 30.0,
                       fontFamily: 'Montserrat',
                       fontWeight: FontWeight.bold),

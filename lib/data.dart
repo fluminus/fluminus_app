@@ -1,9 +1,5 @@
-import 'package:randomword_app/luminus_api/announcement_response.dart';
-
-import 'luminus_api/luminus_api.dart';
-import 'luminus_api/module_response.dart';
-import 'luminus_api/profile_response.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:luminus_api/luminus_api.dart';
 
 List<String> images = [
   "assets/image_04.jpg",
@@ -19,7 +15,7 @@ List<String> title = [
   "Jack the Persian and the Black Castel",
 ];
 
-Auth auth = new Auth(username: DotEnv().env['LUMINUS_USERNAME'], password: DotEnv().env['LUMINUS_PASSWORD']);
+Authentication auth = new Authentication(username: DotEnv().env['LUMINUS_USERNAME'], password: DotEnv().env['LUMINUS_PASSWORD']);
 List<Module> modules;
 Profile profile;
 List<Announcement> announcements = new List();

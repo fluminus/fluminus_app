@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'luminus_api/module_response.dart';
+import 'package:luminus_api/luminus_api.dart';
 
 import 'data.dart' as Data;
 
