@@ -1,12 +1,9 @@
-import 'package:luminus_api/luminus_api.dart';
-import 'package:dotenv/dotenv.dart' show load, env;
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:luminus_api/luminus_api.dart';
 
 
-
-
-  Authentication authentication = new Authentication(username: DotEnv().env['LUMINUS_USERNAME'], password: DotEnv().env['LUMINUS_PASSWORD']);
-  List<Announcement> announcements;
+Authentication authentication = new Authentication(username: DotEnv().env['LUMINUS_USERNAME'], password: DotEnv().env['LUMINUS_PASSWORD']);
+List<Announcement> announcements = new List();
 
 
 Future<List<Announcement>> getAllAnnouncements() async {

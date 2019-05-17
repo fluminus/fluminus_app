@@ -4,7 +4,7 @@ import 'package:dio/dio.dart';
 import 'package:open_file/open_file.dart';
 import 'package:luminus_api/luminus_api.dart';
 import 'data.dart' as Data;
-import 'data.dart';
+
 
 Widget createCardInkWellWidget(String title, String subtitle, Icon icon,
     BuildContext context, Widget nextPage) {
@@ -96,9 +96,7 @@ class FileDownloadPage extends StatefulWidget {
   @override
   _FileDownloadPageState createState() {
     Future<String> url = API.getDownloadUrl(Data.authentication, file);
-    return _FileDownloadPageState(
-        url,
-        filename);
+    return _FileDownloadPageState(url, filename);
   }
 }
 
@@ -331,6 +329,7 @@ class FilePage extends StatelessWidget {
               padding: const EdgeInsets.fromLTRB(14.0, 40.0, 20.0, 20.0),
               child: Text('File Management',
                   style: TextStyle(
+                      color: Colors.black,
                       fontSize: 30.0,
                       fontFamily: 'Montserrat',
                       fontWeight: FontWeight.bold),

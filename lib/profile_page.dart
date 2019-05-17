@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:luminus_api/luminus_api.dart';
 import 'data.dart' as Data;
 
-
 class ProfilePage extends StatefulWidget {
   @override
   _ProfilePageState createState() => _ProfilePageState();
