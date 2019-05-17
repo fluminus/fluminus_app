@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import 'luminus_api/module_response.dart';
-
+import 'package:luminus_api/luminus_api.dart';
 import 'data.dart' as Data;
 
 class ModulePage extends StatelessWidget {
@@ -13,7 +12,7 @@ class ModulePage extends StatelessWidget {
         child: Padding(
           padding: const EdgeInsets.all(10.0),
           child: FutureBuilder<List<Module>>(
-            future: Data.getModules(),
+            future: API.getModules(Data.authentication),
             builder: (context, snapshot) {
               if (snapshot.hasData) {
                 return createListView(context, snapshot);

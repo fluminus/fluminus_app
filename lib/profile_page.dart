@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-
+import 'package:luminus_api/luminus_api.dart';
 import 'data.dart' as Data;
-import 'luminus_api/profile_response.dart';
+
 
 class ProfilePage extends StatefulWidget {
   @override
@@ -9,7 +9,7 @@ class ProfilePage extends StatefulWidget {
 }
 
 class _ProfilePageState extends State<ProfilePage> {
-  Future<Profile> profile = Data.getProfile();
+  Future<Profile> profile = API.getProfile(Data.authentication);
 
   Widget displayName(String name) {
     return Text(

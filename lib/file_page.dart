@@ -2,11 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:dio/dio.dart';
 import 'package:open_file/open_file.dart';
-
-import 'luminus_api/module_response.dart';
-import 'luminus_api/file_response.dart';
-import 'luminus_api/luminus_api.dart';
-
+import '';
 import 'data.dart' as Data;
 
 Widget createCardInkWellWidget(String title, String subtitle, Icon icon,

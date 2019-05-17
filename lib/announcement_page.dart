@@ -1,59 +1,17 @@
 import 'package:flutter/material.dart';
-import 'card_scroll_widget.dart';
-import 'data.dart';
+import 'data.dart' as Data;
 
 class AnnouncementPage extends StatefulWidget {
   @override
-  _APState createState() => new _APState();
+  _AnnouncementPageState createState() => new _AnnouncementPageState();
 }
 
-class _APState extends State<AnnouncementPage> {
-  var currentPage = images.length - 1.0;
+class _AnnouncementPageState extends State<AnnouncementPage> {
+  
 
   @override
   Widget build(BuildContext context) {
-    PageController controller = PageController(initialPage: images.length - 1);
-    controller.addListener(() {
-      setState(() {
-        currentPage = controller.page;
-      });
-    });
-
-    return Container(
-      color: Colors.white,
-      child: new SingleChildScrollView(
-          child: Padding(
-        padding: const EdgeInsets.fromLTRB(
-            8.0, 35.0, 8.0, 20.0), // try and fix this number later
-        child: Column(
-          children: <Widget>[
-            Stack(
-              children: <Widget>[
-                CardScrollWidget(currentPage),
-                Positioned.fill(
-                  child: PageView.builder(
-                    itemCount: images.length,
-                    controller: controller,
-                    reverse: true,
-                    itemBuilder: (context, index) {
-                      return InkWell(
-                        child: Container(),
-                        onLongPress: () {
-                          _selectDate();
-                          //for debug purpose
-                          print(selectedDate.toString());
-                        }
-                      );
-                    },
-                  ),
-                )
-              ],
-            ),
-          ],
-        ),
-      )),
-    );
-  
+    return null;
   }
 
   DateTime selectedDate = DateTime.now();
