@@ -2,8 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:dio/dio.dart';
 import 'package:open_file/open_file.dart';
-import '';
+import 'package:luminus_api/luminus_api.dart';
 import 'data.dart' as Data;
+import 'data.dart';
 
 Widget createCardInkWellWidget(String title, String subtitle, Icon icon,
     BuildContext context, Widget nextPage) {
@@ -46,7 +47,7 @@ class ModuleRootDirectoryPage extends StatelessWidget {
         title: Text(module.name),
       ),
       body: FutureBuilder(
-        future: API.getModuleDirectories(API.myAuth, module),
+        future: API.getModuleDirectories(Data.authentication, module),
         builder: (context, snapshot) {
           if (snapshot.hasData) {
             return createListView(context, snapshot);
@@ -94,7 +95,7 @@ class FileDownloadPage extends StatefulWidget {
 
   @override
   _FileDownloadPageState createState() {
-    Future<String> url = API.getDownloadUrl(Data.auth, file);
+    Future<String> url = API.getDownloadUrl(Data.authentication, file);
     return _FileDownloadPageState(
         url,
         filename);
@@ -208,7 +209,7 @@ class SubdirectoryPage extends StatelessWidget {
         title: Text(this.title),
       ),
       body: FutureBuilder(
-        future: API.getItemsFromDirectory(API.myAuth, parent),
+        future: API.getItemsFromDirectory(Data.authentication, parent),
         builder: (context, snapshot) {
           if (snapshot.hasData) {
             return createListView(context, snapshot);
@@ -271,7 +272,7 @@ class FilePage extends StatelessWidget {
       child: Padding(
         padding: const EdgeInsets.fromLTRB(14.0, 0.0, 14.0, 0.0),
         child: FutureBuilder<List<Module>>(
-          future: Data.getModules(),
+          future: API.getModules(Data.authentication),
           builder: (context, snapshot) {
             if (snapshot.hasData) {
               return createListView(context, snapshot);

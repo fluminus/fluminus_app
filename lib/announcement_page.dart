@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'data.dart' as Data;
 
 class AnnouncementPage extends StatefulWidget {
   @override
