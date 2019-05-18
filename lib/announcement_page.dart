@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:html/parser.dart';
 import 'package:luminus_api/luminus_api.dart';
-import 'data.dart' as Data;
+import 'package:fluminus/data.dart' as data;
+import 'package:fluminus/util.dart' as util;
+
 
 class AnnouncementPage extends StatefulWidget {
   const AnnouncementPage({Key key}) : super(key: key);
@@ -16,44 +18,45 @@ class _AnnouncementPageState extends State<AnnouncementPage>
   Widget build(BuildContext context) {
     print(_modules);
     return FutureBuilder<List<Module>>(
-        future: API.getModules(Data.authentication),
+        future: API.getModules(data.authentication),
         builder: (context, snapshot) {
           if (snapshot.hasData) {
             _modules = snapshot.data;
-            return MaterialApp(
-              home: DefaultTabController(
-                length: _modules.length,
-                child: Scaffold(
-                  appBar: AppBar(
-                    title: const Text("Announcemnts"),
-                    bottom: TabBar(
-                      isScrollable: true,
-                      tabs: _modules.map((Module module) {
-                        return Tab(
-                          text: module.name,
-                        );
-                      }).toList(),
-                    ),
-                  ),
-                  body: TabBarView(
-                    children: _modules.map((Module module) {
-                      return announcementList(module);
+            return DefaultTabController(
+              length: _modules.length,
+              child: Scaffold(
+                appBar: AppBar(
+                  title: const Text("Announcemnts"),
+                  bottom: TabBar(
+                    isScrollable: true,
+                    tabs: _modules.map((Module module) {
+                      return Tab(
+                        text: module.name,
+                      );
                     }).toList(),
                   ),
+                ),
+                body: TabBarView(
+                  children: _modules.map((Module module) {
+                    return announcementList(module);
+                  }).toList(),
                 ),
               ),
             );
           } else if (snapshot.hasError) {
             return Text(snapshot.error.toString());
           }
-          return Center(
-            child: Column(
-              children: <Widget>[
-                Padding(
-                  padding: const EdgeInsets.all(30.0),
-                  child: CircularProgressIndicator(),
-                ),
-              ],
+          return Scaffold(
+            appBar: AppBar(title: const Text("Announcemnts")),
+            body: Center(
+              child: Column(
+                children: <Widget>[
+                  Padding(
+                    padding: const EdgeInsets.all(30.0),
+                    child: CircularProgressIndicator(),
+                  ),
+                ],
+              ),
             ),
           );
         });
@@ -67,7 +70,7 @@ class _AnnouncementPageState extends State<AnnouncementPage>
         child: Padding(
           padding: const EdgeInsets.all(10.0),
           child: FutureBuilder<List<Announcement>>(
-            future: API.getAnnouncements(Data.authentication, module),
+            future: API.getAnnouncements(data.authentication, module),
             builder: (context, snapshot) {
               if (snapshot.hasData) {
                 announcements = snapshot.data;
@@ -109,7 +112,7 @@ class _AnnouncementPageState extends State<AnnouncementPage>
           ListTile(
             title: Text(announcemnt.title),
             subtitle: Text("Expire After: " +
-                announcemnt.expireAfter +
+                util.datetimeToString(DateTime.parse(announcemnt.expireAfter)) +
                 '\n' +
                 '\n' +
                 parsedHtmlText(announcemnt.description)),
@@ -155,20 +158,3 @@ String parsedHtmlText(String htmlText) {
   var document = parse(htmlText);
   return parse(document.body.text).documentElement.text;
 }
-
-/*String formatedDate(DateTime expireDate) {
-    return new DateFormat("EEE, dd MMM, yyyy").format(expireDate);
-}
-*/
-
-/*DateTime selectedDate = DateTime.now();
-
-Future<Null> _selectDate() async {
-    final DateTime pickedDate = await showDatePicker(
-        context: context,
-        initialDate: new DateTime.now(),
-        firstDate: new DateTime(2018, 1, 1),
-        lastDate: new DateTime(2019, 12, 31));
-    if (pickedDate != null) setState(() => selectedDate = pickedDate);
-  }
-}*/
