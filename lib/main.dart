@@ -18,7 +18,7 @@ void main() async {
       return ScrollConfiguration(behavior: MyBehavior(), child: child);
     },
     theme: ThemeData(
-        brightness: Brightness.dark,
+        brightness: Brightness.light,
         primaryColor: Colors.lightBlue[800],
         accentColor: Colors.orange,
         

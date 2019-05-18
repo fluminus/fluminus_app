@@ -2,11 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:dio/dio.dart';
 import 'package:open_file/open_file.dart';
-
-import 'luminus_api/module_response.dart';
-import 'luminus_api/file_response.dart';
-import 'luminus_api/luminus_api.dart';
-
+import 'package:luminus_api/luminus_api.dart';
 import 'data.dart' as Data;
 
 Widget createCardInkWellWidget(String title, String subtitle, Icon icon,
@@ -26,10 +22,8 @@ Widget createCardInkWellWidget(String title, String subtitle, Icon icon,
             child: ListTile(
               leading: icon,
               title: Text(title),
-              subtitle: Text(
-                subtitle,
-                style: TextStyle(fontSize: 13.0),
-              ),
+              subtitle:
+                  Text(subtitle, style: Theme.of(context).textTheme.body1),
             ),
           ),
         ],
@@ -50,7 +44,7 @@ class ModuleRootDirectoryPage extends StatelessWidget {
         title: Text(module.name),
       ),
       body: FutureBuilder(
-        future: API.getModuleDirectories(API.myAuth, module),
+        future: API.getModuleDirectories(Data.authentication, module),
         builder: (context, snapshot) {
           if (snapshot.hasData) {
             return createListView(context, snapshot);
@@ -98,10 +92,8 @@ class FileDownloadPage extends StatefulWidget {
 
   @override
   _FileDownloadPageState createState() {
-    Future<String> url = API.getDownloadUrl(Data.auth, file);
-    return _FileDownloadPageState(
-        url,
-        filename);
+    Future<String> url = API.getDownloadUrl(Data.authentication, file);
+    return _FileDownloadPageState(url, filename);
   }
 }
 
@@ -212,7 +204,7 @@ class SubdirectoryPage extends StatelessWidget {
         title: Text(this.title),
       ),
       body: FutureBuilder(
-        future: API.getItemsFromDirectory(API.myAuth, parent),
+        future: API.getItemsFromDirectory(Data.authentication, parent),
         builder: (context, snapshot) {
           if (snapshot.hasData) {
             return createListView(context, snapshot);
@@ -268,31 +260,34 @@ class SubdirectoryPage extends StatelessWidget {
 class FilePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return new Container(
-      decoration: new BoxDecoration(
-          // borderRadius: new BorderRadius.circular(20.0),
-          color: Colors.white),
-      child: Padding(
-        padding: const EdgeInsets.fromLTRB(14.0, 0.0, 14.0, 0.0),
-        child: FutureBuilder<List<Module>>(
-          future: Data.getModules(),
-          builder: (context, snapshot) {
-            if (snapshot.hasData) {
-              return createListView(context, snapshot);
-            } else if (snapshot.hasError) {
-              return Text(snapshot.error.toString());
-            }
-            return Center(
-              child: Column(
-                children: <Widget>[
-                  Padding(
-                    padding: const EdgeInsets.all(30.0),
-                    child: CircularProgressIndicator(),
-                  ),
-                ],
-              ),
-            );
-          },
+    return Scaffold(
+      appBar: AppBar(title: const Text("Files")),
+      body: Container(
+        decoration: new BoxDecoration(
+            // borderRadius: new BorderRadius.circular(20.0),
+            color: Colors.white),
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(14.0, 10.0, 14.0, 0.0),
+          child: FutureBuilder<List<Module>>(
+            future: API.getModules(Data.authentication),
+            builder: (context, snapshot) {
+              if (snapshot.hasData) {
+                return createListView(context, snapshot);
+              } else if (snapshot.hasError) {
+                return Text(snapshot.error.toString());
+              }
+              return Center(
+                child: Column(
+                  children: <Widget>[
+                    Padding(
+                      padding: const EdgeInsets.all(30.0),
+                      child: CircularProgressIndicator(),
+                    ),
+                  ],
+                ),
+              );
+            },
+          ),
         ),
       ),
     );
@@ -314,7 +309,7 @@ class FilePage extends StatelessWidget {
               title: Text(module.name),
               subtitle: Text(
                 module.courseName,
-                style: TextStyle(fontSize: 13.0),
+                style: Theme.of(context).textTheme.body1,
               ),
             ),
           ),
@@ -326,24 +321,11 @@ class FilePage extends StatelessWidget {
   Widget createListView(BuildContext context, AsyncSnapshot snapshot) {
     List<Module> values = snapshot.data;
     return new ListView.builder(
-      itemCount: values.length + 1,
+      itemCount: values.length,
       itemBuilder: (BuildContext context, int index) {
-        if (index == 0)
-          return new Container(
-            child: Padding(
-              padding: const EdgeInsets.fromLTRB(14.0, 40.0, 20.0, 20.0),
-              child: Text('File Management',
-                  style: TextStyle(
-                      fontSize: 30.0,
-                      fontFamily: 'Montserrat',
-                      fontWeight: FontWeight.bold),
-                  textAlign: TextAlign.left),
-            ),
-          );
-        else
-          return new Column(
-            children: <Widget>[createCardWidget(values[index - 1], context)],
-          );
+        return new Column(
+          children: <Widget>[createCardWidget(values[index], context)],
+        );
       },
     );
   }
