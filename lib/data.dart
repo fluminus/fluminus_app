@@ -1,44 +1,17 @@
-import 'luminus_api/luminus_api.dart';
-import 'luminus_api/module_response.dart';
-import 'luminus_api/profile_response.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:luminus_api/luminus_api.dart';
 
-List<String> images = [
-  "assets/image_04.jpg",
-  "assets/image_03.jpg",
-  "assets/image_02.jpg",
-  "assets/image_01.png",
-];
 
-List<String> title = [
-  "Hounted Ground",
-  "Fallen In Love",
-  "The Dreaming Moon",
-  "Jack the Persian and the Black Castel",
-];
+Authentication authentication = new Authentication(username: DotEnv().env['LUMINUS_USERNAME'], password: DotEnv().env['LUMINUS_PASSWORD']);
+List<Module> modules = new List();
+List<Announcement> announcements = new List();
 
-Auth auth = new Auth(username: DotEnv().env['LUMINUS_USERNAME'], password: DotEnv().env['LUMINUS_PASSWORD']);
-List<Module> modules;
-Profile profile;
-
-Future<List<Module>> getModules() async {
-  if(modules == null) {
-    modules = await API.getModules(auth);
+Future<List<Announcement>> getAllAnnouncements() async {
+  modules = await API.getModules(authentication);
+  for (Module module in modules) {
+    announcements.addAll(await API.getAnnouncements(authentication, module));
   }
-  return modules;
+  return announcements;
 }
 
-void refreshModules() async {
-  modules = await API.getModules(auth);
-}
 
-Future<Profile> getProfile() async {
-  if(profile == null) {
-    profile = await API.getProfile(auth);
-  }
-  return profile;
-}
-
-void refreshProfile() async {
-  profile = await API.getProfile(auth);
-}

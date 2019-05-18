@@ -2,63 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'module_page.dart';
+import 'forum_page.dart';
 import 'profile_page.dart';
 import 'file_page.dart';
-import 'third_page.dart';
-
-import 'luminus_api/download_response.dart';
-
-import 'package:open_file/open_file.dart';
-import 'package:path_provider/path_provider.dart';
+import 'announcement_page.dart';
 
 /// Disabling the scroll glow.
 /// Source: https://stackoverflow.com/questions/51119795/how-to-remove-scroll-glow/51119796#51119796
-class MyBehavior extends ScrollBehavior {
-  @override
-  Widget buildViewportChrome(
-      BuildContext context, Widget child, AxisDirection axisDirection) {
-    return child;
-  }
-}
-
-class SecondRoute extends StatefulWidget {
-  @override
-  _SecondRouteState createState() => _SecondRouteState();
-}
-
-class _SecondRouteState extends State<SecondRoute> {
-  String _openResult = 'Unknown';
-
-  Future<void> openFile() async {
-    String dir = (await getApplicationDocumentsDirectory()).path;
-    final filePath = dir + '/dummy.pdf';
-    final message = await OpenFile.open(filePath);
-    setState(() {
-      _openResult = message;
-    });
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return new Scaffold(
-      appBar: new AppBar(
-        title: Text('Plugin example app'),
-      ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            Text('open result: $_openResult\n'),
-            FlatButton(
-              child: Text('Tap to open file'),
-              onPressed: openFile,
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
 
 void main() async {
   await DotEnv().load('.env');
@@ -67,8 +17,29 @@ void main() async {
     builder: (context, child) {
       return ScrollConfiguration(behavior: MyBehavior(), child: child);
     },
+    theme: ThemeData(
+        brightness: Brightness.light,
+        primaryColor: Colors.lightBlue[800],
+        accentColor: Colors.orange,
+        
+        fontFamily: 'Roboto',
+
+        textTheme: TextTheme(
+          headline: TextStyle(fontSize: 45.0, fontWeight: FontWeight.bold),
+          title: TextStyle(fontSize: 40.0, fontStyle: FontStyle.normal),
+          body1: TextStyle(fontSize: 14.0, fontFamily: 'Roboto'),
+        ),
+      ),
     home: BottomNavBar(),
   ));
+}
+
+class MyBehavior extends ScrollBehavior {
+  @override
+  Widget buildViewportChrome(
+      BuildContext context, Widget child, AxisDirection axisDirection) {
+    return child;
+  }
 }
 
 class BottomNavBar extends StatefulWidget {
@@ -79,58 +50,34 @@ class BottomNavBar extends StatefulWidget {
 class _BottomNavBarState extends State<BottomNavBar> {
   int _page = 0;
   final _pageOptions = [
-    Third(),
+    AnnouncementPage(),
     ModulePage(),
+    ForumPage(),
     FilePage(),
-    ModulePage(),
     ProfilePage()
   ];
-  bool showFloatingActionButton = true;
-  bool showCondition(int index) {
-    return index == 2;
-  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        // appBar: AppBar(
-        //   title: Text(_page.toString()),
-        // ),
-        floatingActionButton: showFloatingActionButton
-            ? FloatingActionButton(
-                child: Icon(Icons.add),
-                onPressed: () {
-                  Navigator.push(context, MaterialPageRoute(builder: (context) {
-                    downloadFile(
-                        "https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf",
-                        "dummy.pdf");
-                    return SecondRoute();
-                  }));
-                },
-              )
-            : Container(),
         bottomNavigationBar: CurvedNavigationBar(
           index: 0,
           height: 60.0,
           items: <Widget>[
-            Icon(Icons.add, size: 30),
-            Icon(Icons.list, size: 30),
-            Icon(Icons.compare_arrows, size: 30),
-            Icon(Icons.call_split, size: 30),
+            Icon(Icons.home, size: 30),
+            Icon(Icons.alarm_on, size: 30),
+            Icon(Icons.question_answer, size: 30),
+            Icon(Icons.insert_drive_file, size: 30),
             Icon(Icons.perm_identity, size: 30),
           ],
-          color: Colors.greenAccent,
-          buttonBackgroundColor: Colors.lightBlueAccent,
+          color: Theme.of(context).accentColor,
+          buttonBackgroundColor: Theme.of(context).primaryColor,
           backgroundColor: Colors.white,
           animationCurve: Curves.easeInOut,
           animationDuration: Duration(milliseconds: 200),
           onTap: (index) {
             setState(() {
               _page = index;
-              if (showCondition(index))
-                showFloatingActionButton = true;
-              else
-                showFloatingActionButton = false;
             });
           },
         ),
