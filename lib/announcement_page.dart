@@ -20,40 +20,41 @@ class _AnnouncementPageState extends State<AnnouncementPage>
         builder: (context, snapshot) {
           if (snapshot.hasData) {
             _modules = snapshot.data;
-            return MaterialApp(
-              home: DefaultTabController(
-                length: _modules.length,
-                child: Scaffold(
-                  appBar: AppBar(
-                    title: const Text("Announcemnts"),
-                    bottom: TabBar(
-                      isScrollable: true,
-                      tabs: _modules.map((Module module) {
-                        return Tab(
-                          text: module.name,
-                        );
-                      }).toList(),
-                    ),
-                  ),
-                  body: TabBarView(
-                    children: _modules.map((Module module) {
-                      return announcementList(module);
+            return DefaultTabController(
+              length: _modules.length,
+              child: Scaffold(
+                appBar: AppBar(
+                  title: const Text("Announcemnts"),
+                  bottom: TabBar(
+                    isScrollable: true,
+                    tabs: _modules.map((Module module) {
+                      return Tab(
+                        text: module.name,
+                      );
                     }).toList(),
                   ),
+                ),
+                body: TabBarView(
+                  children: _modules.map((Module module) {
+                    return announcementList(module);
+                  }).toList(),
                 ),
               ),
             );
           } else if (snapshot.hasError) {
             return Text(snapshot.error.toString());
           }
-          return Center(
-            child: Column(
-              children: <Widget>[
-                Padding(
-                  padding: const EdgeInsets.all(30.0),
-                  child: CircularProgressIndicator(),
-                ),
-              ],
+          return Scaffold(
+            appBar: AppBar(title: const Text("Announcemnts")),
+            body: Center(
+              child: Column(
+                children: <Widget>[
+                  Padding(
+                    padding: const EdgeInsets.all(30.0),
+                    child: CircularProgressIndicator(),
+                  ),
+                ],
+              ),
             ),
           );
         });
