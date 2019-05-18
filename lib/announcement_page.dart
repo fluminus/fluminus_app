@@ -110,7 +110,7 @@ class _AnnouncementPageState extends State<AnnouncementPage>
   Widget announcementCard(Announcement announcemnt, BuildContext context) {
     String title = announcemnt.title;
     String subtitle = "Expire After: " +
-        util.datetimeToString(DateTime.parse(announcemnt.expireAfter));
+        util.datetimeToFormattedString(DateTime.parse(announcemnt.expireAfter));
     String body = parsedHtmlText(announcemnt.description);
     return card.infoCardWithFullBody(title, subtitle, body, context);
     // return card.infoCardWithFixedHeight(title, subtitle, body, context);
