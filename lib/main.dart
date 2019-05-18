@@ -18,15 +18,15 @@ void main() async {
       return ScrollConfiguration(behavior: MyBehavior(), child: child);
     },
     theme: ThemeData(
-        brightness: Brightness.dark,
+        brightness: Brightness.light,
         primaryColor: Colors.lightBlue[800],
         accentColor: Colors.orange,
         
         fontFamily: 'Roboto',
 
         textTheme: TextTheme(
-          headline: TextStyle(fontSize: 72.0, fontWeight: FontWeight.bold),
-          title: TextStyle(fontSize: 36.0, fontStyle: FontStyle.normal),
+          headline: TextStyle(fontSize: 45.0, fontWeight: FontWeight.bold),
+          title: TextStyle(fontSize: 40.0, fontStyle: FontStyle.normal),
           body1: TextStyle(fontSize: 14.0, fontFamily: 'Roboto'),
         ),
       ),
@@ -56,9 +56,6 @@ class _BottomNavBarState extends State<BottomNavBar> {
     FilePage(),
     ProfilePage()
   ];
-  bool showCondition(int index) {
-    return index == 2;
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -73,8 +70,8 @@ class _BottomNavBarState extends State<BottomNavBar> {
             Icon(Icons.insert_drive_file, size: 30),
             Icon(Icons.perm_identity, size: 30),
           ],
-          color: Theme.of(context).primaryColor,
-          buttonBackgroundColor: Theme.of(context).accentColor,
+          color: Theme.of(context).accentColor,
+          buttonBackgroundColor: Theme.of(context).primaryColor,
           backgroundColor: Colors.white,
           animationCurve: Curves.easeInOut,
           animationDuration: Duration(milliseconds: 200),

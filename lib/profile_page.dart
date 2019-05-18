@@ -13,90 +13,24 @@ class _ProfilePageState extends State<ProfilePage> {
   Widget displayName(String name) {
     return Text(
       name,
-      style: TextStyle(
-          fontFamily: 'Montserrat',
-          fontWeight: FontWeight.bold,
-          fontSize: 17.0),
+      style: Theme.of(context).textTheme.body1,
     );
   }
 
   Widget displayMatricNumber(String number) {
     return Text(
       number,
-      style: TextStyle(
-          fontFamily: 'Montserrat', color: Colors.grey, fontSize: 15.0),
+      style: Theme.of(context).textTheme.body1,
     );
   }
 
   Widget displayPersonalParticular(String info) {
     return Text(
       info,
-      style: TextStyle(
-          fontFamily: 'Montserrat',
-          fontWeight: FontWeight.w300,
-          fontSize: 15.0),
+      style: Theme.of(context).textTheme.body1,
     );
   }
-
-  Widget followerNonsense() {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: <Widget>[
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: <Widget>[
-            Text(
-              '1789',
-              style: TextStyle(
-                  fontFamily: 'Montserrat', color: Colors.red, fontSize: 17.0),
-            ),
-            Text(
-              'Followers',
-              style: TextStyle(
-                fontFamily: 'Montserrat',
-                color: Colors.grey,
-              ),
-            )
-          ],
-        ),
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: <Widget>[
-            Text(
-              '236',
-              style: TextStyle(
-                  fontFamily: 'Montserrat', color: Colors.blue, fontSize: 17.0),
-            ),
-            Text(
-              'Following',
-              style: TextStyle(
-                fontFamily: 'Montserrat',
-                color: Colors.grey,
-              ),
-            )
-          ],
-        ),
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: <Widget>[
-            Text(
-              '990',
-              style: TextStyle(
-                  fontFamily: 'Montserrat', color: Colors.red, fontSize: 17.0),
-            ),
-            Text(
-              'Likes',
-              style: TextStyle(
-                fontFamily: 'Montserrat',
-                color: Colors.grey,
-              ),
-            )
-          ],
-        )
-      ],
-    );
-  }
-
+  
   @override
   Widget build(BuildContext context) {
     return Container(

@@ -25,7 +25,7 @@ Widget createCardInkWellWidget(String title, String subtitle, Icon icon,
               title: Text(title),
               subtitle: Text(
                 subtitle,
-                style: TextStyle(fontSize: 13.0),
+                style: Theme.of(context).textTheme.body1
               ),
             ),
           ),
@@ -309,7 +309,7 @@ class FilePage extends StatelessWidget {
               title: Text(module.name),
               subtitle: Text(
                 module.courseName,
-                style: TextStyle(fontSize: 13.0),
+                style: Theme.of(context).textTheme.body1,
               ),
             ),
           ),
@@ -328,11 +328,7 @@ class FilePage extends StatelessWidget {
             child: Padding(
               padding: const EdgeInsets.fromLTRB(14.0, 40.0, 20.0, 20.0),
               child: Text('File Management',
-                  style: TextStyle(
-                      color: Colors.black,
-                      fontSize: 30.0,
-                      fontFamily: 'Montserrat',
-                      fontWeight: FontWeight.bold),
+                  style: Theme.of(context).textTheme.title,
                   textAlign: TextAlign.left),
             ),
           );
