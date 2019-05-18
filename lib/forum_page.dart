@@ -5,10 +5,9 @@ class ForumPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(
-          'Forum Page',
-          style: Theme.of(context).textTheme.title,),
-      ),
+          title: Text(
+        'Forum Page',
+      )),
     );
   }
 }

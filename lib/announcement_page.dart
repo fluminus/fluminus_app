@@ -43,19 +43,19 @@ class _AnnouncementPageState extends State<AnnouncementPage>
                 ),
               ),
             );
-          } else if (snapshot.hasError){
+          } else if (snapshot.hasError) {
             return Text(snapshot.error.toString());
           }
           return Center(
-                child: Column(
-                  children: <Widget>[
-                    Padding(
-                      padding: const EdgeInsets.all(30.0),
-                      child: CircularProgressIndicator(),
-                    ),
-                  ],
+            child: Column(
+              children: <Widget>[
+                Padding(
+                  padding: const EdgeInsets.all(30.0),
+                  child: CircularProgressIndicator(),
                 ),
-              );
+              ],
+            ),
+          );
         });
   }
 
