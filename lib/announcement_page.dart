@@ -1,16 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:html/parser.dart';
 import 'package:luminus_api/luminus_api.dart';
-import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'data.dart' as Data;
 
 class AnnouncementPage extends StatefulWidget {
+  const AnnouncementPage({Key key}) : super(key: key);
   @override
   _AnnouncementPageState createState() => new _AnnouncementPageState();
 }
 
-class _AnnouncementPageState extends State<AnnouncementPage> {
-  int _choice = 0;
+class _AnnouncementPageState extends State<AnnouncementPage>
+    with SingleTickerProviderStateMixin {
   List<Module> _modules;
   @override
   Widget build(BuildContext context) {
@@ -21,27 +21,41 @@ class _AnnouncementPageState extends State<AnnouncementPage> {
           if (snapshot.hasData) {
             _modules = snapshot.data;
             return MaterialApp(
-              home: Scaffold(
-                  bottomNavigationBar: CurvedNavigationBar(
-                    index: 0,
-                    height: 30.0,
-                    items: getModuleTitlesAsTextWidgets(_modules),
-                    color: Theme.of(context).accentColor,
-                    buttonBackgroundColor: Theme.of(context).primaryColor,
-                    backgroundColor: Colors.white,
-                    animationCurve: Curves.easeInOut,
-                    animationDuration: Duration(milliseconds: 200),
-                    onTap: (index) {
-                      setState(() {
-                        _choice = index;
-                      });
-                    },
+              home: DefaultTabController(
+                length: _modules.length,
+                child: Scaffold(
+                  appBar: AppBar(
+                    title: const Text("Announcemnts"),
+                    bottom: TabBar(
+                      isScrollable: true,
+                      tabs: _modules.map((Module module) {
+                        return Tab(
+                          text: module.name,
+                        );
+                      }).toList(),
+                    ),
                   ),
-                  body: announcementList(_modules[_choice])),
+                  body: TabBarView(
+                    children: _modules.map((Module module) {
+                      return announcementList(module);
+                    }).toList(),
+                  ),
+                ),
+              ),
             );
-          } else {
+          } else if (snapshot.hasError){
             return Text(snapshot.error.toString());
           }
+          return Center(
+                child: Column(
+                  children: <Widget>[
+                    Padding(
+                      padding: const EdgeInsets.all(30.0),
+                      child: CircularProgressIndicator(),
+                    ),
+                  ],
+                ),
+              );
         });
   }
 
@@ -94,7 +108,11 @@ class _AnnouncementPageState extends State<AnnouncementPage> {
         children: <Widget>[
           ListTile(
             title: Text(announcemnt.title),
-            subtitle: Text("Expire After: " + announcemnt.expireAfter + '\n' + '\n' + parsedHtmlText(announcemnt.description)),
+            subtitle: Text("Expire After: " +
+                announcemnt.expireAfter +
+                '\n' +
+                '\n' +
+                parsedHtmlText(announcemnt.description)),
           ),
         ],
       ),
@@ -102,10 +120,10 @@ class _AnnouncementPageState extends State<AnnouncementPage> {
   }
 }
 
-List<Widget> getModuleTitlesAsTextWidgets(List<Module> modules) {
-  List<Widget> textWidgets = new List();
+List<Tab> getModuleTitlesAsTextTabs(List<Module> modules) {
+  List<Tab> textWidgets = new List();
   for (Module mod in modules) {
-    textWidgets.add(new Text(mod.courseName));
+    textWidgets.add(new Tab(text: mod.courseName));
   }
   return textWidgets;
 }
