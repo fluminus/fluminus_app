@@ -3,7 +3,7 @@ import 'package:html/parser.dart';
 import 'package:luminus_api/luminus_api.dart';
 import 'package:fluminus/data.dart' as data;
 import 'package:fluminus/util.dart' as util;
-
+import 'package:fluminus/widgets/card.dart' as card;
 
 class AnnouncementPage extends StatefulWidget {
   const AnnouncementPage({Key key}) : super(key: key);
@@ -16,7 +16,6 @@ class _AnnouncementPageState extends State<AnnouncementPage>
   List<Module> _modules;
   @override
   Widget build(BuildContext context) {
-    print(_modules);
     return FutureBuilder<List<Module>>(
         future: API.getModules(data.authentication),
         builder: (context, snapshot) {
@@ -38,7 +37,7 @@ class _AnnouncementPageState extends State<AnnouncementPage>
                 ),
                 body: TabBarView(
                   children: _modules.map((Module module) {
-                    return announcementList(module);
+                    return announcementList(module, context);
                   }).toList(),
                 ),
               ),
@@ -64,7 +63,7 @@ class _AnnouncementPageState extends State<AnnouncementPage>
 
   List<Announcement> announcements;
 
-  Widget announcementList(Module module) {
+  Widget announcementList(Module module, BuildContext context) {
     return new Container(
         decoration: new BoxDecoration(color: Colors.white),
         child: Padding(
@@ -80,7 +79,11 @@ class _AnnouncementPageState extends State<AnnouncementPage>
                     return new Column(
                       mainAxisSize: MainAxisSize.min,
                       children: <Widget>[
-                        announcementCard(announcements[index])
+                        Padding(
+                          padding: const EdgeInsets.only(bottom: 6.0),
+                          child:
+                              announcementCard(announcements[index], context),
+                        )
                       ],
                     );
                   },
@@ -104,22 +107,13 @@ class _AnnouncementPageState extends State<AnnouncementPage>
         ));
   }
 
-  Widget announcementCard(Announcement announcemnt) {
-    return Card(
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: <Widget>[
-          ListTile(
-            title: Text(announcemnt.title),
-            subtitle: Text("Expire After: " +
-                util.datetimeToString(DateTime.parse(announcemnt.expireAfter)) +
-                '\n' +
-                '\n' +
-                parsedHtmlText(announcemnt.description)),
-          ),
-        ],
-      ),
-    );
+  Widget announcementCard(Announcement announcemnt, BuildContext context) {
+    String title = announcemnt.title;
+    String subtitle = "Expire After: " +
+        util.datetimeToString(DateTime.parse(announcemnt.expireAfter));
+    String body = parsedHtmlText(announcemnt.description);
+    return card.infoCardWithFullBody(title, subtitle, body, context);
+    // return card.infoCardWithFixedHeight(title, subtitle, body, context);
   }
 }
 
