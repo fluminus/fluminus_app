@@ -191,20 +191,25 @@ class _FileDownloadPageState extends State<FileDownloadPage> {
   }
 }
 
-class SubdirectoryPage extends StatelessWidget {
+class SubdirectoryPage extends StatefulWidget {
   final String title;
   final Directory parent;
 
   SubdirectoryPage(this.parent, this.title);
 
   @override
+  _SubdirectoryPageState createState() => _SubdirectoryPageState();
+}
+
+class _SubdirectoryPageState extends State<SubdirectoryPage> {
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(this.title),
+        title: Text(this.widget.title),
       ),
       body: _paddedfutureBuilder(
-          API.getItemsFromDirectory(data.authentication, parent),
+          API.getItemsFromDirectory(data.authentication, widget.parent),
           (context, snapshot) {
         if (snapshot.hasData) {
           return createListView(context, snapshot);
