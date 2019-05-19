@@ -225,8 +225,44 @@ class SubdirectoryPage extends StatefulWidget {
 enum _FileStatus { normal, downloading, downloaded }
 
 class _SubdirectoryPageState extends State<SubdirectoryPage> {
-  List<BasicFile> _items;
-  Map<BasicFile, _FileStatus> _fileStatus;
+  Future<List<BasicFile>> _listFuture;
+  Future<Map<BasicFile, _FileStatus>> _statusFuture;
+
+  @override
+  void initState() {
+    super.initState();
+    _listFuture = API.getItemsFromDirectory(data.authentication, widget.parent);
+    _statusFuture = _initStatus(_listFuture);
+  }
+
+  Future<Map<BasicFile, _FileStatus>> _initStatus(Future<List<BasicFile>> list) async {
+    var t = await list;
+    Map<BasicFile, _FileStatus> map = new Map();
+    for(var file in t) {
+      map[file] = _FileStatus.normal;
+    }
+    return map;
+  }
+
+  Future<void> updateStatus(File file, _FileStatus status) async {
+    var t = await _statusFuture;
+    if(!t.containsKey(file)) {
+      print('buggy');
+    } else {
+      t[file] = status;
+    }
+  }
+
+  Future<_FileStatus> getStatus(File file) async {
+    var t = await _statusFuture;
+    if(!t.containsKey(file)) {
+      print('buggy');
+      return null;
+    } else {
+      print('found!');
+      return t[file];
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -236,7 +272,7 @@ class _SubdirectoryPageState extends State<SubdirectoryPage> {
         title: Text(this.widget.title),
       ),
       body: _paddedfutureBuilder(
-          API.getItemsFromDirectory(data.authentication, widget.parent),
+          _listFuture,
           (context, snapshot) {
         if (snapshot.hasData) {
           return createListView(context, snapshot);
@@ -269,13 +305,29 @@ class _SubdirectoryPageState extends State<SubdirectoryPage> {
 
   Widget fileCardWidget(File file, BuildContext context, {Icon trailing}) {
     // TODO: null is bad!
-    return card.inkWellCard(
+    return card.inkWellCardWithFutureBuilder(
         file.name, _formatLastUpdatedTime(file.lastUpdatedDate), context, () {
-      // setState(() {
-      //   _fileStatus[file] = _FileStatus.downloading;
-      // });
-      print(_fileStatus.containsKey(file));
-    }, leading: Icon(Icons.attach_file), trailing: trailing);
+      updateStatus(file, _FileStatus.downloading);
+    }, leading: FutureBuilder(
+      future: getStatus(file),
+      builder: (context, snapshot) {
+        if(snapshot.hasData) {
+          switch (snapshot.data) {
+            case _FileStatus.normal:
+              return Icon(Icons.attach_file);
+            case _FileStatus.downloaded:
+              return Icon(Icons.alarm);
+            case _FileStatus.downloading:
+              return Icon(Icons.people);
+            default:
+              break;
+          }
+        } else if(snapshot.hasError) {
+          return Text(snapshot.error);
+        }
+        return Icon(Icons.attach_file);
+      },
+    ));
   }
 
   // try this; https://stackoverflow.com/questions/52021205/usage-of-futurebuilder-with-setstate
