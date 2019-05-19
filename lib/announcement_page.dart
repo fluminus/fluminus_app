@@ -1,72 +1,154 @@
 import 'package:flutter/material.dart';
-import 'card_scroll_widget.dart';
-import 'data.dart';
+import 'package:html/parser.dart';
+import 'package:luminus_api/luminus_api.dart';
+import 'package:fluminus/data.dart' as data;
+import 'package:fluminus/util.dart' as util;
+import 'package:fluminus/widgets/card.dart' as card;
 
 class AnnouncementPage extends StatefulWidget {
+  const AnnouncementPage({Key key}) : super(key: key);
   @override
-  _APState createState() => new _APState();
+  _AnnouncementPageState createState() => new _AnnouncementPageState();
 }
 
-class _APState extends State<AnnouncementPage> {
-  var currentPage = images.length - 1.0;
+class _AnnouncementPageState extends State<AnnouncementPage>
+    with SingleTickerProviderStateMixin {
+  List<Module> _modules;
+  @override
+  Widget build(BuildContext context) {
+    return FutureBuilder<List<Module>>(
+        future: API.getModules(data.authentication),
+        builder: (context, snapshot) {
+          if (snapshot.hasData) {
+            _modules = snapshot.data;
+            return DefaultTabController(
+              length: _modules.length,
+              child: Scaffold(
+                appBar: AppBar(
+                  title: const Text("Announcemnts"),
+                  bottom: TabBar(
+                    isScrollable: true,
+                    tabs: _modules.map((Module module) {
+                      return Tab(
+                        text: module.name,
+                      );
+                    }).toList(),
+                  ),
+                ),
+                body: TabBarView(
+                  children: _modules.map((Module module) {
+                    return announcementList(module, context);
+                  }).toList(),
+                ),
+              ),
+            );
+          } else if (snapshot.hasError) {
+            return Text(snapshot.error.toString());
+          }
+          return Scaffold(
+            appBar: AppBar(title: const Text("Announcemnts")),
+            body: Center(
+              child: Column(
+                children: <Widget>[
+                  Padding(
+                    padding: const EdgeInsets.all(30.0),
+                    child: CircularProgressIndicator(),
+                  ),
+                ],
+              ),
+            ),
+          );
+        });
+  }
+
+  List<Announcement> announcements;
+
+  Widget announcementList(Module module, BuildContext context) {
+    return new Container(
+        decoration: new BoxDecoration(color: Colors.white),
+        child: Padding(
+          padding: const EdgeInsets.all(10.0),
+          child: FutureBuilder<List<Announcement>>(
+            future: API.getAnnouncements(data.authentication, module),
+            builder: (context, snapshot) {
+              if (snapshot.hasData) {
+                announcements = snapshot.data;
+                return new ListView.builder(
+                  itemCount: announcements.length,
+                  itemBuilder: (BuildContext context, int index) {
+                    return new Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: <Widget>[
+                        Padding(
+                          padding: const EdgeInsets.only(bottom: 6.0),
+                          child:
+                              announcementCard(announcements[index], context),
+                        )
+                      ],
+                    );
+                  },
+                );
+              } else if (snapshot.hasError) {
+                return Text(snapshot.error.toString());
+              }
+              return Center(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: <Widget>[
+                    Padding(
+                      padding: const EdgeInsets.all(30.0),
+                      child: CircularProgressIndicator(),
+                    ),
+                  ],
+                ),
+              );
+            },
+          ),
+        ));
+  }
+
+  Widget announcementCard(Announcement announcemnt, BuildContext context) {
+    String title = announcemnt.title;
+    String subtitle = "Expire After: " +
+        util.datetimeToFormattedString(DateTime.parse(announcemnt.expireAfter));
+    String body = parsedHtmlText(announcemnt.description);
+    return card.infoCardWithFullBody(title, subtitle, body, context);
+    // return card.infoCardWithFixedHeight(title, subtitle, body, context);
+  }
+}
+
+List<Tab> getModuleTitlesAsTextTabs(List<Module> modules) {
+  List<Tab> textWidgets = new List();
+  for (Module mod in modules) {
+    textWidgets.add(new Tab(text: mod.courseName));
+  }
+  return textWidgets;
+}
+
+class ChoiceCard extends StatelessWidget {
+  const ChoiceCard({Key key, this.module}) : super(key: key);
+
+  final Module module;
 
   @override
   Widget build(BuildContext context) {
-    PageController controller = PageController(initialPage: images.length - 1);
-    controller.addListener(() {
-      setState(() {
-        currentPage = controller.page;
-      });
-    });
-
-    return Container(
+    final TextStyle textStyle = Theme.of(context).textTheme.body1;
+    return Card(
       color: Colors.white,
-      child: new SingleChildScrollView(
-          child: Padding(
-        padding: const EdgeInsets.fromLTRB(
-            8.0, 35.0, 8.0, 20.0), // try and fix this number later
+      child: Center(
         child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: <Widget>[
-            Stack(
-              children: <Widget>[
-                CardScrollWidget(currentPage),
-                Positioned.fill(
-                  child: PageView.builder(
-                    itemCount: images.length,
-                    controller: controller,
-                    reverse: true,
-                    itemBuilder: (context, index) {
-                      return InkWell(
-                        child: Container(),
-                        onLongPress: () {
-                          _selectDate();
-                          //for debug purpose
-                          print(selectedDate.toString());
-                        }
-                      );
-                    },
-                  ),
-                )
-              ],
-            ),
+            Text(module.courseName, style: textStyle),
           ],
         ),
-      )),
+      ),
     );
-  
-  }
-
-  DateTime selectedDate = DateTime.now();
-
-  Future<Null> _selectDate() async {
-    final DateTime pickedDate = await showDatePicker(
-        context: context,
-        initialDate: new DateTime.now(),
-        firstDate: new DateTime(2018,1,1),
-        lastDate: new DateTime(2019,12,31)
-    );
-    if(pickedDate != null) setState(() => selectedDate = pickedDate);
   }
 }
 
-
+String parsedHtmlText(String htmlText) {
+  var document = parse(htmlText);
+  return parse(document.body.text).documentElement.text;
+}
