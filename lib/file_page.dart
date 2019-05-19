@@ -5,7 +5,8 @@ import 'package:open_file/open_file.dart';
 import 'package:luminus_api/luminus_api.dart';
 import 'package:fluminus/widgets/card.dart' as card;
 import 'package:fluminus/util.dart' as util;
-import 'data.dart' as data;
+import 'package:fluminus/data.dart' as data;
+import 'package:fluminus/widgets/dialog.dart' as dialog;
 
 final EdgeInsets _padding = const EdgeInsets.fromLTRB(14.0, 10.0, 14.0, 0.0);
 
@@ -133,7 +134,7 @@ class _FileDownloadPageState extends State<FileDownloadPage> {
       var url = await downloadUrl;
       await dio.download(url, dir.path + '/' + filename,
           onReceiveProgress: (rec, total) {
-        print("Rec: $rec , Total: $total");
+        // print("Rec: $rec , Total: $total");
 
         setState(() {
           downloading = true;
@@ -200,7 +201,14 @@ class _FileDownloadPageState extends State<FileDownloadPage> {
 
   Future<void> openFile() async {
     var dir = await getApplicationDocumentsDirectory();
-    await OpenFile.open(dir.path + '/' + filename);
+    var fullPath = dir.path + '/' + filename;
+    print(fullPath);
+    try {
+      await OpenFile.open(fullPath);
+    } catch (e) {
+      // TODO: support opening files in other apps
+      dialog.displayUnsupportedFileTypeDialog(e.toString(), context);
+    }
   }
 }
 
