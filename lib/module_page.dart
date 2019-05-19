@@ -40,6 +40,7 @@ class _ModulePageState extends State<ModulePage> {
                         return Text('Error: ${snapshot.error}');
                       } else {
                         _modules = snapshot.data;
+                        _refreshedModules = _modules;
                         return createListView(_modules);
                       }
                       break;
@@ -84,27 +85,30 @@ class _ModulePageState extends State<ModulePage> {
     _refreshController = RefreshController();
   }
 
-  void _onRresh() async {
-    _refreshedModules = await API.getModules(Data.authentication);
+  void _onLoading() async {
+    _refreshedModules.addAll(await API.getModules(Data.authentication));
+    
     if (_refreshedModules == null) {
-      print("Rresh: null");
-      _refreshController.refreshFailed();
+      print("load: null");
+      _refreshController.loadNoData();
     } else {
-      print("Rresh: got data");
-      _refreshController.refreshCompleted();
+      print("load: got data");
+      _refreshController.loadComplete();
     }
   }
 
-  void _onLoading() {
+  void _onRresh() {
     print("called");
+    print(_modules);
+    print(_refreshedModules);
     if (Data.twoListsAreDeepEqual(_modules, _refreshedModules)) {
-      print("NO data");
-      _refreshController.loadNoData();
+      print("refresh: no need");
+      _refreshController.refreshCompleted();
     } else {
       _modules = _refreshedModules;
       build(context);
-      print("Reload");
-      _refreshController.loadComplete();
+      print("Refreshed");
+      _refreshController.refreshCompleted();
     }
   }
 

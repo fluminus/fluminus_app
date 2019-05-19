@@ -1,6 +1,4 @@
 import 'package:test/test.dart';
-import 'package:luminus_api/luminus_api.dart';
-import 'dart:convert';
 
 void main() {
   // API tests are moved to `luminus_api` library

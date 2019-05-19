@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'module_page.dart';
-import 'forum_page.dart';
-import 'profile_page.dart';
-import 'file_page.dart';
 import 'announcement_page.dart';
+import 'forum_page.dart';
+import 'module_page.dart';
+import 'file_page.dart';
+import 'profile_page.dart';
 
 /// Disabling the scroll glow.
 /// Source: https://stackoverflow.com/questions/51119795/how-to-remove-scroll-glow/51119796#51119796
@@ -13,25 +12,22 @@ import 'announcement_page.dart';
 void main() async {
   await DotEnv().load('.env');
   runApp(MaterialApp(
-    debugShowCheckedModeBanner: false,
-    builder: (context, child) {
-      return ScrollConfiguration(behavior: MyBehavior(), child: child);
-    },
-    theme: ThemeData(
+      debugShowCheckedModeBanner: false,
+      builder: (context, child) {
+        return ScrollConfiguration(behavior: MyBehavior(), child: child);
+      },
+      theme: ThemeData(
         brightness: Brightness.light,
         primaryColor: Colors.lightBlue[800],
         accentColor: Colors.orange,
-        
         fontFamily: 'Roboto',
-
         textTheme: TextTheme(
-          headline: TextStyle(fontSize: 72.0, fontWeight: FontWeight.bold),
-          title: TextStyle(fontSize: 36.0, fontStyle: FontStyle.normal),
+          headline: TextStyle(fontSize: 45.0, fontWeight: FontWeight.bold),
+          title: TextStyle(fontSize: 40.0, fontStyle: FontStyle.normal),
           body1: TextStyle(fontSize: 14.0, fontFamily: 'Roboto'),
         ),
       ),
-    home: BottomNavBar(),
-  ));
+      home: BottomNavBar()));
 }
 
 class MyBehavior extends ScrollBehavior {
@@ -48,42 +44,48 @@ class BottomNavBar extends StatefulWidget {
 }
 
 class _BottomNavBarState extends State<BottomNavBar> {
-  int _page = 0;
-  final _pageOptions = [
+  int _currentIndex = 0;
+  final _pages = [
     AnnouncementPage(),
     ModulePage(),
     ForumPage(),
     FilePage(),
     ProfilePage()
   ];
-  bool showCondition(int index) {
-    return index == 2;
+
+  BottomNavigationBarItem _navBarItem(IconData icon, String title) {
+    return BottomNavigationBarItem(
+        icon: Icon(
+          icon,
+          size: 30,
+          color: Theme.of(context).primaryColor,
+        ),
+        title: Text(
+          title,
+          style: Theme.of(context).textTheme.button,
+        ));
+  }
+
+  void _onTabTapped(int index) {
+    setState(() {
+      _currentIndex = index;
+    });
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        bottomNavigationBar: CurvedNavigationBar(
-          index: 0,
-          height: 60.0,
-          items: <Widget>[
-            Icon(Icons.home, size: 30),
-            Icon(Icons.alarm_on, size: 30),
-            Icon(Icons.question_answer, size: 30),
-            Icon(Icons.insert_drive_file, size: 30),
-            Icon(Icons.perm_identity, size: 30),
-          ],
-          color: Theme.of(context).primaryColor,
-          buttonBackgroundColor: Theme.of(context).accentColor,
-          backgroundColor: Colors.white,
-          animationCurve: Curves.easeInOut,
-          animationDuration: Duration(milliseconds: 200),
-          onTap: (index) {
-            setState(() {
-              _page = index;
-            });
-          },
-        ),
-        body: _pageOptions[_page]);
+      bottomNavigationBar: BottomNavigationBar(
+          currentIndex: _currentIndex,
+          onTap: _onTabTapped,
+          items: <BottomNavigationBarItem>[
+            _navBarItem(Icons.home, 'Home'),
+            _navBarItem(Icons.alarm_on, 'Task'),
+            _navBarItem(Icons.question_answer, 'Forum'),
+            _navBarItem(Icons.insert_drive_file, 'File'),
+            _navBarItem(Icons.perm_identity, 'Profile'),
+          ]),
+      body: _pages[_currentIndex],
+    );
   }
 }
