@@ -1,8 +1,7 @@
-import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:luminus_api/luminus_api.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:collection/collection.dart';
+import 'package:html/parser.dart';
 
 Function twoListsAreDeepEqual = const DeepCollectionEquality().equals;
 
@@ -40,11 +39,9 @@ Future<List> onLoading(RefreshController controller, List currList, Function get
     return refreshedList;
   }
 
-  List<Tab> getModuleTitlesAsTextTabs(List<Module> modules) {
-  List<Tab> textWidgets = new List();
-  for (Module mod in modules) {
-    textWidgets.add(new Tab(text: mod.courseName));
-  }
-  return textWidgets;
+String parsedHtmlText(String htmlText) {
+  var document = parse(htmlText);
+  return parse(document.body.text).documentElement.text;
 }
+
 

@@ -1,4 +1,3 @@
-import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:luminus_api/luminus_api.dart';
 
@@ -14,18 +13,3 @@ Future<List<Announcement>> getAllAnnouncements() async {
   }
   return announcements;
 }
-
-Widget processIndicator = Center(
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: <Widget>[
-                    Padding(
-                      padding: const EdgeInsets.all(30.0),
-                      child: CircularProgressIndicator(),
-                    ),
-                  ],
-                ),
-              );
-
-
-

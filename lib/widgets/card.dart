@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:luminus_api/luminus_api.dart';
+import 'package:fluminus/util.dart' as util;
 // import 'dart:math';
 
 BorderRadius _borderRadius = BorderRadius.circular(16.0);
@@ -71,6 +73,30 @@ Widget inkWellCard(String title, String subtitle, BuildContext context,
   );
   return _basicCard(child);
 }
+
+Widget announcementCard(Announcement announcemnt, BuildContext context) {
+    String title = announcemnt.title;
+    String subtitle = "Expire After: " +
+        util.datetimeToFormattedString(DateTime.parse(announcemnt.expireAfter));
+    String body = util.parsedHtmlText(announcemnt.description);
+    return infoCardWithFullBody(title, subtitle, body, context);
+    // return card.infoCardWithFixedHeight(title, subtitle, body, context);
+  }
+
+  Widget moduleCard(Module module, BuildContext context) {
+    return Card(
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: <Widget>[
+          ListTile(
+            leading: Icon(Icons.class_),
+            title: Text(module.name),
+            subtitle: Text(module.courseName),
+          ),
+        ],
+      ),
+    );
+  }
 
 // Widget infoCardWithFixedHeight(
 //     String title, String subtitle, String body, BuildContext context) {

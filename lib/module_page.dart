@@ -3,6 +3,8 @@ import 'package:luminus_api/luminus_api.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'util.dart' as util;
 import 'data.dart' as data;
+import 'package:fluminus/widgets/common.dart' as common;
+import 'package:fluminus/widgets/list.dart' as list;
 
 class ModulePage extends StatefulWidget {
   const ModulePage({Key key}) : super(key: key);
@@ -53,7 +55,7 @@ class _ModulePageState extends State<ModulePage> {
                     case ConnectionState.active:
                       return Align(
                           alignment: Alignment.center,
-                          child: data.processIndicator);
+                          child: common.processIndicator);
                       break;
                     case ConnectionState.done:
                       if (snapshot.hasError) {
@@ -71,31 +73,8 @@ class _ModulePageState extends State<ModulePage> {
             }));
   }
 
-  Widget moduleCard(Module module) {
-    return Card(
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: <Widget>[
-          ListTile(
-            leading: Icon(Icons.class_),
-            title: Text(module.name),
-            subtitle: Text(module.courseName),
-          ),
-        ],
-      ),
-    );
-  }
-
   ListView moduleList(List<dynamic> modules) {
-    return new ListView.builder(
-      shrinkWrap: true,
-      itemCount: modules.length,
-      itemBuilder: (BuildContext context, int index) {
-        return new Column(
-          children: <Widget>[moduleCard(modules[index])],
-        );
-      },
-    );
+    return list.itemListView(modules, context);
   }
 
   RefreshController _refreshController;
