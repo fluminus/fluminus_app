@@ -97,120 +97,6 @@ class ModuleRootDirectoryPage extends StatelessWidget {
   }
 }
 
-class FileDownloadPage extends StatefulWidget {
-  final File file;
-  final String filename;
-
-  FileDownloadPage(this.file, this.filename);
-
-  @override
-  _FileDownloadPageState createState() {
-    Future<String> url = API.getDownloadUrl(data.authentication, file);
-    return _FileDownloadPageState(url, filename);
-  }
-}
-
-class _FileDownloadPageState extends State<FileDownloadPage> {
-  final Future<String> downloadUrl;
-  final String filename;
-  bool downloading = false;
-  bool completed = false;
-  var progressString = "";
-
-  _FileDownloadPageState(this.downloadUrl, this.filename);
-
-  @override
-  void initState() {
-    super.initState();
-    downloadFile();
-  }
-
-  Future<void> downloadFile() async {
-    Dio dio = Dio();
-
-    try {
-      var dir = await getApplicationDocumentsDirectory();
-      var url = await downloadUrl;
-      await dio.download(url, dir.path + '/' + filename,
-          onReceiveProgress: (rec, total) {
-        // print("Rec: $rec , Total: $total");
-
-        setState(() {
-          downloading = true;
-          progressString = ((rec / total) * 100).toStringAsFixed(0) + "%";
-        });
-      });
-    } catch (e) {
-      print(e);
-    }
-
-    setState(() {
-      downloading = false;
-      completed = true;
-      progressString = "Completed";
-    });
-    print("Download completed");
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text("File Download"),
-      ),
-      body: Center(
-        child: downloading
-            ? Container(
-                height: 120.0,
-                width: 200.0,
-                child: Card(
-                  color: Colors.white,
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: <Widget>[
-                      CircularProgressIndicator(),
-                      SizedBox(
-                        height: 20.0,
-                      ),
-                      Text(
-                        "Downloading File: $progressString",
-                        style: TextStyle(
-                          color: Colors.black,
-                        ),
-                      )
-                    ],
-                  ),
-                ),
-              )
-            : completed
-                ? Container(
-                    height: 120.0,
-                    width: 200.0,
-                    child: Column(children: <Widget>[
-                      RaisedButton(
-                        onPressed: openFile,
-                        child: Text("Open"),
-                      ),
-                      Text("Completed")
-                    ]))
-                : Text("Initializing"),
-      ),
-    );
-  }
-
-  Future<void> openFile() async {
-    var dir = await getApplicationDocumentsDirectory();
-    var fullPath = dir.path + '/' + filename;
-    print(fullPath);
-    try {
-      await OpenFile.open(fullPath);
-    } catch (e) {
-      // TODO: support opening files in other apps
-      dialog.displayUnsupportedFileTypeDialog(e.toString(), context);
-    }
-  }
-}
-
 class SubdirectoryPage extends StatefulWidget {
   final String title;
   final Directory parent;
@@ -261,7 +147,6 @@ class _SubdirectoryPageState extends State<SubdirectoryPage> {
       // TODO: error handling
       throw Error();
     } else {
-      print('found!');
       return t[file];
     }
   }
@@ -274,26 +159,27 @@ class _SubdirectoryPageState extends State<SubdirectoryPage> {
         title: Text(this.widget.title),
       ),
       body: _paddedfutureBuilder(
-          Future.wait([_listFuture, _statusFuture]).then((response) =>
-              {'listFuture': response[0], 'statusFuture': response[1]}),
-          (context, snapshot) {
-            // print('building...');
-            if (snapshot.hasData) {
-              // print(snapshot.data['statusFuture']);
-              return createListView(context, snapshot);
-            } else if (snapshot.hasError) {
-              return Text(snapshot.error);
-            }
-            return Center(
-                child: Column(
-              children: <Widget>[
-                Padding(
-                  padding: const EdgeInsets.all(30.0),
-                  child: CircularProgressIndicator(),
-                ),
-              ],
-            ));
-          }),
+          Future.wait([_listFuture, _statusFuture]).then((response) => {
+                'listFuture': response[0],
+                'statusFuture': response[1]
+              }), (context, snapshot) {
+        // print('building...');
+        if (snapshot.hasData) {
+          // print(snapshot.data['statusFuture']);
+          return createListView(context, snapshot);
+        } else if (snapshot.hasError) {
+          return Text(snapshot.error);
+        }
+        return Center(
+            child: Column(
+          children: <Widget>[
+            Padding(
+              padding: const EdgeInsets.all(30.0),
+              child: CircularProgressIndicator(),
+            ),
+          ],
+        ));
+      }),
     );
   }
 
@@ -308,14 +194,48 @@ class _SubdirectoryPageState extends State<SubdirectoryPage> {
         trailing: Icon(Icons.arrow_right));
   }
 
-  Widget fileCardWidget(File file, Map<BasicFile, _FileStatus> statusList, BuildContext context, {Icon trailing}) {
-    // TODO: null is bad!
+  Future<void> downloadFile(
+      File file, Map<BasicFile, _FileStatus> statusList) async {
+    // TODO: use once instance of Dio
+    Dio dio = Dio();
+
+    try {
+      var dir = await getApplicationDocumentsDirectory();
+      var url = await API.getDownloadUrl(data.authentication, file);
+      await dio.download(url, dir.path + '/' + file.fileName,
+          onReceiveProgress: (rec, total) {
+        // print("Rec: $rec , Total: $total");
+        updateStatus(file, _FileStatus.downloading);
+      });
+    } catch (e) {
+      print(e);
+    }
+    updateStatus(file, _FileStatus.downloaded);
+    // print("Download completed");
+  }
+
+  Future<void> openFile(File file) async {
+    var dir = await getApplicationDocumentsDirectory();
+    var fullPath = dir.path + '/' + file.fileName;
+    // print(fullPath);
+    try {
+      await OpenFile.open(fullPath);
+    } catch (e) {
+      // TODO: support opening files in other apps
+      dialog.displayUnsupportedFileTypeDialog(e.toString(), context);
+    }
+  }
+
+  Widget fileCardWidget(
+      File file, Map<BasicFile, _FileStatus> statusList, BuildContext context,
+      {Icon trailing}) {
+    _FileStatus status;
     Icon normal = Icon(Icons.attach_file);
     Icon downloaded = Icon(Icons.done);
     Icon downloading = Icon(Icons.cloud_download);
-    Icon getFileCardIcon() {  
-      if(statusList.containsKey(file)) {
-        _FileStatus status = statusList[file];
+    Icon getFileCardIcon() {
+      if (statusList.containsKey(file)) {
+        status = statusList[file];
         switch (status) {
           case _FileStatus.normal:
             return normal;
@@ -332,9 +252,14 @@ class _SubdirectoryPageState extends State<SubdirectoryPage> {
         return Icon(Icons.error_outline);
       }
     }
+
     return card.inkWellCard(
         file.name, _formatLastUpdatedTime(file.lastUpdatedDate), context, () {
-      updateStatus(file, _FileStatus.downloading);
+      if (status == _FileStatus.normal) {
+        downloadFile(file, statusList);
+      } else if (status == _FileStatus.downloaded) {
+        openFile(file);
+      }
     }, leading: getFileCardIcon());
   }
 
@@ -346,7 +271,6 @@ class _SubdirectoryPageState extends State<SubdirectoryPage> {
     return new ListView.builder(
       itemCount: fileList.length,
       itemBuilder: (BuildContext context, int index) {
-        print(fileList[index]);
         return new Column(
           children: <Widget>[
             fileList[index] is File
@@ -357,15 +281,6 @@ class _SubdirectoryPageState extends State<SubdirectoryPage> {
       },
     );
   }
-
-  // void _initFileState(List<BasicFile> data) {
-  //   for (BasicFile f in data) {
-  //     print(f);
-  //     // setState(() {
-  //     //   _fileStatus[f] = _FileStatus.normal;
-  //     // });
-  //   }
-  // }
 }
 
 class FilePage extends StatelessWidget {
