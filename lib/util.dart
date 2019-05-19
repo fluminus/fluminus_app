@@ -1,5 +1,9 @@
 import 'package:intl/intl.dart';
 
-String datetimeToString(DateTime time) {
+String datetimeToFormattedString(DateTime time) {
   return DateFormat('EEE, d/M/y ').format(time) + DateFormat.jm().format(time);
+}
+
+String datetimeStringToFormattedString(String timeString) {
+  return datetimeToFormattedString(DateTime.parse(timeString));
 }

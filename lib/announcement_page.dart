@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:html/parser.dart';
 import 'package:luminus_api/luminus_api.dart';
-import 'data.dart' as Data;
-
-
+import 'package:fluminus/data.dart' as data;
+import 'package:fluminus/util.dart' as util;
+import 'package:fluminus/widgets/card.dart' as card;
 
 class AnnouncementPage extends StatefulWidget {
   const AnnouncementPage({Key key}) : super(key: key);
@@ -17,7 +17,7 @@ class _AnnouncementPageState extends State<AnnouncementPage>
   @override
   Widget build(BuildContext context) {
     return FutureBuilder<List<Module>>(
-        future: API.getModules(Data.authentication),
+        future: API.getModules(data.authentication),
         builder: (context, snapshot) {
           if (snapshot.hasData) {
             _modules = snapshot.data;
@@ -38,7 +38,7 @@ class _AnnouncementPageState extends State<AnnouncementPage>
                   ),
                   body: TabBarView(
                     children: _modules.map((Module module) {
-                      return announcementList(module);
+                      return announcementList(module, context);
                     }).toList(),
                   ),
                 ),
@@ -62,13 +62,13 @@ class _AnnouncementPageState extends State<AnnouncementPage>
 
   List<Announcement> announcements;
 
-  Widget announcementList(Module module) {
+  Widget announcementList(Module module, BuildContext context) {
     return new Container(
         decoration: new BoxDecoration(color: Colors.white),
         child: Padding(
           padding: const EdgeInsets.all(10.0),
           child: FutureBuilder<List<Announcement>>(
-            future: API.getAnnouncements(Data.authentication, module),
+            future: API.getAnnouncements(data.authentication, module),
             builder: (context, snapshot) {
               if (snapshot.hasData) {
                 announcements = snapshot.data;
@@ -78,7 +78,11 @@ class _AnnouncementPageState extends State<AnnouncementPage>
                     return new Column(
                       mainAxisSize: MainAxisSize.min,
                       children: <Widget>[
-                        announcementCard(announcements[index])
+                        Padding(
+                          padding: const EdgeInsets.only(bottom: 6.0),
+                          child:
+                              announcementCard(announcements[index], context),
+                        )
                       ],
                     );
                   },
@@ -102,22 +106,13 @@ class _AnnouncementPageState extends State<AnnouncementPage>
         ));
   }
 
-  Widget announcementCard(Announcement announcemnt) {
-    return Card(
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: <Widget>[
-          ListTile(
-            title: Text(announcemnt.title),
-            subtitle: Text("Expire After: " +
-                announcemnt.expireAfter +
-                '\n' +
-                '\n' +
-                parsedHtmlText(announcemnt.description)),
-          ),
-        ],
-      ),
-    );
+  Widget announcementCard(Announcement announcemnt, BuildContext context) {
+    String title = announcemnt.title;
+    String subtitle = "Expire After: " +
+        util.datetimeToFormattedString(DateTime.parse(announcemnt.expireAfter));
+    String body = parsedHtmlText(announcemnt.description);
+    return card.infoCardWithFullBody(title, subtitle, body, context);
+    // return card.infoCardWithFixedHeight(title, subtitle, body, context);
   }
 }
 
@@ -156,20 +151,3 @@ String parsedHtmlText(String htmlText) {
   var document = parse(htmlText);
   return parse(document.body.text).documentElement.text;
 }
-
-/*String formatedDate(DateTime expireDate) {
-    return new DateFormat("EEE, dd MMM, yyyy").format(expireDate);
-}
-*/
-
-/*DateTime selectedDate = DateTime.now();
-
-Future<Null> _selectDate() async {
-    final DateTime pickedDate = await showDatePicker(
-        context: context,
-        initialDate: new DateTime.now(),
-        firstDate: new DateTime(2018, 1, 1),
-        lastDate: new DateTime(2019, 12, 31));
-    if (pickedDate != null) setState(() => selectedDate = pickedDate);
-  }
-}*/

@@ -3,33 +3,29 @@ import 'package:path_provider/path_provider.dart';
 import 'package:dio/dio.dart';
 import 'package:open_file/open_file.dart';
 import 'package:luminus_api/luminus_api.dart';
-import 'data.dart' as Data;
+import 'package:fluminus/widgets/card.dart' as card;
+import 'package:fluminus/util.dart' as util;
+import 'data.dart' as data;
 
-Widget createCardInkWellWidget(String title, String subtitle, Icon icon,
-    BuildContext context, Widget nextPage) {
+final EdgeInsets _padding = const EdgeInsets.fromLTRB(14.0, 10.0, 14.0, 0.0);
+
+Widget _paddedfutureBuilder(Future future, AsyncWidgetBuilder builder) {
   return Padding(
-    padding: const EdgeInsets.only(left: 5.0, right: 5.0),
-    child: Card(
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: <Widget>[
-          InkWell(
-            onTap: () => {
-                  Navigator.push(context, MaterialPageRoute(builder: (context) {
-                    return nextPage;
-                  }))
-                },
-            child: ListTile(
-              leading: icon,
-              title: Text(title),
-              subtitle:
-                  Text(subtitle, style: Theme.of(context).textTheme.body1),
-            ),
-          ),
-        ],
-      ),
-    ),
+    padding: _padding,
+    child: FutureBuilder(future: future, builder: builder),
   );
+}
+
+GestureTapCallback _onTapNextPage(Widget nextPage, BuildContext context) {
+  return () => {
+        Navigator.push(context, MaterialPageRoute(builder: (context) {
+          return nextPage;
+        }))
+      };
+}
+
+String _formatLastUpdatedTime(String lastUpdatedTime) {
+  return 'Last updated: ' + util.datetimeStringToFormattedString(lastUpdatedTime);
 }
 
 class ModuleRootDirectoryPage extends StatelessWidget {
@@ -43,41 +39,45 @@ class ModuleRootDirectoryPage extends StatelessWidget {
       appBar: AppBar(
         title: Text(module.name),
       ),
-      body: FutureBuilder(
-        future: API.getModuleDirectories(Data.authentication, module),
-        builder: (context, snapshot) {
-          if (snapshot.hasData) {
-            return createListView(context, snapshot);
-          } else if (snapshot.hasError) {
-            return Text(snapshot.error);
-          }
-          return Center(
-              child: Column(
-            children: <Widget>[
-              Padding(
-                padding: const EdgeInsets.all(30.0),
-                child: CircularProgressIndicator(),
-              ),
-            ],
-          ));
-        },
-      ),
+      body: _paddedfutureBuilder(
+          API.getModuleDirectories(data.authentication, module),
+          (context, snapshot) {
+        if (snapshot.hasData) {
+          return fileListView(context, snapshot);
+        } else if (snapshot.hasError) {
+          return Text(snapshot.error);
+        }
+        return Center(
+            child: Column(
+          children: <Widget>[
+            Padding(
+              padding: const EdgeInsets.all(30.0),
+              child: CircularProgressIndicator(),
+            ),
+          ],
+        ));
+      }),
     );
   }
 
-  Widget createDirectoryCardWidget(Directory dir, BuildContext context) {
+  Widget directoryCardWidget(Directory dir, BuildContext context) {
     Widget nextPage = SubdirectoryPage(dir, module.name + ' - ' + dir.name);
-    return createCardInkWellWidget(
-        dir.name, dir.lastUpdatedDate, Icon(Icons.folder), context, nextPage);
+
+    return card.inkWellCard(
+        dir.name,
+        _formatLastUpdatedTime(dir.lastUpdatedDate),
+        context,
+        _onTapNextPage(nextPage, context),
+        leading: Icon(Icons.folder));
   }
 
-  Widget createListView(BuildContext context, AsyncSnapshot snapshot) {
+  Widget fileListView(BuildContext context, AsyncSnapshot snapshot) {
     List<Directory> values = snapshot.data;
     return new ListView.builder(
       itemCount: values.length,
       itemBuilder: (BuildContext context, int index) {
         return new Column(
-          children: <Widget>[createDirectoryCardWidget(values[index], context)],
+          children: <Widget>[directoryCardWidget(values[index], context)],
         );
       },
     );
@@ -92,7 +92,7 @@ class FileDownloadPage extends StatefulWidget {
 
   @override
   _FileDownloadPageState createState() {
-    Future<String> url = API.getDownloadUrl(Data.authentication, file);
+    Future<String> url = API.getDownloadUrl(data.authentication, file);
     return _FileDownloadPageState(url, filename);
   }
 }
@@ -191,56 +191,69 @@ class _FileDownloadPageState extends State<FileDownloadPage> {
   }
 }
 
-class SubdirectoryPage extends StatelessWidget {
+class SubdirectoryPage extends StatefulWidget {
   final String title;
   final Directory parent;
 
   SubdirectoryPage(this.parent, this.title);
 
   @override
+  _SubdirectoryPageState createState() => _SubdirectoryPageState();
+}
+
+class _SubdirectoryPageState extends State<SubdirectoryPage> {
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(this.title),
+        title: Text(this.widget.title),
       ),
-      body: FutureBuilder(
-        future: API.getItemsFromDirectory(Data.authentication, parent),
-        builder: (context, snapshot) {
-          if (snapshot.hasData) {
-            return createListView(context, snapshot);
-          } else if (snapshot.hasError) {
-            return Text(snapshot.error);
-          }
-          return Center(
-              child: Column(
-            children: <Widget>[
-              Padding(
-                padding: const EdgeInsets.all(30.0),
-                child: CircularProgressIndicator(),
-              ),
-            ],
-          ));
-        },
-      ),
+      body: _paddedfutureBuilder(
+          API.getItemsFromDirectory(data.authentication, widget.parent),
+          (context, snapshot) {
+        if (snapshot.hasData) {
+          return createListView(context, snapshot);
+        } else if (snapshot.hasError) {
+          return Text(snapshot.error);
+        }
+        return Center(
+            child: Column(
+          children: <Widget>[
+            Padding(
+              padding: const EdgeInsets.all(30.0),
+              child: CircularProgressIndicator(),
+            ),
+          ],
+        ));
+      }),
     );
   }
 
-  Widget createDirectoryCardWidget(Directory dir, BuildContext context) {
-    // TODO: null is bad!
+  Widget directoryCardWidget(Directory dir, BuildContext context) {
     Widget nextPage = SubdirectoryPage(dir, dir.name);
-    return createCardInkWellWidget(
-        dir.name, dir.lastUpdatedDate, Icon(Icons.folder), context, nextPage);
+    return card.inkWellCard(
+        dir.name,
+        _formatLastUpdatedTime(dir.lastUpdatedDate),
+        context,
+        _onTapNextPage(nextPage, context),
+        leading: Icon(Icons.folder),
+        trailing: Icon(Icons.arrow_right));
   }
 
-  Widget createFileCardWidget(File file, BuildContext context) {
+  Widget fileCardWidget(File file, BuildContext context, {Icon trailing}) {
     // TODO: null is bad!
+
     Widget nextPage = FileDownloadPage(file, file.fileName);
-    return createCardInkWellWidget(file.name, file.lastUpdatedDate,
-        Icon(Icons.attach_file), context, nextPage);
+    return card.inkWellCard(
+        file.name,
+        _formatLastUpdatedTime(file.lastUpdatedDate),
+        context,
+        _onTapNextPage(nextPage, context),
+        leading: Icon(Icons.attach_file),
+        trailing: trailing);
   }
 
   Widget createListView(BuildContext context, AsyncSnapshot snapshot) {
-    // List<Directory> dirs = snapshot.data;
     List<BasicFile> items = snapshot.data;
     return new ListView.builder(
       itemCount: items.length,
@@ -248,8 +261,8 @@ class SubdirectoryPage extends StatelessWidget {
         return new Column(
           children: <Widget>[
             items[index] is File
-                ? createFileCardWidget(items[index], context)
-                : createDirectoryCardWidget(items[index], context)
+                ? fileCardWidget(items[index], context)
+                : directoryCardWidget(items[index], context)
           ],
         );
       },
@@ -266,65 +279,47 @@ class FilePage extends StatelessWidget {
         decoration: new BoxDecoration(
             // borderRadius: new BorderRadius.circular(20.0),
             color: Colors.white),
-        child: Padding(
-          padding: const EdgeInsets.fromLTRB(14.0, 10.0, 14.0, 0.0),
-          child: FutureBuilder<List<Module>>(
-            future: API.getModules(Data.authentication),
-            builder: (context, snapshot) {
-              if (snapshot.hasData) {
-                return createListView(context, snapshot);
-              } else if (snapshot.hasError) {
-                return Text(snapshot.error.toString());
-              }
-              return Center(
-                child: Column(
-                  children: <Widget>[
-                    Padding(
-                      padding: const EdgeInsets.all(30.0),
-                      child: CircularProgressIndicator(),
-                    ),
-                  ],
+        child: _paddedfutureBuilder(API.getModules(data.authentication),
+            (context, snapshot) {
+          if (snapshot.hasData) {
+            return moduleRootDirectoyListView(context, snapshot);
+          } else if (snapshot.hasError) {
+            return Text(snapshot.error.toString());
+          }
+          return Center(
+            child: Column(
+              children: <Widget>[
+                Padding(
+                  padding: const EdgeInsets.all(30.0),
+                  child: CircularProgressIndicator(),
                 ),
-              );
-            },
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget createCardWidget(Module module, BuildContext context) {
-    return Card(
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: <Widget>[
-          InkWell(
-            onTap: () => {
-                  Navigator.push(context, MaterialPageRoute(builder: (context) {
-                    return ModuleRootDirectoryPage(module);
-                  }))
-                },
-            child: ListTile(
-              leading: Icon(Icons.class_),
-              title: Text(module.name),
-              subtitle: Text(
-                module.courseName,
-                style: Theme.of(context).textTheme.body1,
-              ),
+              ],
             ),
-          ),
-        ],
+          );
+        }),
       ),
     );
   }
 
-  Widget createListView(BuildContext context, AsyncSnapshot snapshot) {
+  Widget moduleRootDirectoryCard(Module module, BuildContext context) {
+    Widget nextPage = ModuleRootDirectoryPage(module);
+    return card.inkWellCard(
+      module.name,
+      module.courseName,
+      context,
+      _onTapNextPage(nextPage, context),
+      leading: Icon(Icons.class_),
+    );
+  }
+
+  Widget moduleRootDirectoyListView(
+      BuildContext context, AsyncSnapshot snapshot) {
     List<Module> values = snapshot.data;
     return new ListView.builder(
       itemCount: values.length,
       itemBuilder: (BuildContext context, int index) {
         return new Column(
-          children: <Widget>[createCardWidget(values[index], context)],
+          children: <Widget>[moduleRootDirectoryCard(values[index], context)],
         );
       },
     );
