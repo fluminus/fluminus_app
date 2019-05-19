@@ -227,6 +227,7 @@ enum _FileStatus { normal, downloading, downloaded }
 class _SubdirectoryPageState extends State<SubdirectoryPage> {
   Future<List<BasicFile>> _listFuture;
   Future<Map<BasicFile, _FileStatus>> _statusFuture;
+  bool _statusReady = false;
 
   @override
   void initState() {
@@ -235,27 +236,33 @@ class _SubdirectoryPageState extends State<SubdirectoryPage> {
     _statusFuture = _initStatus(_listFuture);
   }
 
-  Future<Map<BasicFile, _FileStatus>> _initStatus(Future<List<BasicFile>> list) async {
+  Future<Map<BasicFile, _FileStatus>> _initStatus(
+      Future<List<BasicFile>> list) async {
     var t = await list;
     Map<BasicFile, _FileStatus> map = new Map();
-    for(var file in t) {
+    for (var file in t) {
       map[file] = _FileStatus.normal;
     }
+    setState(() {
+      _statusReady = true;
+    });
     return map;
   }
 
   Future<void> updateStatus(File file, _FileStatus status) async {
     var t = await _statusFuture;
-    if(!t.containsKey(file)) {
+    if (!t.containsKey(file)) {
       print('buggy');
     } else {
-      t[file] = status;
+      setState(() {
+        t[file] = status;
+      });
     }
   }
 
   Future<_FileStatus> getStatus(File file) async {
     var t = await _statusFuture;
-    if(!t.containsKey(file)) {
+    if (!t.containsKey(file)) {
       print('buggy');
       return null;
     } else {
@@ -271,24 +278,27 @@ class _SubdirectoryPageState extends State<SubdirectoryPage> {
       appBar: AppBar(
         title: Text(this.widget.title),
       ),
-      body: _paddedfutureBuilder(
-          _listFuture,
-          (context, snapshot) {
-        if (snapshot.hasData) {
-          return createListView(context, snapshot);
-        } else if (snapshot.hasError) {
-          return Text(snapshot.error);
-        }
-        return Center(
-            child: Column(
-          children: <Widget>[
-            Padding(
-              padding: const EdgeInsets.all(30.0),
-              child: CircularProgressIndicator(),
-            ),
-          ],
-        ));
-      }),
+      body: FutureBuilder(
+          future: Future.wait([_listFuture, _statusFuture]).then((response) =>
+              {'listFuture': response[0], 'statusFuture': response[1]}),
+          builder: (context, snapshot) {
+            print('building...');
+            if (snapshot.hasData) {
+              print(snapshot.data['statusFuture']);
+              return createListView(context, snapshot);
+            } else if (snapshot.hasError) {
+              return Text(snapshot.error);
+            }
+            return Center(
+                child: Column(
+              children: <Widget>[
+                Padding(
+                  padding: const EdgeInsets.all(30.0),
+                  child: CircularProgressIndicator(),
+                ),
+              ],
+            ));
+          }),
     );
   }
 
@@ -305,43 +315,35 @@ class _SubdirectoryPageState extends State<SubdirectoryPage> {
 
   Widget fileCardWidget(File file, BuildContext context, {Icon trailing}) {
     // TODO: null is bad!
-    return card.inkWellCardWithFutureBuilder(
+    Icon normal = Icon(Icons.attach_file);
+    Icon downloaded = Icon(Icons.done);
+    Icon downloading = Icon(Icons.cloud_download);
+    // Icon getFileCardIcon() {
+    //   if(_statusReady) {
+
+    //   } else {
+    //     return
+    //   }
+    // }
+    return card.inkWellCard(
         file.name, _formatLastUpdatedTime(file.lastUpdatedDate), context, () {
       updateStatus(file, _FileStatus.downloading);
-    }, leading: FutureBuilder(
-      future: getStatus(file),
-      builder: (context, snapshot) {
-        if(snapshot.hasData) {
-          switch (snapshot.data) {
-            case _FileStatus.normal:
-              return Icon(Icons.attach_file);
-            case _FileStatus.downloaded:
-              return Icon(Icons.alarm);
-            case _FileStatus.downloading:
-              return Icon(Icons.people);
-            default:
-              break;
-          }
-        } else if(snapshot.hasError) {
-          return Text(snapshot.error);
-        }
-        return Icon(Icons.attach_file);
-      },
-    ));
+    }, leading: normal);
   }
 
   // try this; https://stackoverflow.com/questions/52021205/usage-of-futurebuilder-with-setstate
   Widget createListView(BuildContext context, AsyncSnapshot snapshot) {
     // _initFileState(snapshot.data);
+    var list = snapshot.data['listFuture'];
     return new ListView.builder(
-      itemCount: snapshot.data.length,
+      itemCount: list.length,
       itemBuilder: (BuildContext context, int index) {
-        print(snapshot.data[index]);
+        print(list[index]);
         return new Column(
           children: <Widget>[
-            snapshot.data[index] is File
-                ? fileCardWidget(snapshot.data[index], context)
-                : directoryCardWidget(snapshot.data[index], context)
+            list[index] is File
+                ? fileCardWidget(list[index], context)
+                : directoryCardWidget(list[index], context)
           ],
         );
       },
