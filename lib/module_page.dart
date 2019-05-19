@@ -15,11 +15,29 @@ class _ModulePageState extends State<ModulePage> {
 
   @override
   Widget build(BuildContext context) {
+    void updateList(List<Module> updatedModules) {
+      setState(() {
+        _modules = updatedModules;
+      });
+    }
+
+    Future<void> _onRefresh() async {
+      bool needToRefresh = await _onLoading();
+      if (needToRefresh) {
+        if (_refreshedModules == null) {
+          _refreshController.refreshFailed();
+        } else {
+          updateList(_refreshedModules);
+        }
+      }
+      _refreshController.refreshCompleted();
+    }
+
     return SmartRefresher(
         enablePullDown: true,
         enablePullUp: true,
         controller: _refreshController,
-        onRefresh: _onRresh,
+        onRefresh: _onRefresh,
         onLoading: _onLoading,
         child: ListView.builder(
             itemCount: 1,
@@ -39,8 +57,9 @@ class _ModulePageState extends State<ModulePage> {
                       if (snapshot.hasError) {
                         return Text('Error: ${snapshot.error}');
                       } else {
-                        _modules = snapshot.data;
-                        _refreshedModules = _modules;
+                        if (_modules == null) {
+                          _modules = snapshot.data;
+                        }
                         return createListView(_modules);
                       }
                       break;
@@ -85,30 +104,18 @@ class _ModulePageState extends State<ModulePage> {
     _refreshController = RefreshController();
   }
 
-  void _onLoading() async {
-    _refreshedModules.addAll(await API.getModules(Data.authentication));
-    
-    if (_refreshedModules == null) {
-      print("load: null");
+  Future<bool> _onLoading() async {
+    List<Module> temp = new List();
+    temp.add(_modules[0]);
+    _refreshedModules = temp;
+    if (Data.twoListsAreDeepEqual(_modules, _refreshedModules)) {
+      print("load no data");
       _refreshController.loadNoData();
+      return false;
     } else {
       print("load: got data");
       _refreshController.loadComplete();
-    }
-  }
-
-  void _onRresh() {
-    print("called");
-    print(_modules);
-    print(_refreshedModules);
-    if (Data.twoListsAreDeepEqual(_modules, _refreshedModules)) {
-      print("refresh: no need");
-      _refreshController.refreshCompleted();
-    } else {
-      _modules = _refreshedModules;
-      build(context);
-      print("Refreshed");
-      _refreshController.refreshCompleted();
+      return true;
     }
   }
 

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:fluminus/announcement_page.dart';
 // import 'package:fluminus/home_page.dart';
-import 'package:fluminus/task_page.dart';
+import 'package:fluminus/module_page.dart';
 import 'package:fluminus/forum_page.dart';
 import 'package:fluminus/file_page.dart';
 import 'package:fluminus/profile_page.dart';
