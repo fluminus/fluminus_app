@@ -9,6 +9,18 @@ import 'data.dart' as data;
 
 final EdgeInsets _padding = const EdgeInsets.fromLTRB(14.0, 10.0, 14.0, 0.0);
 
+FloatingActionButton _backToHomeFloatingActionButton(BuildContext context) {
+  return FloatingActionButton(
+    child: Icon(Icons.home),
+    onPressed: () {
+      // Pop to the front page
+      // reference: https://stackoverflow.com/questions/49672706/flutter-navigation-pop-to-index-1
+      Navigator.popUntil(
+          context, ModalRoute.withName(Navigator.defaultRouteName));
+    },
+  );
+}
+
 Widget _paddedfutureBuilder(Future future, AsyncWidgetBuilder builder) {
   return Padding(
     padding: _padding,
@@ -25,7 +37,8 @@ GestureTapCallback _onTapNextPage(Widget nextPage, BuildContext context) {
 }
 
 String _formatLastUpdatedTime(String lastUpdatedTime) {
-  return 'Last updated: ' + util.datetimeStringToFormattedString(lastUpdatedTime);
+  return 'Last updated: ' +
+      util.datetimeStringToFormattedString(lastUpdatedTime);
 }
 
 class ModuleRootDirectoryPage extends StatelessWidget {
@@ -205,6 +218,7 @@ class _SubdirectoryPageState extends State<SubdirectoryPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      floatingActionButton: _backToHomeFloatingActionButton(context),
       appBar: AppBar(
         title: Text(this.widget.title),
       ),

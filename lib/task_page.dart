@@ -1,68 +1,23 @@
 import 'package:flutter/material.dart';
-import 'package:luminus_api/luminus_api.dart';
-import 'data.dart' as Data;
+// import 'package:luminus_api/luminus_api.dart';
+// import 'package:fluminus/data.dart' as data;
+import 'package:fluminus/widgets/dialog.dart' as dialog;
+import 'package:fluminus/widgets/placeholder.dart' as ph;
 
-class ModulePage extends StatelessWidget {
+class TaskPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("Tasks")),
-      body: Container(
-          decoration: new BoxDecoration(
-              // borderRadius: new BorderRadius.circular(20.0),
-              color: Colors.white),
-          child: Padding(
-            padding: const EdgeInsets.all(10.0),
-            child: FutureBuilder<List<Module>>(
-              future: API.getModules(Data.authentication),
-              builder: (context, snapshot) {
-                if (snapshot.hasData) {
-                  return createListView(context, snapshot);
-                } else if (snapshot.hasError) {
-                  return Text(snapshot.error.toString());
-                }
-                return Center(
-                  child: Column(
-                    children: <Widget>[
-                      Padding(
-                        padding: const EdgeInsets.all(30.0),
-                        child: CircularProgressIndicator(),
-                      ),
-                    ],
-                  ),
-                );
-              },
-            ),
-          )),
-    );
-  }
-
-  Widget createCardWidget(Module module) {
-    return Card(
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: <Widget>[
-          ListTile(
-            leading: Icon(Icons.class_),
-            title: Text(module.name),
-            subtitle: Text(module.courseName),
-          ),
-        ],
+      appBar: AppBar(
+        title: Text('Task'),
       ),
-    );
-  }
-
-  static List<Module> values;
-
-  Widget createListView(BuildContext context, AsyncSnapshot snapshot) {
-    values = snapshot.data;
-    return new ListView.builder(
-      itemCount: values.length,
-      itemBuilder: (BuildContext context, int index) {
-        return new Column(
-          children: <Widget>[createCardWidget(values[index])],
-        );
-      },
+      floatingActionButton: FloatingActionButton(
+        child: Icon(Icons.explore),
+        onPressed: () {
+          dialog.displayRefreshTokenDialog(context);
+        },
+      ),
+      body: ph.placeholder(),
     );
   }
 }
