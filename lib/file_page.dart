@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:dio/dio.dart';
 import 'package:open_file/open_file.dart';
@@ -38,8 +39,7 @@ GestureTapCallback _onTapNextPage(Widget nextPage, BuildContext context) {
 }
 
 String _formatLastUpdatedTime(String lastUpdatedTime) {
-  return 'Last updated: ' +
-      util.datetimeStringToFormattedString(lastUpdatedTime);
+  return util.datetimeStringToFormattedString(lastUpdatedTime);
 }
 
 class ModuleRootDirectoryPage extends StatelessWidget {
@@ -222,7 +222,12 @@ class SubdirectoryPage extends StatefulWidget {
   _SubdirectoryPageState createState() => _SubdirectoryPageState();
 }
 
+enum _FileStatus { normal, downloading, downloaded }
+
 class _SubdirectoryPageState extends State<SubdirectoryPage> {
+  List<BasicFile> _items;
+  Map<BasicFile, _FileStatus> _fileStatus;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -264,32 +269,41 @@ class _SubdirectoryPageState extends State<SubdirectoryPage> {
 
   Widget fileCardWidget(File file, BuildContext context, {Icon trailing}) {
     // TODO: null is bad!
-
-    Widget nextPage = FileDownloadPage(file, file.fileName);
     return card.inkWellCard(
-        file.name,
-        _formatLastUpdatedTime(file.lastUpdatedDate),
-        context,
-        _onTapNextPage(nextPage, context),
-        leading: Icon(Icons.attach_file),
-        trailing: trailing);
+        file.name, _formatLastUpdatedTime(file.lastUpdatedDate), context, () {
+      // setState(() {
+      //   _fileStatus[file] = _FileStatus.downloading;
+      // });
+      print(_fileStatus.containsKey(file));
+    }, leading: Icon(Icons.attach_file), trailing: trailing);
   }
 
+  // try this; https://stackoverflow.com/questions/52021205/usage-of-futurebuilder-with-setstate
   Widget createListView(BuildContext context, AsyncSnapshot snapshot) {
-    List<BasicFile> items = snapshot.data;
+    // _initFileState(snapshot.data);
     return new ListView.builder(
-      itemCount: items.length,
+      itemCount: snapshot.data.length,
       itemBuilder: (BuildContext context, int index) {
+        print(snapshot.data[index]);
         return new Column(
           children: <Widget>[
-            items[index] is File
-                ? fileCardWidget(items[index], context)
-                : directoryCardWidget(items[index], context)
+            snapshot.data[index] is File
+                ? fileCardWidget(snapshot.data[index], context)
+                : directoryCardWidget(snapshot.data[index], context)
           ],
         );
       },
     );
   }
+
+  // void _initFileState(List<BasicFile> data) {
+  //   for (BasicFile f in data) {
+  //     print(f);
+  //     // setState(() {
+  //     //   _fileStatus[f] = _FileStatus.normal;
+  //     // });
+  //   }
+  // }
 }
 
 class FilePage extends StatelessWidget {
