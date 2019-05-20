@@ -131,7 +131,7 @@ Widget announcementCard(Announcement announcemnt, BuildContext context) {
         leading: Icon(Icons.folder));
   }
 
-  /*Widget directoryCard(Directory dir, BuildContext context) {
+  Widget directoryCard(Directory dir, BuildContext context) {
     Widget nextPage = SubdirectoryPage(dir, dir.name);
     return inkWellCard(
         dir.name,
@@ -140,7 +140,7 @@ Widget announcementCard(Announcement announcemnt, BuildContext context) {
         util.onTapNextPage(nextPage, context),
         leading: Icon(Icons.folder),
         trailing: Icon(Icons.arrow_right));
-  }*/
+  }
 
   Widget moduleRootDirectoryCard(Module module, BuildContext context) {
     Widget nextPage = ModuleRootDirectoryPage(module);

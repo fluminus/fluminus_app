@@ -35,12 +35,8 @@ class _AnnouncementPageState extends State<AnnouncementPage>
   Widget build(BuildContext context) {
 
     Widget refreshableList(Module module) {
-      void updateAMList(List<Announcement> refreshedAnnouncements) {
-        setState(() {
-          _announcements = refreshedAnnouncements;
-        });
-      }
-      Future<List> onRefresh() async {
+
+      Future<void> onRefresh() async {
         _refreshedAnnouncements = await util.onLoading(
             _refreshController,
             _announcements,
@@ -49,29 +45,31 @@ class _AnnouncementPageState extends State<AnnouncementPage>
         if (_refreshedAnnouncements == null) {
           _refreshController.refreshFailed();
         } else {
-          updateAMList(_refreshedAnnouncements);
+          setState(() {
+            _announcements = _refreshedAnnouncements;
+          });
           _refreshController.refreshCompleted();
         }
-        return _refreshedAnnouncements;
       }
 
-return FutureBuilder<List<Announcement>>(
-            future: API.getAnnouncements(data.authentication, module),
-            builder: (context, snapshot) {
-              if (snapshot.hasData) {
-                _announcements = snapshot.data;
-                return list.refreshableListView(
-                    _refreshController,
-                    () => onRefresh(),
-                    _announcements,
-                    list.CardType.announcementCardType,
-                    context, null);
-              } else if (snapshot.hasError) {
-                return Text(snapshot.error.toString());
-              }
-              return common.processIndicator;
-            },
-          );
+      return FutureBuilder<List<Announcement>>(
+        future: API.getAnnouncements(data.authentication, module),
+        builder: (context, snapshot) {
+          if (snapshot.hasData) {
+            _announcements = snapshot.data;
+            return list.refreshableListView(
+                _refreshController,
+                () => onRefresh(),
+                _announcements,
+                list.CardType.announcementCardType,
+                context,
+                null);
+          } else if (snapshot.hasError) {
+            return Text(snapshot.error.toString());
+          }
+          return common.processIndicator;
+        },
+      );
     }
 
     return FutureBuilder<List<Module>>(

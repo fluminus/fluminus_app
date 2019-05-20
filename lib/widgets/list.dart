@@ -61,7 +61,7 @@ Widget refreshableListView(
       enablePullUp: true,
       controller: refreshController,
       onRefresh: onRefresh,
-      child: itemListView(itemList, type, context, null)
+      child: itemListView(itemList, type, context, params)
   );
 }
 

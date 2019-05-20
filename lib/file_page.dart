@@ -9,6 +9,7 @@ import 'package:fluminus/widgets/common.dart' as common;
 import 'package:fluminus/util.dart' as util;
 import 'package:fluminus/data.dart' as data;
 import 'package:fluminus/widgets/dialog.dart' as dialog;
+import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 final EdgeInsets _padding = const EdgeInsets.fromLTRB(14.0, 10.0, 14.0, 0.0);
 
@@ -31,32 +32,102 @@ Widget _paddedfutureBuilder(Future future, AsyncWidgetBuilder builder) {
   );
 }
 
-class ModuleRootDirectoryPage extends StatelessWidget {
+class FilePage extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: const Text("Files")),
+      body: Container(
+        decoration: new BoxDecoration(
+            // borderRadius: new BorderRadius.circular(20.0),
+            color: Colors.white),
+        child: _paddedfutureBuilder(API.getModules(data.authentication),
+            (context, snapshot) {
+          if (snapshot.hasData) {
+            return moduleRootDirectoyListView(context, snapshot);
+          } else if (snapshot.hasError) {
+            return Text(snapshot.error.toString());
+          }
+          return common.processIndicator;
+        }),
+      ),
+    );
+  }
+
+  Widget moduleRootDirectoyListView(
+      BuildContext context, AsyncSnapshot snapshot) {
+    return list.itemListView(snapshot.data,
+        list.CardType.moduleRootDirectoryCardType, context, null);
+  }
+}
+
+class ModuleRootDirectoryPage extends StatefulWidget {
   final Module module;
 
   ModuleRootDirectoryPage(this.module);
 
   @override
+  _ModuleRootDirectoryPageState createState() =>
+      _ModuleRootDirectoryPageState();
+}
+
+class _ModuleRootDirectoryPageState extends State<ModuleRootDirectoryPage> {
+  List<Directory> _directories;
+  List<Directory> _refreshedDirectories;
+  RefreshController _refreshController;
+
+  @override
+  void initState() {
+    super.initState();
+    _refreshController = RefreshController();
+  }
+
+  @override
+  void dispose() {
+    _refreshController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
+    Future<void> onRefresh() async {
+      _refreshedDirectories = await util.onLoading(
+          _refreshController,
+          _directories,
+          () => API.getModuleDirectories(data.authentication, widget.module));
+
+      if (_refreshedDirectories == null) {
+        _refreshController.refreshFailed();
+      } else {
+        setState(() {
+          _directories = _refreshedDirectories;
+        });
+        _refreshController.refreshCompleted();
+      }
+    }
+
     return Scaffold(
       appBar: AppBar(
-        title: Text(module.name),
+        title: Text(widget.module.name),
       ),
       body: _paddedfutureBuilder(
-          API.getModuleDirectories(data.authentication, module),
+          API.getModuleDirectories(data.authentication, widget.module),
           (context, snapshot) {
         if (snapshot.hasData) {
-          return fileListView(context, snapshot);
+          _directories = snapshot.data;
+          return list.refreshableListView(
+              _refreshController,
+              () => onRefresh(),
+              _directories,
+              list.CardType.moduleDirectoryCardType,
+              context,
+              {"module": widget.module});
         } else if (snapshot.hasError) {
           return Text(snapshot.error);
         }
         return common.processIndicator;
       }),
     );
-  }
-
-  Widget fileListView(BuildContext context, AsyncSnapshot snapshot) {
-    return list.itemListView(snapshot.data, list.CardType.moduleDirectoryCardType, context, {"module": module});
   }
 }
 
@@ -75,12 +146,20 @@ enum _FileStatus { normal, downloading, downloaded }
 class _SubdirectoryPageState extends State<SubdirectoryPage> {
   Future<List<BasicFile>> _listFuture;
   Future<Map<BasicFile, _FileStatus>> _statusFuture;
+  RefreshController _refreshController;
 
   @override
   void initState() {
     super.initState();
     _listFuture = API.getItemsFromDirectory(data.authentication, widget.parent);
     _statusFuture = _initStatus(_listFuture);
+    _refreshController = RefreshController();
+  }
+
+  @override
+  void dispose() {
+    _refreshController.dispose();
+    super.dispose();
   }
 
   Future<Map<BasicFile, _FileStatus>> _initStatus(
@@ -116,6 +195,8 @@ class _SubdirectoryPageState extends State<SubdirectoryPage> {
 
   @override
   Widget build(BuildContext context) {
+
+    
     return Scaffold(
       floatingActionButton: _backToHomeFloatingActionButton(context),
       appBar: AppBar(
@@ -129,24 +210,13 @@ class _SubdirectoryPageState extends State<SubdirectoryPage> {
         // print('building...');
         if (snapshot.hasData) {
           // print(snapshot.data['statusFuture']);
-          return createListView(context, snapshot);
+          return fileListView(context, snapshot);
         } else if (snapshot.hasError) {
           return Text(snapshot.error);
         }
         return common.processIndicator;
       }),
     );
-  }
-
-  Widget directoryCardWidget(Directory dir, BuildContext context) {
-    Widget nextPage = SubdirectoryPage(dir, dir.name);
-    return card.inkWellCard(
-        dir.name,
-        util.formatLastUpdatedTime(dir.lastUpdatedDate),
-        context,
-        util.onTapNextPage(nextPage, context),
-        leading: Icon(Icons.folder),
-        trailing: Icon(Icons.arrow_right));
   }
 
   Future<void> downloadFile(
@@ -207,8 +277,10 @@ class _SubdirectoryPageState extends State<SubdirectoryPage> {
         return Icon(Icons.error_outline);
       }
     }
+
     return card.inkWellCard(
-        file.name, util.formatLastUpdatedTime(file.lastUpdatedDate), context, () {
+        file.name, util.formatLastUpdatedTime(file.lastUpdatedDate), context,
+        () {
       if (status == _FileStatus.normal) {
         downloadFile(file, statusList);
       } else if (status == _FileStatus.downloaded) {
@@ -218,7 +290,7 @@ class _SubdirectoryPageState extends State<SubdirectoryPage> {
   }
 
   // try this; https://stackoverflow.com/questions/52021205/usage-of-futurebuilder-with-setstate
-  Widget createListView(BuildContext context, AsyncSnapshot snapshot) {
+  Widget fileListView(BuildContext context, AsyncSnapshot snapshot) {
     // _initFileState(snapshot.data);
     var fileList = snapshot.data['listFuture'];
     var statusMap = snapshot.data['statusFuture'];
@@ -229,38 +301,10 @@ class _SubdirectoryPageState extends State<SubdirectoryPage> {
           children: <Widget>[
             fileList[index] is File
                 ? fileCardWidget(fileList[index], statusMap, context)
-                : directoryCardWidget(fileList[index], context)
+                : card.directoryCard(fileList[index], context)
           ],
         );
       },
     );
-  }
-}
-
-class FilePage extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text("Files")),
-      body: Container(
-        decoration: new BoxDecoration(
-            // borderRadius: new BorderRadius.circular(20.0),
-            color: Colors.white),
-        child: _paddedfutureBuilder(API.getModules(data.authentication),
-            (context, snapshot) {
-          if (snapshot.hasData) {
-            return moduleRootDirectoyListView(context, snapshot);
-          } else if (snapshot.hasError) {
-            return Text(snapshot.error.toString());
-          }
-          return common.processIndicator;
-        }),
-      ),
-    );
-  }
-
-  Widget moduleRootDirectoyListView(
-      BuildContext context, AsyncSnapshot snapshot) {
-    return list.itemListView(snapshot.data, list.CardType.moduleRootDirectoryCardType, context, null);
   }
 }
