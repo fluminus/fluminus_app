@@ -67,10 +67,8 @@ class _AnnouncementPageState extends State<AnnouncementPage>
                     _announcements.removeAt(index);
                   });
                 },
-                (index){
-                  setState(() {
-                    _announcements.removeAt(index);
-                  });
+                (){
+                  util.showPickerNumber(context);
                 },
                 context,
                 null);

@@ -3,6 +3,7 @@ import 'package:intl/intl.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:collection/collection.dart';
 import 'package:html/parser.dart';
+import 'package:flutter_picker/flutter_picker.dart';
 
 Function twoListsAreDeepEqual = const DeepCollectionEquality().equals;
 
@@ -57,5 +58,44 @@ GestureTapCallback onTapNextPage(Widget nextPage, BuildContext context) {
       };
 }
 
-
+showPickerNumber(BuildContext context) {
+    new Picker(
+        adapter: NumberPickerAdapter(data: [
+          NumberPickerColumn(begin: 0, end: 4),
+          NumberPickerColumn(begin: 0, end: 10),
+          NumberPickerColumn(begin: 0, end: 20),
+        ]),
+        delimiter: [
+          PickerDelimiter(
+            column: 1,
+            child: Container(
+            width: 30.0,
+            alignment: Alignment.center,
+            child: Text("M")
+          )),
+          PickerDelimiter(
+            column: 3,
+            child: Container(
+            width: 30.0,
+            alignment: Alignment.center,
+            child: Text("W")
+          )),
+          PickerDelimiter(
+            column: 5,
+            child: Container(
+            width: 30.0,
+            alignment: Alignment.center,
+            child: Text("D")
+          )),
+        ],
+        hideHeader: true,
+        title: new Text(
+          "Schedule task in\n(month : week : day)",
+          style: Theme.of(context).textTheme.title),
+        onConfirm: (Picker picker, List value) {
+          print(value.toString());
+          print(picker.getSelectedValues());
+        }
+    ).showDialog(context);
+  }
 
