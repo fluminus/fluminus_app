@@ -4,6 +4,8 @@ import 'package:dio/dio.dart';
 import 'package:open_file/open_file.dart';
 import 'package:luminus_api/luminus_api.dart';
 import 'package:fluminus/widgets/card.dart' as card;
+import 'package:fluminus/widgets/list.dart' as list;
+import 'package:fluminus/widgets/common.dart' as common;
 import 'package:fluminus/util.dart' as util;
 import 'package:fluminus/data.dart' as data;
 import 'package:fluminus/widgets/dialog.dart' as dialog;
@@ -29,18 +31,6 @@ Widget _paddedfutureBuilder(Future future, AsyncWidgetBuilder builder) {
   );
 }
 
-GestureTapCallback _onTapNextPage(Widget nextPage, BuildContext context) {
-  return () => {
-        Navigator.push(context, MaterialPageRoute(builder: (context) {
-          return nextPage;
-        }))
-      };
-}
-
-String _formatLastUpdatedTime(String lastUpdatedTime) {
-  return util.datetimeStringToFormattedString(lastUpdatedTime);
-}
-
 class ModuleRootDirectoryPage extends StatelessWidget {
   final Module module;
 
@@ -60,40 +50,13 @@ class ModuleRootDirectoryPage extends StatelessWidget {
         } else if (snapshot.hasError) {
           return Text(snapshot.error);
         }
-        return Center(
-            child: Column(
-          children: <Widget>[
-            Padding(
-              padding: const EdgeInsets.all(30.0),
-              child: CircularProgressIndicator(),
-            ),
-          ],
-        ));
+        return common.processIndicator;
       }),
     );
   }
 
-  Widget directoryCardWidget(Directory dir, BuildContext context) {
-    Widget nextPage = SubdirectoryPage(dir, module.name + ' - ' + dir.name);
-
-    return card.inkWellCard(
-        dir.name,
-        _formatLastUpdatedTime(dir.lastUpdatedDate),
-        context,
-        _onTapNextPage(nextPage, context),
-        leading: Icon(Icons.folder));
-  }
-
   Widget fileListView(BuildContext context, AsyncSnapshot snapshot) {
-    List<Directory> values = snapshot.data;
-    return new ListView.builder(
-      itemCount: values.length,
-      itemBuilder: (BuildContext context, int index) {
-        return new Column(
-          children: <Widget>[directoryCardWidget(values[index], context)],
-        );
-      },
-    );
+    return list.itemListView(snapshot.data, list.CardType.moduleDirectoryCardType, context, {"module": module});
   }
 }
 
@@ -170,15 +133,7 @@ class _SubdirectoryPageState extends State<SubdirectoryPage> {
         } else if (snapshot.hasError) {
           return Text(snapshot.error);
         }
-        return Center(
-            child: Column(
-          children: <Widget>[
-            Padding(
-              padding: const EdgeInsets.all(30.0),
-              child: CircularProgressIndicator(),
-            ),
-          ],
-        ));
+        return common.processIndicator;
       }),
     );
   }
@@ -187,9 +142,9 @@ class _SubdirectoryPageState extends State<SubdirectoryPage> {
     Widget nextPage = SubdirectoryPage(dir, dir.name);
     return card.inkWellCard(
         dir.name,
-        _formatLastUpdatedTime(dir.lastUpdatedDate),
+        util.formatLastUpdatedTime(dir.lastUpdatedDate),
         context,
-        _onTapNextPage(nextPage, context),
+        util.onTapNextPage(nextPage, context),
         leading: Icon(Icons.folder),
         trailing: Icon(Icons.arrow_right));
   }
@@ -252,9 +207,8 @@ class _SubdirectoryPageState extends State<SubdirectoryPage> {
         return Icon(Icons.error_outline);
       }
     }
-
     return card.inkWellCard(
-        file.name, _formatLastUpdatedTime(file.lastUpdatedDate), context, () {
+        file.name, util.formatLastUpdatedTime(file.lastUpdatedDate), context, () {
       if (status == _FileStatus.normal) {
         downloadFile(file, statusList);
       } else if (status == _FileStatus.downloaded) {
@@ -299,42 +253,14 @@ class FilePage extends StatelessWidget {
           } else if (snapshot.hasError) {
             return Text(snapshot.error.toString());
           }
-          return Center(
-            child: Column(
-              children: <Widget>[
-                Padding(
-                  padding: const EdgeInsets.all(30.0),
-                  child: CircularProgressIndicator(),
-                ),
-              ],
-            ),
-          );
+          return common.processIndicator;
         }),
       ),
     );
   }
 
-  Widget moduleRootDirectoryCard(Module module, BuildContext context) {
-    Widget nextPage = ModuleRootDirectoryPage(module);
-    return card.inkWellCard(
-      module.name,
-      module.courseName,
-      context,
-      _onTapNextPage(nextPage, context),
-      leading: Icon(Icons.class_),
-    );
-  }
-
   Widget moduleRootDirectoyListView(
       BuildContext context, AsyncSnapshot snapshot) {
-    List<Module> values = snapshot.data;
-    return new ListView.builder(
-      itemCount: values.length,
-      itemBuilder: (BuildContext context, int index) {
-        return new Column(
-          children: <Widget>[moduleRootDirectoryCard(values[index], context)],
-        );
-      },
-    );
+    return list.itemListView(snapshot.data, list.CardType.moduleRootDirectoryCardType, context, null);
   }
 }

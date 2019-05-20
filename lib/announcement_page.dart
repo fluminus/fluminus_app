@@ -124,7 +124,7 @@ class _AnnouncementPageState extends State<AnnouncementPage>
             builder: (context, snapshot) {
               if (snapshot.hasData) {
                 _announcements = snapshot.data;
-                return list.itemListView(_announcements, list.CardType.announcementCard, context);
+                return list.itemListView(_announcements, list.CardType.announcementCardType, context, null);
               } else if (snapshot.hasError) {
                 return Text(snapshot.error.toString());
               }

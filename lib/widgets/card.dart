@@ -121,6 +121,27 @@ Widget announcementCard(Announcement announcemnt, BuildContext context) {
     );
   }
 
+  Widget moduleDirectoryCard(Directory dir, BuildContext context, Module module) {
+    Widget nextPage = SubdirectoryPage(dir, module.name + ' - ' + dir.name);
+    return inkWellCard(
+        dir.name,
+        util.formatLastUpdatedTime(dir.lastUpdatedDate),
+        context,
+        util.onTapNextPage(nextPage, context),
+        leading: Icon(Icons.folder));
+  }
+
+  /*Widget directoryCard(Directory dir, BuildContext context) {
+    Widget nextPage = SubdirectoryPage(dir, dir.name);
+    return inkWellCard(
+        dir.name,
+        util.formatLastUpdatedTime(dir.lastUpdatedDate),
+        context,
+        util.onTapNextPage(nextPage, context),
+        leading: Icon(Icons.folder),
+        trailing: Icon(Icons.arrow_right));
+  }*/
+
   Widget moduleRootDirectoryCard(Module module, BuildContext context) {
     Widget nextPage = ModuleRootDirectoryPage(module);
     return inkWellCard(
@@ -131,6 +152,10 @@ Widget announcementCard(Announcement announcemnt, BuildContext context) {
       leading: Icon(Icons.class_),
     );
   }
+
+
+
+
 
 // Widget infoCardWithFixedHeight(
 //     String title, String subtitle, String body, BuildContext context) {

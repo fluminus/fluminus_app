@@ -50,7 +50,7 @@ class _BottomNavBarState extends State<BottomNavBar> {
   int _currentIndex = 0;
   final _pages = [
     AnnouncementPage(),
-    TaskPage(),
+    ModulePage(),
     ForumPage(),
     FilePage(),
     ProfilePage()
