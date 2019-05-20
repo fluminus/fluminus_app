@@ -50,18 +50,19 @@ Widget itemListView(List itemList, CardType type, BuildContext context, Map para
 }
 
 Widget refreshableListView(
-    Module module,
     RefreshController refreshController,
     Function onRefresh,
-    Widget listDisplay(Module module, BuildContext context)) {
+    List itemList,
+    CardType type,
+    BuildContext context,
+    Map params) {
   return SmartRefresher(
       enablePullDown: true,
       enablePullUp: true,
       controller: refreshController,
       onRefresh: onRefresh,
-      child: ListView.builder(
-          itemCount: 1,
-          itemBuilder: (context, index) {
-            return listDisplay(module, context);
-          }));
+      child: itemListView(itemList, type, context, null)
+  );
 }
+
+

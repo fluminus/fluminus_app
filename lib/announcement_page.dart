@@ -40,7 +40,7 @@ class _AnnouncementPageState extends State<AnnouncementPage>
           _announcements = refreshedAnnouncements;
         });
       }
-      Future<void> onRefresh() async {
+      Future<List> onRefresh() async {
         _refreshedAnnouncements = await util.onLoading(
             _refreshController,
             _announcements,
@@ -52,35 +52,26 @@ class _AnnouncementPageState extends State<AnnouncementPage>
           updateAMList(_refreshedAnnouncements);
           _refreshController.refreshCompleted();
         }
+        return _refreshedAnnouncements;
       }
 
-      return FutureBuilder<List<Announcement>>(
-        future: API.getAnnouncements(data.authentication, module),
-        builder: (context, snapshot) {
-          switch (snapshot.connectionState) {
-            case ConnectionState.none:
-            case ConnectionState.waiting:
-            case ConnectionState.active:
-              return Align(
-                  alignment: Alignment.center, child: common.processIndicator);
-              break;
-            case ConnectionState.done:
-              if (snapshot.hasError) {
-                return Text('Error: ${snapshot.error}');
-              } else {
-                if (_announcements == null) {
-                  _announcements = snapshot.data;
-                }
+return FutureBuilder<List<Announcement>>(
+            future: API.getAnnouncements(data.authentication, module),
+            builder: (context, snapshot) {
+              if (snapshot.hasData) {
+                _announcements = snapshot.data;
                 return list.refreshableListView(
-                    module,
                     _refreshController,
                     () => onRefresh(),
-                    (module, context) => announcementList(module, context));
+                    _announcements,
+                    list.CardType.announcementCardType,
+                    context, null);
+              } else if (snapshot.hasError) {
+                return Text(snapshot.error.toString());
               }
-              break;
-          }
-        },
-      );
+              return common.processIndicator;
+            },
+          );
     }
 
     return FutureBuilder<List<Module>>(
@@ -116,20 +107,5 @@ class _AnnouncementPageState extends State<AnnouncementPage>
           }
           return common.processIndicator;
         });
-  }
-
-  Widget announcementList(Module module, BuildContext context) {
-    return FutureBuilder<List<Announcement>>(
-            future: API.getAnnouncements(data.authentication, module),
-            builder: (context, snapshot) {
-              if (snapshot.hasData) {
-                _announcements = snapshot.data;
-                return list.itemListView(_announcements, list.CardType.announcementCardType, context, null);
-              } else if (snapshot.hasError) {
-                return Text(snapshot.error.toString());
-              }
-              return common.processIndicator;
-            },
-          );
   }
 }
