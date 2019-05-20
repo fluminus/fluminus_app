@@ -69,7 +69,28 @@ Widget inkWellCard(String title, String subtitle, BuildContext context,
         leading: leading,
         trailing: trailing,
         title: Text(title),
-        subtitle: Text(subtitle, style: Theme.of(context).textTheme.body1),
+        subtitle: Text(subtitle, style: TextStyle(fontSize: 13.0)),
+      ),
+    ),
+  );
+  return _basicCard(child);
+}
+
+Widget inkWellCardWithFutureBuilder(String title, String subtitle, BuildContext context,
+    GestureTapCallback onTap,
+    {FutureBuilder leading, FutureBuilder trailing}) {
+  const double _verticalPadding = 6.0;
+  Widget child = InkWell(
+    borderRadius: _borderRadius,
+    onTap: onTap,
+    child: Padding(
+      padding: const EdgeInsets.only(
+          top: _verticalPadding, bottom: _verticalPadding),
+      child: ListTile(
+        leading: leading,
+        trailing: trailing,
+        title: Text(title),
+        subtitle: Text(subtitle, style: TextStyle(fontSize: 13.0)),
       ),
     ),
   );
