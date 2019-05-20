@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:luminus_api/luminus_api.dart';
 import 'package:fluminus/util.dart' as util;
+
+import '../file_page.dart';
 // import 'dart:math';
 
 BorderRadius _borderRadius = BorderRadius.circular(16.0);
@@ -95,6 +97,17 @@ Widget announcementCard(Announcement announcemnt, BuildContext context) {
           ),
         ],
       ),
+    );
+  }
+
+  Widget moduleRootDirectoryCard(Module module, BuildContext context) {
+    Widget nextPage = ModuleRootDirectoryPage(module);
+    return inkWellCard(
+      module.name,
+      module.courseName,
+      context,
+      util.onTapNextPage(nextPage, context),
+      leading: Icon(Icons.class_),
     );
   }
 

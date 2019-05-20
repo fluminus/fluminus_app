@@ -3,7 +3,13 @@ import 'package:luminus_api/luminus_api.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'card.dart';
 
-Widget _certainCard(var item, BuildContext context) {
+enum CardType {
+  announcementCard,
+  moduleCard,
+  moduleRootDirectoryCard,
+}
+
+Widget _certainCard(var item, CardType type, BuildContext context) {
   switch (item.runtimeType) {
     case Announcement:
       return announcementCard(item, context);
@@ -16,7 +22,7 @@ Widget _certainCard(var item, BuildContext context) {
   return null;
 }
 
-Widget itemListView(List itemList, BuildContext context) {
+Widget itemListView(List itemList, CardType type, BuildContext context) {
   return new ListView.builder(
     shrinkWrap: true,
     itemCount: itemList.length,
@@ -26,7 +32,7 @@ Widget itemListView(List itemList, BuildContext context) {
         children: <Widget>[
           Padding(
               padding: const EdgeInsets.only(bottom: 6.0),
-              child: _certainCard(itemList[index], context))
+              child: _certainCard(itemList[index], type, context))
         ],
       );
     },

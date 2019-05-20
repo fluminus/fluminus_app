@@ -74,7 +74,7 @@ class _ModulePageState extends State<ModulePage> {
   }
 
   ListView moduleList(List<dynamic> modules) {
-    return list.itemListView(modules, context);
+    return list.itemListView(modules, list.CardType.moduleCard, context);
   }
 
   RefreshController _refreshController;

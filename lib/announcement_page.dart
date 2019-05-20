@@ -124,35 +124,12 @@ class _AnnouncementPageState extends State<AnnouncementPage>
             builder: (context, snapshot) {
               if (snapshot.hasData) {
                 _announcements = snapshot.data;
-                return list.itemListView(_announcements, context);
+                return list.itemListView(_announcements, list.CardType.announcementCard, context);
               } else if (snapshot.hasError) {
                 return Text(snapshot.error.toString());
               }
               return common.processIndicator;
             },
           );
-  }
-}
-
-class ChoiceCard extends StatelessWidget {
-  const ChoiceCard({Key key, this.module}) : super(key: key);
-
-  final Module module;
-
-  @override
-  Widget build(BuildContext context) {
-    final TextStyle textStyle = Theme.of(context).textTheme.body1;
-    return Card(
-      color: Colors.white,
-      child: Center(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: <Widget>[
-            Text(module.courseName, style: textStyle),
-          ],
-        ),
-      ),
-    );
   }
 }

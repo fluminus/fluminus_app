@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:collection/collection.dart';
@@ -7,6 +8,10 @@ Function twoListsAreDeepEqual = const DeepCollectionEquality().equals;
 
 String datetimeToFormattedString(DateTime time) {
   return DateFormat('EEE, d/M/y ').format(time) + DateFormat.jm().format(time);
+}
+
+String formatLastUpdatedTime(String lastUpdatedTime) {
+  return 'Last updated: ' + datetimeStringToFormattedString(lastUpdatedTime);
 }
 
 String datetimeStringToFormattedString(String timeString) {
@@ -42,6 +47,14 @@ Future<List> onLoading(RefreshController controller, List currList, Function get
 String parsedHtmlText(String htmlText) {
   var document = parse(htmlText);
   return parse(document.body.text).documentElement.text;
+}
+
+GestureTapCallback onTapNextPage(Widget nextPage, BuildContext context) {
+  return () => {
+        Navigator.push(context, MaterialPageRoute(builder: (context) {
+          return nextPage;
+        }))
+      };
 }
 
 
