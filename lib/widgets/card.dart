@@ -153,10 +153,7 @@ Widget announcementCard(Announcement announcemnt, BuildContext context) {
     );
   }
 
-
-
-
-
+  
 // Widget infoCardWithFixedHeight(
 //     String title, String subtitle, String body, BuildContext context) {
 //   return Card(

@@ -19,7 +19,6 @@ String datetimeStringToFormattedString(String timeString) {
 }
 
 Future<List> onLoading(RefreshController controller, List currList, Function getData) async {
-  print("called");
     List refreshedList = await getData();
     if (twoListsAreDeepEqual(currList, refreshedList)) {
       controller.loadNoData();

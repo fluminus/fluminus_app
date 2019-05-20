@@ -61,7 +61,7 @@ class _AnnouncementPageState extends State<AnnouncementPage>
                 _refreshController,
                 () => onRefresh(),
                 _announcements,
-                list.CardType.announcementCardType,
+                () => list.CardType.announcementCardType,
                 context,
                 null);
           } else if (snapshot.hasError) {
