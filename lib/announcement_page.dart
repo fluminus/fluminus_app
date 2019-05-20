@@ -57,11 +57,21 @@ class _AnnouncementPageState extends State<AnnouncementPage>
         builder: (context, snapshot) {
           if (snapshot.hasData) {
             _announcements = snapshot.data;
-            return list.refreshableListView(
+            return list.refreshableAndDismissibleListView(
                 _refreshController,
                 () => onRefresh(),
                 _announcements,
                 () => list.CardType.announcementCardType,
+                (index){
+                  setState(() {
+                    _announcements.removeAt(index);
+                  });
+                },
+                (index){
+                  setState(() {
+                    _announcements.removeAt(index);
+                  });
+                },
                 context,
                 null);
           } else if (snapshot.hasError) {

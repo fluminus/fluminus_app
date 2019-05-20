@@ -35,7 +35,7 @@ Widget itemListView(List itemList, Function getCardType, BuildContext context, M
   return new ListView.builder(
     shrinkWrap: true,
     itemCount: itemList.length,
-    itemBuilder: (BuildContext context, int index) {
+    itemBuilder: (context, index) {
       return new Column(
         mainAxisSize: MainAxisSize.min,
         children: <Widget>[
@@ -61,6 +61,58 @@ Widget refreshableListView(
       controller: refreshController,
       onRefresh: onRefresh,
       child: itemListView(itemList, getCardType, context, params)
+  );
+}
+
+Widget dismissibleListView(List itemList, Function getCardType, Function afterSwipingLeft, Function afterSwipingRight, BuildContext context, Map params) {
+  return new ListView.builder(
+    shrinkWrap: true,
+    itemCount: itemList.length,
+    itemBuilder: (context, index) {
+      final item = itemList[index];
+      return Dismissible(
+        //TODO: ensure that item has id =)
+        key: Key(item.id),
+        onDismissed: (direction) {
+          switch(direction) {
+            case DismissDirection.endToStart:
+              afterSwipingLeft();
+              break;
+            case DismissDirection.startToEnd:
+              afterSwipingRight();
+              break;
+            default:
+              break;
+          }
+        },
+        child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: <Widget>[
+          Padding(
+              padding: const EdgeInsets.only(bottom: 6.0),
+              child: _certainCard(itemList[index], getCardType(), context, params))
+        ],
+      )
+      );
+    },
+  );
+}
+
+Widget refreshableAndDismissibleListView(
+    RefreshController refreshController,
+    Function onRefresh,
+    List itemList,
+    Function getCardType,
+    Function afterSwipingLeft,
+    Function afterSwipingRight,
+    BuildContext context,
+    Map params) {
+  return SmartRefresher(
+      enablePullDown: true,
+      enablePullUp: true,
+      controller: refreshController,
+      onRefresh: onRefresh,
+      child: dismissibleListView(itemList, getCardType, afterSwipingLeft, afterSwipingRight,context, params)
   );
 }
 
