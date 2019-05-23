@@ -76,10 +76,10 @@ Widget dismissibleListView(List itemList, Function getCardType, Function afterSw
         onDismissed: (direction) {
           switch(direction) {
             case DismissDirection.endToStart:
-              afterSwipingLeft();
+              afterSwipingLeft(index);
               break;
             case DismissDirection.startToEnd:
-              afterSwipingRight();
+              afterSwipingRight(index, context);
               break;
             default:
               break;

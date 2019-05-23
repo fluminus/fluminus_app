@@ -1,3 +1,4 @@
+import 'package:fluminus/announcement_list_page.dart';
 import 'package:flutter/material.dart';
 import 'package:luminus_api/luminus_api.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
@@ -34,52 +35,6 @@ class _AnnouncementPageState extends State<AnnouncementPage>
   @override
   Widget build(BuildContext context) {
 
-    Widget refreshableList(Module module) {
-
-      Future<void> onRefresh() async {
-        _refreshedAnnouncements = await util.onLoading(
-            _refreshController,
-            _announcements,
-            () => API.getAnnouncements(data.authentication, module));
-
-        if (_refreshedAnnouncements == null) {
-          _refreshController.refreshFailed();
-        } else {
-          setState(() {
-            _announcements = _refreshedAnnouncements;
-          });
-          _refreshController.refreshCompleted();
-        }
-      }
-
-      return FutureBuilder<List<Announcement>>(
-        future: API.getAnnouncements(data.authentication, module),
-        builder: (context, snapshot) {
-          if (snapshot.hasData) {
-            _announcements = snapshot.data;
-            return list.refreshableAndDismissibleListView(
-                _refreshController,
-                () => onRefresh(),
-                _announcements,
-                () => list.CardType.announcementCardType,
-                (index){
-                  setState(() {
-                    _announcements.removeAt(index);
-                  });
-                },
-                (){
-                  util.showPickerNumber(context);
-                },
-                context,
-                null);
-          } else if (snapshot.hasError) {
-            return Text(snapshot.error.toString());
-          }
-          return common.processIndicator;
-        },
-      );
-    }
-
     return FutureBuilder<List<Module>>(
         future: API.getModules(data.authentication),
         builder: (context, snapshot) {
@@ -102,7 +57,7 @@ class _AnnouncementPageState extends State<AnnouncementPage>
                   ),
                   body: TabBarView(
                     children: _modules.map((Module module) {
-                      return refreshableList(module);
+                      return AnnouncementListPage(module:module);
                     }).toList(),
                   ),
                 ),
