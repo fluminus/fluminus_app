@@ -16,21 +16,6 @@ class AnnouncementPage extends StatefulWidget {
 class _AnnouncementPageState extends State<AnnouncementPage>
     with SingleTickerProviderStateMixin {
   List<Module> _modules;
-  List<Announcement> _announcements;
-  List<Announcement> _refreshedAnnouncements;
-  RefreshController _refreshController;
-
-  @override
-  void initState() {
-    super.initState();
-    _refreshController = RefreshController();
-  }
-
-  @override
-  void dispose() {
-    _refreshController.dispose();
-    super.dispose();
-  }
 
   @override
   Widget build(BuildContext context) {

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:luminus_api/luminus_api.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'dart:convert';
 import 'package:fluminus/widgets/common.dart' as common;
 import 'package:fluminus/widgets/list.dart' as list;
 import 'util.dart' as util;
@@ -16,9 +18,10 @@ class AnnouncementListPage extends StatefulWidget {
 
 class _AnnouncementListPageState extends State<AnnouncementListPage>
     with AutomaticKeepAliveClientMixin<AnnouncementListPage> {
-  List<Announcement> _announcements;
-  List<Announcement> _refreshedAnnouncements;
+  List<dynamic> _announcements;
+  List<dynamic> _refreshedAnnouncements;
   RefreshController _refreshController;
+  Future<SharedPreferences> _sprefs = SharedPreferences.getInstance();
 
   @override
   void initState() {
@@ -29,11 +32,13 @@ class _AnnouncementListPageState extends State<AnnouncementListPage>
   @override
   void dispose() {
     _refreshController.dispose();
+    _write();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
+
     Future<void> onRefresh() async {
       _refreshedAnnouncements = await util.onLoading(
           _refreshController,
@@ -50,7 +55,7 @@ class _AnnouncementListPageState extends State<AnnouncementListPage>
       }
     }
 
-    Widget announcementList(List<Announcement> announcements) {
+    Widget announcementList(List<dynamic> announcements) {
       return list.refreshableAndDismissibleListView(
           _refreshController,
           () => onRefresh(),
@@ -67,8 +72,8 @@ class _AnnouncementListPageState extends State<AnnouncementListPage>
     if (_announcements != null) {
       return announcementList(_announcements);
     } else {
-      return FutureBuilder<List<Announcement>>(
-        future: API.getAnnouncements(data.authentication, widget.module),
+      return FutureBuilder<List<dynamic>>(
+        future: _read(),
         builder: (context, snapshot) {
           if (snapshot.hasData) {
             _announcements = snapshot.data;
@@ -84,4 +89,29 @@ class _AnnouncementListPageState extends State<AnnouncementListPage>
 
   @override
   bool get wantKeepAlive => true;
+
+  Future<List<dynamic>> _read() async {
+    final prefs = await _sprefs;
+    String result = prefs.getString('encodedList' + widget.module.name);
+    if (result != null) {
+      List maps = json.decode(result);
+      _announcements = new List();
+      for (int i = 0; i < maps.length; i++) {
+        _announcements.add(Announcement.fromJson(maps[i]));
+      }
+      return _announcements;
+    } else {
+      return API.getAnnouncements(data.authentication, widget.module);
+    }
+  }
+
+  _write() async {
+    final prefs = await _sprefs;
+    List<Map> maps = new List();
+    for (Announcement announcement in _announcements) {
+      maps.add(announcement.toJson());
+    }
+    String encodedList = json.encode(maps);
+    prefs.setString('encodedList' + widget.module.name, encodedList);
+  }
 }
