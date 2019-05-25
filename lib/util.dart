@@ -19,6 +19,10 @@ String datetimeStringToFormattedString(String timeString) {
   return datetimeToFormattedString(DateTime.parse(timeString));
 }
 
+String formatDate(DateTime date) {
+  return new DateFormat("dd / MMM / yyyy").format(date);
+}
+
 Future<List> onLoading(RefreshController controller, List currList, Function getData) async {
     List refreshedList = await getData();
     if (twoListsAreDeepEqual(currList, refreshedList)) {

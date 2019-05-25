@@ -153,6 +153,25 @@ Widget announcementCard(Announcement announcemnt, BuildContext context) {
     );
   }
 
+  Widget taskCard(var detail, String summary, DateTime date, BuildContext context) {
+    return Card(
+      child: InkResponse(
+        enableFeedback: true,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: <Widget>[
+          ListTile(
+            leading: Icon(Icons.class_),
+            title: Text(summary),
+            subtitle: Text(util.formatDate(date)),
+          ),
+        ],
+      ),
+      onTap: () => announcementCard(detail, context),
+    )
+    );
+  } 
+
 // Widget infoCardWithFixedHeight(
 //     String title, String subtitle, String body, BuildContext context) {
 //   return Card(
