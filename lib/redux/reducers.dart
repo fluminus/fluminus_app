@@ -13,10 +13,14 @@ List<Task> taskReducer(List<Task> state, action) {
   if (action is AddTaskAction) {
     return []
       .. addAll(state)
-      .. add(Task(id: action.id, date: action.date, announcement: action.announcement));
+      .. add(Task(id: action.id, summary: action.summary, date: action.date, announcement: action.announcement));
   }
   if (action is RemoveTaskAction) {
     return List.unmodifiable(List.from(state)..remove(action.task));
   }
+  if (action is LoadedTasksAction) {
+    return action.tasks;
+  }
   return state;
 }
+

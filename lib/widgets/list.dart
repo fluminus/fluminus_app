@@ -8,6 +8,7 @@ enum CardType {
   directoryCardType,
   moduleDirectoryCardType,
   moduleRootDirectoryCardType,
+  taskCardType
 }
 
 Widget _certainCard(var item, CardType type, BuildContext context, Map params) {
@@ -26,6 +27,9 @@ Widget _certainCard(var item, CardType type, BuildContext context, Map params) {
       break;
     case CardType.moduleRootDirectoryCardType:
       return moduleRootDirectoryCard(item, context);
+      break;
+    case CardType.taskCardType:
+      return taskCard(item, context);
       break;
   }
   return null;

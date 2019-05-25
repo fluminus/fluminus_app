@@ -1,3 +1,4 @@
+import 'package:fluminus/model/task_list_model.dart';
 import 'package:flutter/material.dart';
 import 'package:luminus_api/luminus_api.dart';
 import 'package:fluminus/util.dart' as util;
@@ -153,7 +154,7 @@ Widget announcementCard(Announcement announcemnt, BuildContext context) {
     );
   }
 
-  Widget taskCard(var detail, String summary, DateTime date, BuildContext context) {
+  Widget taskCard(Task task, BuildContext context) {
     return Card(
       child: InkResponse(
         enableFeedback: true,
@@ -162,12 +163,12 @@ Widget announcementCard(Announcement announcemnt, BuildContext context) {
         children: <Widget>[
           ListTile(
             leading: Icon(Icons.class_),
-            title: Text(summary),
-            subtitle: Text(util.formatDate(date)),
+            title: Text(task.summary),
+            subtitle: Text(util.formatDate(task.date)),
           ),
         ],
       ),
-      onTap: () => announcementCard(detail, context),
+      onTap: () => announcementCard(task.announcement, context),
     )
     );
   } 

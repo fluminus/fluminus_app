@@ -1,16 +1,11 @@
 import 'package:fluminus/model/task_list_model.dart';
 import 'package:flutter/material.dart';
-// import 'package:luminus_api/luminus_api.dart';
-// import 'package:fluminus/data.dart' as data;
-import 'package:fluminus/widgets/list.dart' as list;
-import 'package:fluminus/widgets/dialog.dart' as dialog;
-import 'package:fluminus/widgets/placeholder.dart' as ph;
 import 'package:fluminus/redux/reducers.dart';
 import 'package:fluminus/redux/actions.dart';
-import 'package:flutter/rendering.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:luminus_api/luminus_api.dart';
 import 'package:redux/redux.dart';
+import 'package:fluminus/widgets/list.dart' as list;
 
 class TaskPage extends StatelessWidget {
   @override
@@ -28,7 +23,7 @@ class TaskPage extends StatelessWidget {
           body: StoreConnector<TaskListState, _ViewModel>(
             converter: (Store<TaskListState> store) => _ViewModel.create(store),
             builder: (BuildContext context, _ViewModel viewModel) => 
-              list.itemListView(viewModel.tasks, () => list.CardType.announcementCardType, context, null)
+              list.itemListView(viewModel.tasks, () => list.CardType.taskCardType, context, null)
             )
           ), 
         );
@@ -37,7 +32,7 @@ class TaskPage extends StatelessWidget {
 
 class _ViewModel {
   final List<Task> tasks;
-  final Function(DateTime, Announcement) onAddTask;
+  final Function(String, DateTime, Announcement) onAddTask;
   final Function(Task) onRemoveTask;
   
 
@@ -49,8 +44,8 @@ class _ViewModel {
   });
 
   factory _ViewModel.create(Store<TaskListState> store) {
-    _onAddTask(DateTime date, Announcement announcement) {
-      store.dispatch(AddTaskAction(date, announcement));
+    _onAddTask(String summary, DateTime date, Announcement announcement) {
+      store.dispatch(AddTaskAction(summary, date, announcement));
     }
     _onRemoveTask(Task task) {
       store.dispatch(RemoveTaskAction(task));

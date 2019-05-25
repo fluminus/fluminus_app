@@ -3,10 +3,11 @@ import 'package:luminus_api/luminus_api.dart';
 
 class AddTaskAction{
   static int _id = 0;
+  final String summary;
   final DateTime date;
   final Announcement announcement;
 
-  AddTaskAction(this.date, this.announcement) {
+  AddTaskAction(this.summary, this.date, this.announcement) {
     _id++;
   }
 
@@ -17,4 +18,11 @@ class RemoveTaskAction{
   final Task task;
   RemoveTaskAction(this.task);
 
+}
+
+class GetTasksAction{}
+
+class LoadedTasksAction{
+  final List<Task> tasks;
+  LoadedTasksAction(this.tasks);
 }
