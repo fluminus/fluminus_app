@@ -31,8 +31,7 @@ class Task {
       id = json['id'],
       summary = json['summary'],
       date = json['date'],
-      announcement = json['announcement'];
-    
+      announcement = Announcement.fromJson(json['announcement']);
 
     Map<String, dynamic> toJson() {
       final Map<String, dynamic> data = new Map<String, dynamic>();

@@ -1,3 +1,4 @@
+import 'package:fluminus/task_page.dart';
 import 'package:flutter/material.dart';
 import 'package:luminus_api/luminus_api.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
@@ -64,7 +65,10 @@ class _AnnouncementListPageState extends State<AnnouncementListPage>
           announcements.removeAt(index);
         });
       }, (index, context) {
-        util.showPickerNumber(context);
+        DateTime date = util.showPickerNumber(context);
+        Announcement announcement = announcements[index];
+        String summary = announcement.title;
+        TaskPage.model.onAddTask(summary, date, announcement);
       }, context, null);
     }
 

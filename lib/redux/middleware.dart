@@ -15,7 +15,7 @@ void saveToPrefs(TaskListState state) async {
 Future<TaskListState> loadFromPrefs() async {
   SharedPreferences sp = await SharedPreferences.getInstance();
   String encodedLsit = sp.getString('tasks');
-  if (String != null) {
+  if (encodedLsit != null) {
     Map map = json.decode(encodedLsit);
     return TaskListState.fromJson(map);
   }

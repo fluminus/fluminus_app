@@ -97,9 +97,15 @@ showPickerNumber(BuildContext context) {
           "Schedule task in\n(month : week : day)",
           style: Theme.of(context).textTheme.title),
         onConfirm: (Picker picker, List value) {
-          print(value.toString());
-          print(picker.getSelectedValues());
+          return getDateFromPicker(value);
         }
     ).showDialog(context);
   }
+
+  DateTime getDateFromPicker(List diffOfMWD) {
+    DateTime now = new DateTime.now();
+    var duration = diffOfMWD[1] * 7 + diffOfMWD[2];
+    now.add(new Duration(days: duration));
+    return new DateTime(now.year, now.month + 1, now.day);
+  } 
 
