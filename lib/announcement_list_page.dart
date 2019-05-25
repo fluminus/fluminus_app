@@ -38,7 +38,6 @@ class _AnnouncementListPageState extends State<AnnouncementListPage>
 
   @override
   Widget build(BuildContext context) {
-
     Future<void> onRefresh() async {
       _refreshedAnnouncements = await util.onLoading(
           _refreshController,
@@ -92,7 +91,7 @@ class _AnnouncementListPageState extends State<AnnouncementListPage>
 
   Future<List<dynamic>> _read() async {
     final prefs = await _sprefs;
-    String result = prefs.getString('encodedList' + widget.module.name);
+    String result = prefs.getString('encodedAnnouncementList' + widget.module.name);
     if (result != null) {
       List maps = json.decode(result);
       _announcements = new List();
@@ -112,6 +111,6 @@ class _AnnouncementListPageState extends State<AnnouncementListPage>
       maps.add(announcement.toJson());
     }
     String encodedList = json.encode(maps);
-    prefs.setString('encodedList' + widget.module.name, encodedList);
+    prefs.setString('encodedAnnouncementList' + widget.module.name, encodedList);
   }
 }

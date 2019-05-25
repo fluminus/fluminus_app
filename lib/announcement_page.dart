@@ -1,11 +1,8 @@
 import 'package:fluminus/announcement_list_page.dart';
 import 'package:flutter/material.dart';
 import 'package:luminus_api/luminus_api.dart';
-import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:fluminus/data.dart' as data;
-import 'package:fluminus/util.dart' as util;
 import 'package:fluminus/widgets/common.dart' as common;
-import 'package:fluminus/widgets/list.dart' as list;
 
 class AnnouncementPage extends StatefulWidget {
   const AnnouncementPage({Key key}) : super(key: key);
