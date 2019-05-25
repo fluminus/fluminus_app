@@ -16,32 +16,29 @@ class _AnnouncementPageState extends State<AnnouncementPage>
 
   @override
   Widget build(BuildContext context) {
-
     return FutureBuilder<List<Module>>(
         future: API.getModules(data.authentication),
         builder: (context, snapshot) {
           if (snapshot.hasData) {
             _modules = snapshot.data;
-            return MaterialApp(
-              home: DefaultTabController(
-                length: _modules.length,
-                child: Scaffold(
-                  appBar: AppBar(
-                    title: const Text("Announcemnts"),
-                    bottom: TabBar(
-                      isScrollable: true,
-                      tabs: _modules.map((Module module) {
-                        return Tab(
-                          text: module.name,
-                        );
-                      }).toList(),
-                    ),
-                  ),
-                  body: TabBarView(
-                    children: _modules.map((Module module) {
-                      return AnnouncementListPage(module:module);
+            return DefaultTabController(
+              length: _modules.length,
+              child: Scaffold(
+                appBar: AppBar(
+                  title: const Text("Announcemnts"),
+                  bottom: TabBar(
+                    isScrollable: true,
+                    tabs: _modules.map((Module module) {
+                      return Tab(
+                        text: module.name,
+                      );
                     }).toList(),
                   ),
+                ),
+                body: TabBarView(
+                  children: _modules.map((Module module) {
+                    return AnnouncementListPage(module: module);
+                  }).toList(),
                 ),
               ),
             );
