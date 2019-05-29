@@ -9,6 +9,7 @@ class AddTaskAction{
 
   AddTaskAction(this.summary, this.date, this.announcement) {
     _id++;
+    print("Added");
   }
 
   int get id => _id;

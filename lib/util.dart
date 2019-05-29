@@ -1,5 +1,7 @@
+import 'package:fluminus/redux/store.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:luminus_api/luminus_api.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:collection/collection.dart';
 import 'package:html/parser.dart';
@@ -62,7 +64,7 @@ GestureTapCallback onTapNextPage(Widget nextPage, BuildContext context) {
       };
 }
 
-showPickerNumber(BuildContext context) {
+showPickerNumber(BuildContext context, String summary, Announcement announcement) async {
     new Picker(
         adapter: NumberPickerAdapter(data: [
           NumberPickerColumn(begin: 0, end: 4),
@@ -97,7 +99,7 @@ showPickerNumber(BuildContext context) {
           "Schedule task in\n(month : week : day)",
           style: Theme.of(context).textTheme.title),
         onConfirm: (Picker picker, List value) {
-          return getDateFromPicker(value);
+          model.onAddTask(summary, getDateFromPicker(value), announcement);
         }
     ).showDialog(context);
   }
