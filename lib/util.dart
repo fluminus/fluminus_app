@@ -6,6 +6,7 @@ import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:collection/collection.dart';
 import 'package:html/parser.dart';
 import 'package:flutter_picker/flutter_picker.dart';
+import 'package:fluminus/util.dart' as util;
 
 Function twoListsAreDeepEqual = const DeepCollectionEquality().equals;
 
@@ -99,15 +100,15 @@ showPickerNumber(BuildContext context, String summary, Announcement announcement
           "Schedule task in\n(month : week : day)",
           style: Theme.of(context).textTheme.title),
         onConfirm: (Picker picker, List value) {
-          model.onAddTask(summary, getDateFromPicker(value), announcement);
+          model.onAddTask(summary, getFormattedDateStringFromPicker(value), announcement);
         }
     ).showDialog(context);
   }
 
-  DateTime getDateFromPicker(List diffOfMWD) {
+  String getFormattedDateStringFromPicker(List diffOfMWD) {
     DateTime now = new DateTime.now();
+    DateTime scheduledDate = new DateTime(now.year, now.month + diffOfMWD[0], now.day);
     var duration = diffOfMWD[1] * 7 + diffOfMWD[2];
-    now.add(new Duration(days: duration));
-    return new DateTime(now.year, now.month + 1, now.day);
+    return util.formatDate(scheduledDate.add(new Duration(days: duration)));
   } 
 

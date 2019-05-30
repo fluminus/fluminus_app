@@ -11,9 +11,12 @@ TaskListState taskListReducer(TaskListState state, action) {
 
 List<Task> taskReducer(List<Task> state, action) {
   if (action is AddTaskAction) {
-    return []
+    print("reducer: added");
+    List<Task> tasks = []
       .. addAll(state)
       .. add(Task(id: action.id, summary: action.summary, date: action.date, announcement: action.announcement));
+      print(tasks);
+      return tasks;
   }
   if (action is RemoveTaskAction) {
     return List.unmodifiable(List.from(state)..remove(action.task));

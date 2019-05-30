@@ -17,13 +17,13 @@ ViewModel model = ViewModel.create(store);
 
 class ViewModel {
   final List<Task> tasks;
-  final Function(String, DateTime, Announcement) onAddTask;
+  final Function(String, String, Announcement) onAddTask;
   final Function(Task) onRemoveTask;
 
   ViewModel({this.tasks, this.onAddTask, this.onRemoveTask});
 
   factory ViewModel.create(Store<TaskListState> store) {
-    _onAddTask(String summary, DateTime date, Announcement announcement) {
+    _onAddTask(String summary, String date, Announcement announcement) {
       store.dispatch(AddTaskAction(summary, date, announcement));
     }
 

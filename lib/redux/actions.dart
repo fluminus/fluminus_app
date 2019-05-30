@@ -4,7 +4,7 @@ import 'package:luminus_api/luminus_api.dart';
 class AddTaskAction{
   static int _id = 0;
   final String summary;
-  final DateTime date;
+  final String date;
   final Announcement announcement;
 
   AddTaskAction(this.summary, this.date, this.announcement) {

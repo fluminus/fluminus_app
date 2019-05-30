@@ -22,9 +22,10 @@ class TaskPage extends StatelessWidget {
           builder: (BuildContext context, Store<TaskListState> store) =>
               StoreConnector<TaskListState, ViewModel>(
                   converter: (Store<TaskListState> store) => model,
-                  builder: (BuildContext context, ViewModel viewModel) =>
-                      list.itemListView(viewModel.tasks,
-                          () => list.CardType.taskCardType, context, null)),
+                  builder: (BuildContext context, ViewModel viewModel) {
+                      return list.itemListView(store.state.tasks,
+                          () => list.CardType.taskCardType, context, null);}
+                          ),
         ),
         drawer: Container(child: ReduxDevTools(store)),
       ),

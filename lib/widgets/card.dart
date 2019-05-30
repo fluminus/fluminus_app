@@ -164,7 +164,7 @@ Widget announcementCard(Announcement announcemnt, BuildContext context) {
           ListTile(
             leading: Icon(Icons.class_),
             title: Text(task.summary),
-            subtitle: Text(util.formatDate(task.date)),
+            subtitle: Text(task.date),
           ),
         ],
       ),

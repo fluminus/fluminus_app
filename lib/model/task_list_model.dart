@@ -6,7 +6,7 @@ class TaskDetail {}
 class Task {
   final int id;
   final String summary;
-  final DateTime date;
+  final String date;
   final Announcement announcement;
 
   Task(
@@ -16,7 +16,7 @@ class Task {
       @required this.announcement});
 
   Task copyWith(
-      {int id, String summary, DateTime date, Announcement announcement}) {
+      {int id, String summary, String date, Announcement announcement}) {
     return Task(
         id: id ?? this.id,
         summary: summary ?? this.summary,
@@ -34,7 +34,7 @@ class Task {
     final Map<String, dynamic> map = new Map<String, dynamic>();
     map['id'] = this.id;
     map['summary'] = this.summary;
-    map['date'] = this.date.toString();
+    map['date'] = this.date;
     map['announcement'] = this.announcement.toJson();
     return map;
   }
