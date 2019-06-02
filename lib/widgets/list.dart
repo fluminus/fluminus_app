@@ -29,7 +29,7 @@ Widget _certainCard(var item, CardType type, BuildContext context, Map params) {
       return moduleRootDirectoryCard(item, context);
       break;
     case CardType.taskCardType:
-      return taskCard(item, context);
+      return taskCard(item, context, null);
       break;
   }
   return null;
