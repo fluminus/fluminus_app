@@ -5,11 +5,11 @@ class AddTaskAction{
   static int _id = 0;
   final String summary;
   final String date;
+  final String dayOfWeek;
   final Announcement announcement;
 
-  AddTaskAction(this.summary, this.date, this.announcement) {
+  AddTaskAction(this.summary, this.date, this.dayOfWeek, this.announcement) {
     _id++;
-    print("Added");
   }
 
   int get id => _id;

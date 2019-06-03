@@ -1,18 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:luminus_api/luminus_api.dart';
 
-class TaskDetail {}
-
 class Task {
   final int id;
   final String summary;
   final String date;
+  final String dayOfWeek;
   final Announcement announcement;
 
   Task(
       {@required this.id,
       @required this.summary,
       @required this.date,
+      @required this.dayOfWeek,
       @required this.announcement});
 
   Task copyWith(
@@ -28,6 +28,7 @@ class Task {
       : id = json['id'],
         summary = json['summary'],
         date = json['date'],
+        dayOfWeek = json['dayOfWeek'],
         announcement = Announcement.fromJson(json['announcement']);
 
   Map<String, dynamic> toJson() {
@@ -35,6 +36,7 @@ class Task {
     map['id'] = this.id;
     map['summary'] = this.summary;
     map['date'] = this.date;
+    map['dayOfWeek'] = this.dayOfWeek;
     map['announcement'] = this.announcement.toJson();
     return map;
   }

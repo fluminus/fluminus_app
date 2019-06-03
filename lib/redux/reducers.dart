@@ -14,7 +14,7 @@ List<Task> taskReducer(List<Task> state, action) {
     print("reducer: added");
     List<Task> tasks = []
       .. addAll(state)
-      .. add(Task(id: action.id, summary: action.summary, date: action.date, announcement: action.announcement));
+      .. add(Task(id: action.id, summary: action.summary, date: action.date, dayOfWeek: action.dayOfWeek, announcement: action.announcement));
       print(tasks);
       return tasks;
   }

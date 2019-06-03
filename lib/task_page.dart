@@ -5,6 +5,7 @@ import 'package:fluminus/redux/actions.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:redux/redux.dart';
 import 'package:flutter_redux_dev_tools/flutter_redux_dev_tools.dart';
+import 'package:side_header_list_view/side_header_list_view.dart';
 import 'package:fluminus/widgets/list.dart' as list;
 
 class TaskPage extends StatelessWidget {
