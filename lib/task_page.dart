@@ -1,5 +1,6 @@
 import 'package:fluminus/model/task_list_model.dart';
 import 'package:fluminus/redux/store.dart';
+import 'package:fluminus/task_detail_page.dart';
 import 'package:flutter/material.dart';
 import 'package:fluminus/redux/actions.dart';
 import 'package:flutter_redux/flutter_redux.dart';
@@ -11,6 +12,18 @@ import 'package:fluminus/util.dart' as util;
 import 'data.dart' as data;
 
 class TaskPage extends StatelessWidget {
+  FloatingActionButton addTaskButton(BuildContext context) {
+    return FloatingActionButton(
+      child: Icon(Icons.add),
+      onPressed: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => TaskDetail()),
+        );
+      },
+    );
+  }
+
   Widget taskListView(List<Task> taskList, BuildContext context) {
     List<Task> sortedTaskList = new List.of(taskList);
     sortedTaskList.sort((x, y) => x.date.compareTo(y.date));
@@ -19,12 +32,43 @@ class TaskPage extends StatelessWidget {
     List<Widget> headers = weekHeaders(data.smsStartDate, context);
     List<int> keys = tasksListByWeekNum.keys.toList();
     keys.sort((x, y) => x - y);
-    return CustomScrollView(slivers: <Widget>[
-      SliverList(
-          delegate: SliverChildListDelegate(keys.map((weekNum) {
-        return sideHeaderListView(
-            tasksListByWeekNum[weekNum], headers[weekNum], context);
-      }).toList()))
+
+    return Stack(children: <Widget>[
+      Column(children: <Widget>[
+        Card(
+          child: Container(
+            width: MediaQuery.of(context).size.width,
+            height: 200.0,
+            decoration: BoxDecoration(
+              image: DecorationImage(
+                image: AssetImage("assets/card_background.jpg"),
+                fit: BoxFit.fitWidth,
+                alignment: Alignment.topCenter,
+              ),
+            ),
+            child: Padding(
+                padding: const EdgeInsets.only(
+                    top: 40.0, left: 25.0, right: 10.0, bottom: 10.0),
+                child: Text(
+                  util.formatDate(DateTime.now()),
+                  style: Theme.of(context).textTheme.caption,
+                )),
+          ),
+        ),
+        Expanded(
+            child: CustomScrollView(shrinkWrap: true, slivers: <Widget>[
+          SliverList(
+              delegate: SliverChildListDelegate(keys.map((weekNum) {
+            return sideHeaderListView(
+                tasksListByWeekNum[weekNum], headers[weekNum], context);
+          }).toList()))
+        ]))
+      ]),
+      Positioned(
+        child: addTaskButton(context),
+        top: 175.0,
+        right: 20.0,
+      ),
     ]);
   }
 
@@ -32,7 +76,8 @@ class TaskPage extends StatelessWidget {
       List<Task> tasks, Widget header, BuildContext context) {
     return SideHeaderListView(
       itemCount: tasks.length,
-      padding: const EdgeInsets.only(top: 10.0, left: 25.0, right: 10.0, bottom: 10.0),
+      padding: const EdgeInsets.only(
+          top: 10.0, left: 25.0, right: 10.0, bottom: 10.0),
       itemExtend: 90.0,
       header: header,
       headerBuilder: (BuildContext context, int index) {
@@ -73,21 +118,22 @@ class TaskPage extends StatelessWidget {
         info = "Week $weekNum";
       }
       weekHeaders.add(new Container(
-        padding: const EdgeInsets.only(top: 16.0, left: 16.0, right: 16.0, bottom: 10.0),
+          padding: const EdgeInsets.only(
+              top: 16.0, left: 16.0, right: 16.0, bottom: 10.0),
           child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween, 
-        children: <Widget>[
-          Text(
-            info,
-            style: Theme.of(context).textTheme.caption,
-          ),
-          Text(
-            util.formatTowDates(startDate, endDate),
-            style: Theme.of(context).textTheme.subtitle,
-            textAlign: TextAlign.right,
-          )
-        ],
-      )));
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: <Widget>[
+              Text(
+                info,
+                style: Theme.of(context).textTheme.caption,
+              ),
+              Text(
+                util.formatTowDates(startDate, endDate),
+                style: Theme.of(context).textTheme.subtitle,
+                textAlign: TextAlign.right,
+              )
+            ],
+          )));
       startDate = startDate.add(new Duration(days: 8));
       endDate = startDate.add(new Duration(days: 7));
     }
@@ -156,48 +202,47 @@ class _SideHeaderListViewState extends State<SideHeaderListView> {
 
   @override
   Widget build(BuildContext context) {
-    return 
-    Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: <Widget>[
         widget.header,
         new Stack(
-      children: <Widget>[
-        new Positioned(
-          child: new Opacity(
-            opacity: _shouldShowHeader(currentPosition) ? 0.0 : 1.0,
-            child: widget.headerBuilder(
-                context, currentPosition >= 0 ? currentPosition : 0),
-          ),
-          top: 0.0 + (widget.padding?.top ?? 0),
-          left: 0.0 + (widget.padding?.left ?? 0),
-        ),
-        
-       
-          ListView.builder(
-            scrollDirection: Axis.vertical,
-            shrinkWrap: true,
-            padding: widget.padding,
-            itemCount: widget.itemCount,
-            itemExtent: widget.itemExtend,
-            controller: _getScrollController(),
-            itemBuilder: (BuildContext context, int index) {
-              return new Row(
-                mainAxisSize: MainAxisSize.max,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>[
-                  new FittedBox(
-                    child: new Opacity(
-                      opacity: _shouldShowHeader(index) ? 1.0 : 0.0,
-                      child: widget.headerBuilder(context, index),
-                    ),
-                  ),
-                  new Expanded(child: widget.itemBuilder(context, index))
-                ],
-              );
-            }),
-        ],
-    )],);
+          children: <Widget>[
+            new Positioned(
+              child: new Opacity(
+                opacity: _shouldShowHeader(currentPosition) ? 0.0 : 1.0,
+                child: widget.headerBuilder(
+                    context, currentPosition >= 0 ? currentPosition : 0),
+              ),
+              top: 0.0 + (widget.padding?.top ?? 0),
+              left: 0.0 + (widget.padding?.left ?? 0),
+            ),
+            ListView.builder(
+                scrollDirection: Axis.vertical,
+                shrinkWrap: true,
+                padding: widget.padding,
+                itemCount: widget.itemCount,
+                itemExtent: widget.itemExtend,
+                controller: _getScrollController(),
+                itemBuilder: (BuildContext context, int index) {
+                  return new Row(
+                    mainAxisSize: MainAxisSize.max,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: <Widget>[
+                      new FittedBox(
+                        child: new Opacity(
+                          opacity: _shouldShowHeader(index) ? 1.0 : 0.0,
+                          child: widget.headerBuilder(context, index),
+                        ),
+                      ),
+                      new Expanded(child: widget.itemBuilder(context, index))
+                    ],
+                  );
+                }),
+          ],
+        )
+      ],
+    );
   }
 
   bool _shouldShowHeader(int position) {
