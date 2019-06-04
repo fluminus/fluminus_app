@@ -6,6 +6,7 @@ class Task {
   final String summary;
   final String date;
   final String dayOfWeek;
+  final int weekNum;
   final Announcement announcement;
 
   Task(
@@ -13,14 +14,17 @@ class Task {
       @required this.summary,
       @required this.date,
       @required this.dayOfWeek,
+      @required this.weekNum,
       @required this.announcement});
 
   Task copyWith(
-      {int id, String summary, String date, Announcement announcement}) {
+      {int id, String summary, String date, String dayOfWeek, int weekNum, Announcement announcement}) {
     return Task(
         id: id ?? this.id,
         summary: summary ?? this.summary,
         date: date ?? this.date,
+        dayOfWeek: dayOfWeek??this.dayOfWeek,
+        weekNum: weekNum??this.weekNum,
         announcement: announcement ?? this.announcement);
   }
 
@@ -28,7 +32,8 @@ class Task {
       : id = json['id'],
         summary = json['summary'],
         date = json['date'],
-        dayOfWeek = json['dayOfWeek'],
+        dayOfWeek = json['dayOfWeek']??"MON",
+        weekNum = json['weekNum']??1,
         announcement = Announcement.fromJson(json['announcement']);
 
   Map<String, dynamic> toJson() {
@@ -37,6 +42,7 @@ class Task {
     map['summary'] = this.summary;
     map['date'] = this.date;
     map['dayOfWeek'] = this.dayOfWeek;
+    map['weekNum'] = this.weekNum;
     map['announcement'] = this.announcement.toJson();
     return map;
   }

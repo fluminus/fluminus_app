@@ -6,9 +6,10 @@ class AddTaskAction{
   final String summary;
   final String date;
   final String dayOfWeek;
+  final int weekNum;
   final Announcement announcement;
 
-  AddTaskAction(this.summary, this.date, this.dayOfWeek, this.announcement) {
+  AddTaskAction(this.summary, this.date, this.dayOfWeek, this.weekNum,this.announcement) {
     _id++;
   }
 

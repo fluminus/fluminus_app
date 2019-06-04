@@ -1,4 +1,3 @@
-import 'package:fluminus/redux/store.dart';
 import 'package:flutter/material.dart';
 import 'package:luminus_api/luminus_api.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
@@ -67,7 +66,7 @@ class _AnnouncementListPageState extends State<AnnouncementListPage>
       }, (index, context) async{
         Announcement announcement = announcements[index];
         String summary = announcement.title;
-        util.showPickerNumber(context, summary, announcement);
+        util.showPickerNumber(context, summary, data.smsStartDate, announcement);
         
       }, context, null);
     }
