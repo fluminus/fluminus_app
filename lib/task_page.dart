@@ -6,7 +6,6 @@ import 'package:flutter_redux/flutter_redux.dart';
 import 'package:redux/redux.dart';
 import 'package:flutter_redux_dev_tools/flutter_redux_dev_tools.dart';
 import 'package:collection/collection.dart';
-//import 'package:side_header_list_view/side_header_list_view.dart';
 import 'package:fluminus/widgets/card.dart' as card;
 import 'package:fluminus/util.dart' as util;
 import 'data.dart' as data;
@@ -143,7 +142,12 @@ class _SideHeaderListViewState extends State<SideHeaderListView> {
 
   @override
   Widget build(BuildContext context) {
-    return new Stack(
+    return 
+    Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+        widget.header,
+        new Stack(
       children: <Widget>[
         new Positioned(
           child: new Opacity(
@@ -154,7 +158,10 @@ class _SideHeaderListViewState extends State<SideHeaderListView> {
           top: 0.0 + (widget.padding?.top ?? 0),
           left: 0.0 + (widget.padding?.left ?? 0),
         ),
-        new ListView.builder(
+        
+       
+          ListView.builder(
+            scrollDirection: Axis.vertical,
             shrinkWrap: true,
             padding: widget.padding,
             itemCount: widget.itemCount,
@@ -175,8 +182,8 @@ class _SideHeaderListViewState extends State<SideHeaderListView> {
                 ],
               );
             }),
-      ],
-    );
+        ],
+    )],);
   }
 
   bool _shouldShowHeader(int position) {
