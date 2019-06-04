@@ -12,11 +12,13 @@ import 'data.dart' as data;
 
 class TaskPage extends StatelessWidget {
   Widget taskListView(List<Task> taskList, BuildContext context) {
-    //taskList.sort((x, y) => x.date.compareTo(y.date));
+    List<Task> sortedTaskList = new List.of(taskList);
+    sortedTaskList.sort((x, y) => x.date.compareTo(y.date));
     Map<int, List<Task>> tasksListByWeekNum =
-        groupBy(store.state.tasks, (task) => task.weekNum);
+        groupBy(sortedTaskList, (task) => task.weekNum);
     List<Widget> headers = weekHeaders(data.smsStartDate, context);
     List<int> keys = tasksListByWeekNum.keys.toList();
+    keys.sort((x, y) => x - y);
     return CustomScrollView(slivers: <Widget>[
       SliverList(
           delegate: SliverChildListDelegate(keys.map((weekNum) {
@@ -30,7 +32,7 @@ class TaskPage extends StatelessWidget {
       List<Task> tasks, Widget header, BuildContext context) {
     return SideHeaderListView(
       itemCount: tasks.length,
-      padding: new EdgeInsets.all(16.0),
+      padding: const EdgeInsets.only(top: 10.0, left: 25.0, right: 10.0, bottom: 10.0),
       itemExtend: 90.0,
       header: header,
       headerBuilder: (BuildContext context, int index) {
@@ -71,11 +73,13 @@ class TaskPage extends StatelessWidget {
         info = "Week $weekNum";
       }
       weekHeaders.add(new Container(
+        padding: const EdgeInsets.only(top: 16.0, left: 16.0, right: 16.0, bottom: 10.0),
           child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween, 
         children: <Widget>[
           Text(
-            info + "   ",
-            style: Theme.of(context).textTheme.headline,
+            info,
+            style: Theme.of(context).textTheme.caption,
           ),
           Text(
             util.formatTowDates(startDate, endDate),
@@ -84,6 +88,8 @@ class TaskPage extends StatelessWidget {
           )
         ],
       )));
+      startDate = startDate.add(new Duration(days: 8));
+      endDate = startDate.add(new Duration(days: 7));
     }
     return weekHeaders;
   }
@@ -111,7 +117,15 @@ class TaskPage extends StatelessWidget {
   }
 }
 
-typedef bool HasSameHeader(int a, int b);
+/**
+ *  SideHeaderListView for Flutter
+ *
+ *  Copyright (c) 2017 Rene Floor
+ *
+ *  Released under BSD License.
+ */
+
+typedef HasSameHeader = bool Function(int a, int b);
 
 class SideHeaderListView extends StatefulWidget {
   final int itemCount;
