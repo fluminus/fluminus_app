@@ -1,4 +1,5 @@
 import 'package:fluminus/model/task_list_model.dart';
+import 'package:fluminus/new_task_page.dart';
 import 'package:fluminus/redux/store.dart';
 import 'package:flutter/material.dart';
 import 'package:luminus_api/luminus_api.dart';
@@ -151,12 +152,12 @@ Widget moduleRootDirectoryCard(Module module, BuildContext context) {
   );
 }
 
-Widget taskCard(Task task, BuildContext context, Widget detailPage) {
+Widget taskCard(Task task, BuildContext context) {
   return inkWellCard(
-    task.announcement.title,
+    task.title,
     task.date,
     context,
-    util.onTapNextPage(detailPage, context),
+    util.onTapNextPage(new TaskDetail(task), context),
     trailingButton: IconButton(
       icon: Icon(Icons.delete),
       onPressed: () => model.onRemoveTask(task),

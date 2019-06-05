@@ -17,14 +17,14 @@ ViewModel model = ViewModel.create(store);
 
 class ViewModel {
   final List<Task> tasks;
-  final Function(String, String, String, int, Announcement) onAddTask;
+  final Function({String title, String date, String detail, String dayOfWeek, int weekNum, String startTime, String endTime, bool isAllDay, String location, String tag}) onAddTask;
   final Function(Task) onRemoveTask;
 
   ViewModel({this.tasks, this.onAddTask, this.onRemoveTask});
 
   factory ViewModel.create(Store<TaskListState> store) {
-    _onAddTask(String summary, String date, String dayOfWeek, int weekNum, Announcement announcement) {
-      store.dispatch(AddTaskAction(summary, date, dayOfWeek, weekNum, announcement));
+    _onAddTask({String title, String date, String detail, String dayOfWeek, int weekNum, String startTime, String endTime, bool isAllDay, String location, String tag}) {
+      store.dispatch(AddTaskAction(title, date, detail??'', dayOfWeek, weekNum, startTime??'', endTime??'', isAllDay, location??'', tag??''));
     }
 
     _onRemoveTask(Task task) {

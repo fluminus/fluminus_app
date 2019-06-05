@@ -77,7 +77,7 @@ GestureTapCallback onTapNextPage(Widget nextPage, BuildContext context) {
 }
 
 showPickerNumber(
-    BuildContext context, String summary, DateTime smsStartDate, Announcement announcement) async {
+    BuildContext context, DateTime smsStartDate, Announcement announcement) async {
   new Picker(
       adapter: NumberPickerAdapter(data: [
         NumberPickerColumn(begin: 0, end: 4),
@@ -104,7 +104,7 @@ showPickerNumber(
       onConfirm: (Picker picker, List value) {
         DateTime date = getPickedDate(value);
         model.onAddTask(
-            summary, util.formatDate(date), util.formatDateAsWeek(date), weekNum(smsStartDate, date),announcement);
+            title: announcement.title, detail: announcement.description, date: util.formatDate(date), dayOfWeek: util.formatDateAsWeek(date), weekNum: weekNum(smsStartDate, date));
       }).showDialog(context);
 }
 
