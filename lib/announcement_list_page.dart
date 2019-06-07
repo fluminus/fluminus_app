@@ -71,6 +71,8 @@ class _AnnouncementListPageState extends State<AnnouncementListPage>
       }, context, null);
     }
 
+    super.build(context);
+
     if (_announcements != null) {
       return announcementList(_announcements);
     } else {

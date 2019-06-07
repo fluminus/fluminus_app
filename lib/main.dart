@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:fluminus/announcement_page.dart';
 import 'package:fluminus/task_page.dart';
@@ -19,6 +20,7 @@ void main() async {
       theme: ThemeData(
         brightness: Brightness.light,
         primaryColor: Colors.lightBlue[800],
+        unselectedWidgetColor: Colors.blueGrey,
         accentColor: Colors.orange,
         fontFamily: 'Roboto',
         textTheme: TextTheme(
@@ -56,10 +58,16 @@ class _BottomNavBarState extends State<BottomNavBar> {
     ProfilePage()
   ];
 
-  BottomNavigationBarItem _navBarItem(IconData icon, String title) {
+  BottomNavigationBarItem _navBarItem(
+      IconData activeIcon, IconData defaultIcon, String title) {
     return BottomNavigationBarItem(
         icon: Icon(
-          icon,
+          defaultIcon,
+          size: 30,
+          color: Theme.of(context).unselectedWidgetColor,
+        ),
+        activeIcon: Icon(
+          activeIcon,
           size: 30,
           color: Theme.of(context).primaryColor,
         ),
@@ -79,14 +87,18 @@ class _BottomNavBarState extends State<BottomNavBar> {
   Widget build(BuildContext context) {
     return Scaffold(
       bottomNavigationBar: BottomNavigationBar(
+          showSelectedLabels: false,
+          showUnselectedLabels: false,
+          type: BottomNavigationBarType.fixed,
           currentIndex: _currentIndex,
           onTap: _onTabTapped,
           items: <BottomNavigationBarItem>[
-            _navBarItem(Icons.home, 'Home'),
-            _navBarItem(Icons.alarm_on, 'Task'),
-            _navBarItem(Icons.question_answer, 'Forum'),
-            _navBarItem(Icons.insert_drive_file, 'File'),
-            _navBarItem(Icons.perm_identity, 'Profile'),
+            _navBarItem(MdiIcons.home, MdiIcons.homeOutline, 'Home'),
+            _navBarItem(
+                MdiIcons.calendarCheck, MdiIcons.calendarCheckOutline, 'Task'),
+            _navBarItem(MdiIcons.forum, MdiIcons.forumOutline, 'Forum'),
+            _navBarItem(MdiIcons.fileFind, MdiIcons.fileFindOutline, 'File'),
+            _navBarItem(MdiIcons.settings, MdiIcons.settingsOutline, 'Profile'),
           ]),
       body: _pages[_currentIndex],
     );
