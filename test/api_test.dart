@@ -22,4 +22,3 @@ void main() {
     // expect(encoded, equals(myModules));
   });
 }
-

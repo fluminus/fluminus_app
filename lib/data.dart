@@ -3,7 +3,7 @@ import 'package:luminus_api/luminus_api.dart';
 
 
 Authentication authentication = new Authentication(username: DotEnv().env['LUMINUS_USERNAME'], password: DotEnv().env['LUMINUS_PASSWORD']);
-List<Module> modules = new List();
+List<Module> modules;
 List<Announcement> announcements = new List();
 
 Future<List<Announcement>> getAllAnnouncements() async {
@@ -13,5 +13,3 @@ Future<List<Announcement>> getAllAnnouncements() async {
   }
   return announcements;
 }
-
-

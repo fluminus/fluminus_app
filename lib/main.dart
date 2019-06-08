@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:fluminus/announcement_page.dart';
-// import 'package:fluminus/home_page.dart';
 import 'package:fluminus/task_page.dart';
 import 'package:fluminus/forum_page.dart';
 import 'package:fluminus/file_page.dart';
@@ -25,6 +24,7 @@ void main() async {
         textTheme: TextTheme(
           headline: TextStyle(fontSize: 45.0, fontWeight: FontWeight.bold),
           title: TextStyle(fontSize: 40.0, fontStyle: FontStyle.normal),
+          caption: TextStyle(fontSize: 30.0, fontWeight: FontWeight.bold),
           subhead: TextStyle(fontWeight: FontWeight.bold, fontSize: 18.0),
           subtitle: TextStyle(fontSize: 14.0, color: Colors.grey),
           body1: TextStyle(fontSize: 14.0, fontFamily: 'Roboto'),

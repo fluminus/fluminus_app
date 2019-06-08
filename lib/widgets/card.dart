@@ -1,4 +1,9 @@
+import 'package:fluminus/model/task_list_model.dart';
 import 'package:flutter/material.dart';
+import 'package:luminus_api/luminus_api.dart';
+import 'package:fluminus/util.dart' as util;
+
+import '../file_page.dart';
 // import 'dart:math';
 
 BorderRadius _borderRadius = BorderRadius.circular(16.0);
@@ -92,6 +97,81 @@ Widget inkWellCardWithFutureBuilder(String title, String subtitle, BuildContext 
   );
   return _basicCard(child);
 }
+
+Widget announcementCard(Announcement announcemnt, BuildContext context) {
+    String title = announcemnt.title;
+    String subtitle = "Expire After: " +
+        util.datetimeToFormattedString(DateTime.parse(announcemnt.expireAfter));
+    String body = util.parsedHtmlText(announcemnt.description);
+    return infoCardWithFullBody(title, subtitle, body, context);
+    // return card.infoCardWithFixedHeight(title, subtitle, body, context);
+  }
+
+  Widget moduleCard(Module module, BuildContext context) {
+    return Card(
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: <Widget>[
+          ListTile(
+            leading: Icon(Icons.class_),
+            title: Text(module.name),
+            subtitle: Text(module.courseName),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget moduleDirectoryCard(Directory dir, BuildContext context, Module module) {
+    Widget nextPage = SubdirectoryPage(dir, module.name + ' - ' + dir.name);
+    return inkWellCard(
+        dir.name,
+        util.formatLastUpdatedTime(dir.lastUpdatedDate),
+        context,
+        util.onTapNextPage(nextPage, context),
+        leading: Icon(Icons.folder));
+  }
+
+  Widget directoryCard(Directory dir, BuildContext context) {
+    Widget nextPage = SubdirectoryPage(dir, dir.name);
+    return inkWellCard(
+        dir.name,
+        util.formatLastUpdatedTime(dir.lastUpdatedDate),
+        context,
+        util.onTapNextPage(nextPage, context),
+        leading: Icon(Icons.folder),
+        trailing: Icon(Icons.arrow_right));
+  }
+
+  Widget moduleRootDirectoryCard(Module module, BuildContext context) {
+    Widget nextPage = ModuleRootDirectoryPage(module);
+    return inkWellCard(
+      module.name,
+      module.courseName,
+      context,
+      util.onTapNextPage(nextPage, context),
+      leading: Icon(Icons.class_),
+    );
+  }
+
+  Widget taskCard(Task task, BuildContext context) {
+    return Card(
+      child: InkResponse(
+        enableFeedback: true,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: <Widget>[
+          ListTile(
+            leading: Icon(Icons.class_),
+            title: Text(task.summary),
+            subtitle: Text(task.date),
+          ),
+        ],
+      ),
+      onTap: () => announcementCard(task.announcement, context),
+    )
+    );
+  } 
 
 // Widget infoCardWithFixedHeight(
 //     String title, String subtitle, String body, BuildContext context) {
