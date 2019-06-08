@@ -38,9 +38,6 @@ class FilePage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(title: const Text("Files")),
       body: Container(
-        decoration: new BoxDecoration(
-            // borderRadius: new BorderRadius.circular(20.0),
-            color: Colors.white),
         child: _paddedfutureBuilder(API.getModules(data.authentication),
             (context, snapshot) {
           if (snapshot.hasData) {

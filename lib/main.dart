@@ -8,6 +8,7 @@ import 'package:fluminus/task_page.dart';
 import 'package:fluminus/forum_page.dart';
 import 'package:fluminus/file_page.dart';
 import 'package:fluminus/profile_page.dart';
+import 'package:fluminus/widgets/theme.dart' as theme;
 
 /// Disabling the scroll glow.
 /// Source: https://stackoverflow.com/questions/51119795/how-to-remove-scroll-glow/51119796#51119796
@@ -30,24 +31,8 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return new DynamicTheme(
         defaultBrightness: brightness,
-        data: (brightness) => ThemeData(
-              brightness: brightness,
-              primaryColor: brightness == Brightness.dark
-                  ? Colors.black
-                  : Colors.lightBlue[800],
-              unselectedWidgetColor: Colors.blueGrey,
-              accentColor: Colors.orange,
-              fontFamily: 'Roboto',
-              textTheme: TextTheme(
-                headline:
-                    TextStyle(fontSize: 45.0, fontWeight: FontWeight.bold),
-                title: TextStyle(fontSize: 40.0, fontStyle: FontStyle.normal),
-                caption: TextStyle(fontSize: 30.0, fontWeight: FontWeight.bold),
-                subhead: TextStyle(fontWeight: FontWeight.bold, fontSize: 18.0),
-                subtitle: TextStyle(fontSize: 14.0, color: Colors.grey),
-                body1: TextStyle(fontSize: 14.0, fontFamily: 'Roboto'),
-              ),
-            ),
+        data: (brightness) =>
+            brightness == Brightness.light ? theme.lightTheme : theme.darkTheme,
         themedWidgetBuilder: (context, theme) {
           return MaterialApp(
               debugShowCheckedModeBanner: false,
