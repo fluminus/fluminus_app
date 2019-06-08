@@ -10,14 +10,17 @@ import 'package:fluminus/widgets/theme.dart' as theme;
 /// Source: https://stackoverflow.com/questions/51119795/how-to-remove-scroll-glow/51119796#51119796
 
 void main() async {
-  Brightness brightness;
+  /*Brightness brightness;
   SharedPreferences prefs = await SharedPreferences.getInstance();
   brightness =
       (prefs.getBool('isDark') ?? false) ? Brightness.dark : Brightness.light;
   await DotEnv().load('.env');
   runApp(App(
     brightness: brightness,
-  ));
+  ));*/
+  runApp(MaterialApp(
+      home: HomePage(),
+    ));
 }
 
 class App extends StatelessWidget {

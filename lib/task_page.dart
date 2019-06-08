@@ -10,20 +10,40 @@ import 'package:fluminus/widgets/card.dart' as card;
 import 'package:fluminus/util.dart' as util;
 import 'data.dart' as data;
 
-class TaskPage extends StatelessWidget {
-  FloatingActionButton addTaskButton(BuildContext context) {
-    return FloatingActionButton(
-      child: Icon(Icons.add, color: Colors.white),
-      onPressed: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => TaskDetail(new Task())),
-        );
-      },
-    );
+class TaskPage extends StatefulWidget {
+  @override
+  _TaskPageState createState() => _TaskPageState();
+}
+
+class _TaskPageState extends State<TaskPage> {
+  Widget addTaskButton(
+      BuildContext context, ScrollController scrollController) {
+    double top = 175.0;
+    if (scrollController.offset < 0.0) {
+      top = 175.0;
+    } else if (scrollController.hasClients &&
+        top - scrollController.offset >= 5.0) {
+      top -= scrollController.offset;
+    } else {
+      top = 5.0;
+    }
+    return Positioned(
+        top: top,
+        right: 20.0,
+        child: FloatingActionButton(
+          child: Icon(Icons.add, color: Colors.white),
+          mini: true,
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => TaskDetail(new Task())),
+            );
+          },
+        ));
   }
 
-  Widget taskListView(List<Task> taskList, BuildContext context) {
+  Widget taskListView(List<Task> taskList, ScrollController scrollController,
+      BuildContext context) {
     List<Task> sortedTaskList = new List.of(taskList);
     sortedTaskList.sort((x, y) => x.date.compareTo(y.date));
     Map<int, List<Task>> tasksListByWeekNum =
@@ -32,47 +52,41 @@ class TaskPage extends StatelessWidget {
     List<int> keys = tasksListByWeekNum.keys.toList();
     keys.sort((x, y) => x - y);
 
-    Widget cardHeader =  Card(
-          child: Container(
-            width: MediaQuery.of(context).size.width,
-            height: 200.0,
-            decoration: BoxDecoration(
-              image: DecorationImage(
-                image: AssetImage("assets/card_background.jpg"),
-                fit: BoxFit.fitWidth,
-                alignment: Alignment.topCenter,
-              ),
-            ),
-            child: Padding(
-                padding: const EdgeInsets.only(
-                    top: 40.0, left: 25.0, right: 10.0, bottom: 10.0),
-                child: Text(
-                  util.formatDate(DateTime.now()),
-                  style: Theme.of(context).textTheme.caption,
-                )),
+    Widget cardHeader = Card(
+      child: Container(
+        width: MediaQuery.of(context).size.width,
+        height: 200.0,
+        decoration: BoxDecoration(
+          image: DecorationImage(
+            image: AssetImage("assets/card_background.jpg"),
+            fit: BoxFit.fitWidth,
+            alignment: Alignment.topCenter,
           ),
-        );
+        ),
+        child: Padding(
+            padding: const EdgeInsets.only(
+                top: 40.0, left: 25.0, right: 10.0, bottom: 10.0),
+            child: Text(
+              util.formatDate(DateTime.now()),
+              style: Theme.of(context).textTheme.caption,
+            )),
+      ),
+    );
 
     return Stack(children: <Widget>[
-      Column(children: <Widget>[
-        
-        Expanded(
-            child: CustomScrollView(shrinkWrap: true, slivers: <Widget>[
-          SliverList(
-              delegate: SliverChildListDelegate(
-                new List()
-                ..add(cardHeader)
-                ..addAll(keys.map((weekNum) {
-            return sideHeaderListView(
-                tasksListByWeekNum[weekNum], headers[weekNum], context);
-          }).toList())))
-        ]))
-      ]),
-      Positioned(
-        child: addTaskButton(context),
-        top: 175.0,
-        right: 20.0,
-      ),
+      CustomScrollView(
+          shrinkWrap: true,
+          controller: scrollController,
+          slivers: <Widget>[
+            SliverList(
+                delegate: SliverChildListDelegate(new List()
+                  ..add(cardHeader)
+                  ..addAll(keys.map((weekNum) {
+                    return sideHeaderListView(
+                        tasksListByWeekNum[weekNum], headers[weekNum], context);
+                  }).toList())))
+          ]),
+      addTaskButton(context, _scrollController)
     ]);
   }
 
@@ -144,6 +158,21 @@ class TaskPage extends StatelessWidget {
     return weekHeaders;
   }
 
+  ScrollController _scrollController;
+
+  @override
+  void initState() {
+    super.initState();
+    _scrollController = new ScrollController();
+    _scrollController.addListener(() => setState(() {}));
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return StoreProvider<TaskListState>(
@@ -158,7 +187,8 @@ class TaskPage extends StatelessWidget {
               StoreConnector<TaskListState, ViewModel>(
                   converter: (Store<TaskListState> store) => model,
                   builder: (BuildContext context, ViewModel viewModel) {
-                    return taskListView(store.state.tasks, context);
+                    return taskListView(
+                        store.state.tasks, _scrollController, context);
                   }),
         ),
       ),

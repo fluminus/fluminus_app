@@ -3,7 +3,6 @@ import 'package:fluminus/redux/store.dart';
 import 'package:flutter/material.dart';
 import 'package:fluminus/util.dart' as util;
 import 'data.dart' as data;
-import 'package:luminus_api/luminus_api.dart';
 
 class TaskDetail extends StatefulWidget {
   final Task task;
@@ -14,13 +13,13 @@ class TaskDetail extends StatefulWidget {
 }
 
 class _TaskDetailState extends State<TaskDetail> {
-  TextEditingController titleTextController; 
-  TextEditingController detailTextController; 
-  TextEditingController dateTextController; 
-  TextEditingController startTimeTextController; 
-  TextEditingController endTimeTextController; 
-  TextEditingController locationTextController; 
-  TextEditingController tagTextController; 
+  TextEditingController titleTextController;
+  TextEditingController detailTextController;
+  TextEditingController dateTextController;
+  TextEditingController startTimeTextController;
+  TextEditingController endTimeTextController;
+  TextEditingController locationTextController;
+  TextEditingController tagTextController;
 
   DateTime dateTime = DateTime.now();
 
@@ -82,13 +81,19 @@ class _TaskDetailState extends State<TaskDetail> {
   @override
   void initState() {
     super.initState();
-    titleTextController = new TextEditingController(text: widget.task.title ?? "");
-    detailTextController = new TextEditingController(text:widget.task.detail ?? "");
-    dateTextController = new TextEditingController(text:widget.task.date ?? util.formatDate(DateTime.now()));
-    startTimeTextController = new TextEditingController(text:widget.task.startTime ?? "00 : 00");
-    endTimeTextController = new TextEditingController(text:widget.task.endTime ?? "00: 00");
-    locationTextController = new TextEditingController(text:widget.task.location ?? "00: 00");
-    tagTextController = new TextEditingController(text:widget.task.tag ?? "");
+    titleTextController =
+        new TextEditingController(text: widget.task.title ?? "");
+    detailTextController =
+        new TextEditingController(text: widget.task.detail ?? "");
+    dateTextController = new TextEditingController(
+        text: widget.task.date ?? util.formatDate(DateTime.now()));
+    startTimeTextController =
+        new TextEditingController(text: widget.task.startTime ?? "00 : 00");
+    endTimeTextController =
+        new TextEditingController(text: widget.task.endTime ?? "00: 00");
+    locationTextController =
+        new TextEditingController(text: widget.task.location ?? "00: 00");
+    tagTextController = new TextEditingController(text: widget.task.tag ?? "");
   }
 
   @override
@@ -105,7 +110,6 @@ class _TaskDetailState extends State<TaskDetail> {
 
   @override
   Widget build(BuildContext context) {
-    
     return Scaffold(
         appBar: AppBar(
           title: Text('New Task'),
@@ -129,37 +133,42 @@ class _TaskDetailState extends State<TaskDetail> {
             ),
           ],
         ),
-        body: Column(children: <Widget>[
-          basicTextField('TITLE', titleTextController),
-          basicTextField('DETAIL', detailTextController),
-          clickableText('DATE', () {
-            _selectedDate(context);
-          }, dateTextController),
-          Row(
-            children: <Widget>[
-              new Expanded(
-                  flex: 1,
-                  child: clickableText('From', () {
-                    _selectTime(context, 'startTime');
-                  }, startTimeTextController)),
-              new Expanded(
-                  flex: 1,
-                  child: clickableText('To', () {
-                    _selectTime(context, 'endTime');
-                  }, endTimeTextController)),
-            ],
-          ),
-          basicTextField('LOCATION', locationTextController),
-          new Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              mainAxisSize: MainAxisSize.min,
-              children: <Widget>[
-                Expanded(
-                  child:
-                      clickableText('TAG', () {}, new TextEditingController()),
+        body: ListView.builder(
+            shrinkWrap: true,
+            itemCount: 1,
+            itemBuilder: (context, index) {
+              return Column(children: <Widget>[
+                basicTextField('TITLE', titleTextController),
+                basicTextField('DETAIL', detailTextController),
+                clickableText('DATE', () {
+                  _selectedDate(context);
+                }, dateTextController),
+                Row(
+                  children: <Widget>[
+                    new Expanded(
+                        flex: 1,
+                        child: clickableText('From', () {
+                          _selectTime(context, 'startTime');
+                        }, startTimeTextController)),
+                    new Expanded(
+                        flex: 1,
+                        child: clickableText('To', () {
+                          _selectTime(context, 'endTime');
+                        }, endTimeTextController)),
+                  ],
                 ),
-                Icon(Icons.arrow_drop_down)
-              ])
-        ]));
+                basicTextField('LOCATION', locationTextController),
+                new Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    mainAxisSize: MainAxisSize.min,
+                    children: <Widget>[
+                      Expanded(
+                        child: clickableText(
+                            'TAG', () {}, new TextEditingController()),
+                      ),
+                      Icon(Icons.arrow_drop_down)
+                    ])
+              ]);
+            }));
   }
 }

@@ -104,7 +104,7 @@ showPickerThreeNumber(BuildContext context, DateTime smsStartDate,
         DateTime date = getPickedDate(value);
         model.onAddTask(
             title: announcement.title,
-            detail: announcement.description,
+            detail: parsedHtmlText(announcement.description),
             date: formatDate(date),
             dayOfWeek: formatDateAsDayOfWeek(date),
             weekNum: weekNum(smsStartDate, date));
