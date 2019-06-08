@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:luminus_api/luminus_api.dart';
+import 'package:fluminus/widgets/common.dart';
 import 'data.dart' as Data;
 
 class ProfilePage extends StatefulWidget {
@@ -8,7 +10,8 @@ class ProfilePage extends StatefulWidget {
 }
 
 class _ProfilePageState extends State<ProfilePage> {
-  Future<Profile> profile = API.getProfile(Data.authentication);
+  Future<Profile> profile = API.getProfile(Data.authentication());
+  bool _isDarkMode;
 
   Widget displayName(String name) {
     return Text(
@@ -31,67 +34,81 @@ class _ProfilePageState extends State<ProfilePage> {
     );
   }
 
+  Widget profileWidget(Profile data) {
+    return Padding(
+      padding: const EdgeInsets.only(top: 10.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[
+          Padding(
+              padding:
+                  const EdgeInsets.only(left: 20.0, right: 20.0, top: 10.0),
+              child: displayName(data.userNameOriginal)),
+          Padding(
+            padding: const EdgeInsets.only(left: 20.0),
+            child: displayMatricNumber(data.userMatricNo),
+          ),
+          Padding(
+            padding: const EdgeInsets.only(left: 20.0, top: 20.0, right: 20.0),
+            child: displayPersonalParticular(data.email),
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("Profile")),
-      body: Container(
-        color: Colors.white,
-        child: FutureBuilder(
-            future: profile,
-            builder: (context, snapshot) {
-              if (snapshot.hasData) {
-                Profile data = snapshot.data;
-                return ListView(
-                  children: <Widget>[
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
+        appBar: AppBar(title: const Text("Profile")),
+        body: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: <Widget>[
+            FutureBuilder(
+                future: profile,
+                builder: (context, snapshot) {
+                  if (snapshot.hasData) {
+                    Profile data = snapshot.data;
+                    return profileWidget(data);
+                  } else if (snapshot.hasError) {
+                    return Text(snapshot.error.toString());
+                  }
+                  return Container(
+                    child: Column(
                       children: <Widget>[
                         Padding(
-                          padding: EdgeInsets.only(
-                              left: 20.0, right: 20.0, top: 20.0),
-                          child: Container(
-                            height: 50.0,
-                            width: 50.0,
-                            decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(25.0),
-                                image: DecorationImage(
-                                    image: AssetImage('assets/card_background.jpg'),
-                                    fit: BoxFit.cover)),
-                          ),
-                        ),
-                        Padding(
-                            padding: const EdgeInsets.only(
-                                left: 20.0, right: 20.0, top: 10.0),
-                            child: displayName(data.userNameOriginal)),
-                        Padding(
-                          padding: const EdgeInsets.only(left: 20.0),
-                          child: displayMatricNumber(data.userMatricNo),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.only(
-                              left: 20.0, top: 20.0, right: 20.0),
-                          child: displayPersonalParticular(data.email),
+                          padding: const EdgeInsets.all(30.0),
+                          child: CircularProgressIndicator(),
                         ),
                       ],
-                    )
-                  ],
-                );
-              } else if (snapshot.hasError) {
-                return Text(snapshot.error.toString());
-              }
-              return Center(
-                child: Column(
-                  children: <Widget>[
-                    Padding(
-                      padding: const EdgeInsets.all(30.0),
-                      child: CircularProgressIndicator(),
                     ),
-                  ],
-                ),
-              );
-            }),
-      ),
-    );
+                  );
+                }),
+            Padding(
+              padding: const EdgeInsets.only(top: 20.0),
+            ),
+            Padding(
+              padding: const EdgeInsets.only(left: 20.0, right: 20.0),
+              child: Row(
+                children: <Widget>[
+                  Text('Spooky Mode 💀'),
+                  Switch(
+                    value: _isDarkMode =
+                        Theme.of(context).brightness == Brightness.dark,
+                    onChanged: (val) async {
+                      setState(() {
+                        _isDarkMode = !_isDarkMode;
+                      });
+                      toggleBrightness(context);
+                      SharedPreferences prefs =
+                          await SharedPreferences.getInstance();
+                      prefs.setBool('isDark', _isDarkMode);
+                    },
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ));
   }
 }
