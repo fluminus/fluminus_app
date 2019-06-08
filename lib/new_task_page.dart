@@ -113,6 +113,7 @@ class _TaskDetailState extends State<TaskDetail> {
             IconButton(
               icon: Icon(Icons.check),
               onPressed: () {
+                model.onRemoveTask(widget.task);
                 model.onAddTask(
                     title: titleTextController.text,
                     detail: detailTextController.text,
