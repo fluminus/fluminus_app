@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'card.dart';
 
+
 enum CardType {
   announcementCardType,
   moduleCardType,
@@ -12,14 +13,14 @@ enum CardType {
 }
 
 Widget _certainCard(var item, CardType type, BuildContext context, Map params) {
-    switch (type) {
-      case CardType.announcementCardType:
-        return announcementCard(item, context);
-        break;
-      case CardType.moduleCardType:
-        return moduleCard(item, context);
-        break;
-      case CardType.directoryCardType:
+  switch (type) {
+    case CardType.announcementCardType:
+      return announcementCard(item, context);
+      break;
+    case CardType.moduleCardType:
+      return moduleCard(item, context);
+      break;
+    case CardType.directoryCardType:
       return directoryCard(item, context);
       break;
     case CardType.moduleDirectoryCardType:
@@ -35,7 +36,8 @@ Widget _certainCard(var item, CardType type, BuildContext context, Map params) {
   return null;
 }
 
-Widget itemListView(List itemList, Function getCardType, BuildContext context, Map params) {
+Widget itemListView(
+    List itemList, Function getCardType, BuildContext context, Map params) {
   return new ListView.builder(
     shrinkWrap: true,
     itemCount: itemList.length,
@@ -45,7 +47,8 @@ Widget itemListView(List itemList, Function getCardType, BuildContext context, M
         children: <Widget>[
           Padding(
               padding: const EdgeInsets.only(bottom: 6.0),
-              child: _certainCard(itemList[index], getCardType(), context, params))
+              child:
+                  _certainCard(itemList[index], getCardType(), context, params))
         ],
       );
     },
@@ -64,40 +67,45 @@ Widget refreshableListView(
       enablePullUp: true,
       controller: refreshController,
       onRefresh: onRefresh,
-      child: itemListView(itemList, getCardType, context, params)
-  );
+      child: itemListView(itemList, getCardType, context, params));
 }
 
-Widget dismissibleListView(List itemList, Function getCardType, Function afterSwipingLeft, Function afterSwipingRight, BuildContext context, Map params) {
+Widget dismissibleListView(
+    List itemList,
+    Function getCardType,
+    Function afterSwipingLeft,
+    Function afterSwipingRight,
+    BuildContext context,
+    Map params) {
   return new ListView.builder(
     shrinkWrap: true,
     itemCount: itemList.length,
     itemBuilder: (context, index) {
       final item = itemList[index];
       return Dismissible(
-        //TODO: ensure that item has id =)
-        key: Key(item.id),
-        onDismissed: (direction) {
-          switch(direction) {
-            case DismissDirection.endToStart:
-              afterSwipingLeft(index);
-              break;
-            case DismissDirection.startToEnd:
-              afterSwipingRight(index, context);
-              break;
-            default:
-              break;
-          }
-        },
-        child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: <Widget>[
-          Padding(
-              padding: const EdgeInsets.only(bottom: 6.0),
-              child: _certainCard(itemList[index], getCardType(), context, params))
-        ],
-      )
-      );
+          //TODO: ensure that item has id =)
+          key: Key(item.id),
+          onDismissed: (direction) {
+            switch (direction) {
+              case DismissDirection.endToStart:
+                afterSwipingLeft(index);
+                break;
+              case DismissDirection.startToEnd:
+                afterSwipingRight(index, context);
+                break;
+              default:
+                break;
+            }
+          },
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: <Widget>[
+              Padding(
+                  padding: const EdgeInsets.only(bottom: 6.0),
+                  child: _certainCard(
+                      itemList[index], getCardType(), context, params))
+            ],
+          ));
     },
   );
 }
@@ -116,8 +124,7 @@ Widget refreshableAndDismissibleListView(
       enablePullUp: true,
       controller: refreshController,
       onRefresh: onRefresh,
-      child: dismissibleListView(itemList, getCardType, afterSwipingLeft, afterSwipingRight,context, params)
-  );
+      child: dismissibleListView(itemList, getCardType, afterSwipingLeft,
+          afterSwipingRight, context, params));
 }
-
-
+  

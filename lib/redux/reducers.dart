@@ -11,10 +11,9 @@ TaskListState taskListReducer(TaskListState state, action) {
 
 List<Task> taskReducer(List<Task> state, action) {
   if (action is AddTaskAction) {
-    print("reducer: added");
     List<Task> tasks = []
       .. addAll(state)
-      .. add(Task(id: action.id, summary: action.summary, date: action.date, announcement: action.announcement));
+      .. add(Task(id: action.id, title: action.title, detail: action.detail, date: action.date, dayOfWeek: action.dayOfWeek, weekNum: action.weekNum, startTime: action.startTime, endTime: action.endTime, isAllDay: action.isAllDay, location: action.location, tag: action.tag));
       print(tasks);
       return tasks;
   }

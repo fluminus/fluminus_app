@@ -28,6 +28,8 @@ void main() async {
           subhead: TextStyle(fontWeight: FontWeight.bold, fontSize: 18.0),
           subtitle: TextStyle(fontSize: 14.0, color: Colors.grey),
           body1: TextStyle(fontSize: 14.0, fontFamily: 'Roboto'),
+          //TODO: Change to use themedata for color yd xianzai mei wang
+          body2: TextStyle(fontSize: 14.0, fontFamily: 'Roboto', fontWeight: FontWeight.bold, color: Colors.lightBlue[800]),
         ),
       ),
       home: BottomNavBar()));

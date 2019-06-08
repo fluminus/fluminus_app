@@ -56,7 +56,7 @@ class _ProfilePageState extends State<ProfilePage> {
                             decoration: BoxDecoration(
                                 borderRadius: BorderRadius.circular(25.0),
                                 image: DecorationImage(
-                                    image: AssetImage('assets/image_01.png'),
+                                    image: AssetImage('assets/card_background.jpg'),
                                     fit: BoxFit.cover)),
                           ),
                         ),

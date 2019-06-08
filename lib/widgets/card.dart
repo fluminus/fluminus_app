@@ -1,4 +1,6 @@
 import 'package:fluminus/model/task_list_model.dart';
+import 'package:fluminus/new_task_page.dart';
+import 'package:fluminus/redux/store.dart';
 import 'package:flutter/material.dart';
 import 'package:luminus_api/luminus_api.dart';
 import 'package:fluminus/util.dart' as util;
@@ -58,7 +60,10 @@ String _getExcerpt(String body, {int excerptLength = 100}) {
 
 Widget inkWellCard(String title, String subtitle, BuildContext context,
     GestureTapCallback onTap,
-    {Icon leading, Icon trailing}) {
+    {Icon leading,
+    Icon trailing,
+    IconButton leadingButton,
+    IconButton trailingButton}) {
   const double _verticalPadding = 6.0;
   Widget child = InkWell(
     borderRadius: _borderRadius,
@@ -67,8 +72,8 @@ Widget inkWellCard(String title, String subtitle, BuildContext context,
       padding: const EdgeInsets.only(
           top: _verticalPadding, bottom: _verticalPadding),
       child: ListTile(
-        leading: leading,
-        trailing: trailing,
+        leading: leading ?? leadingButton,
+        trailing: trailing ?? trailingButton,
         title: Text(title),
         subtitle: Text(subtitle, style: TextStyle(fontSize: 13.0)),
       ),
@@ -77,8 +82,8 @@ Widget inkWellCard(String title, String subtitle, BuildContext context,
   return _basicCard(child);
 }
 
-Widget inkWellCardWithFutureBuilder(String title, String subtitle, BuildContext context,
-    GestureTapCallback onTap,
+Widget inkWellCardWithFutureBuilder(String title, String subtitle,
+    BuildContext context, GestureTapCallback onTap,
     {FutureBuilder leading, FutureBuilder trailing}) {
   const double _verticalPadding = 6.0;
   Widget child = InkWell(
@@ -99,79 +104,66 @@ Widget inkWellCardWithFutureBuilder(String title, String subtitle, BuildContext 
 }
 
 Widget announcementCard(Announcement announcemnt, BuildContext context) {
-    String title = announcemnt.title;
-    String subtitle = "Expire After: " +
-        util.datetimeToFormattedString(DateTime.parse(announcemnt.expireAfter));
-    String body = util.parsedHtmlText(announcemnt.description);
-    return infoCardWithFullBody(title, subtitle, body, context);
-    // return card.infoCardWithFixedHeight(title, subtitle, body, context);
-  }
+  String title = announcemnt.title;
+  String subtitle = "Expire After: " +
+      util.datetimeToFormattedString(DateTime.parse(announcemnt.expireAfter));
+  String body = util.parsedHtmlText(announcemnt.description);
+  return infoCardWithFullBody(title, subtitle, body, context);
+  // return card.infoCardWithFixedHeight(title, subtitle, body, context);
+}
 
-  Widget moduleCard(Module module, BuildContext context) {
-    return Card(
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: <Widget>[
-          ListTile(
-            leading: Icon(Icons.class_),
-            title: Text(module.name),
-            subtitle: Text(module.courseName),
-          ),
-        ],
-      ),
-    );
-  }
+Widget moduleCard(Module module, BuildContext context) {
+  return Card(
+    child: Column(
+      mainAxisSize: MainAxisSize.min,
+      children: <Widget>[
+        ListTile(
+          leading: Icon(Icons.class_),
+          title: Text(module.name),
+          subtitle: Text(module.courseName),
+        ),
+      ],
+    ),
+  );
+}
 
-  Widget moduleDirectoryCard(Directory dir, BuildContext context, Module module) {
-    Widget nextPage = SubdirectoryPage(dir, module.name + ' - ' + dir.name);
-    return inkWellCard(
-        dir.name,
-        util.formatLastUpdatedTime(dir.lastUpdatedDate),
-        context,
-        util.onTapNextPage(nextPage, context),
-        leading: Icon(Icons.folder));
-  }
+Widget moduleDirectoryCard(Directory dir, BuildContext context, Module module) {
+  Widget nextPage = SubdirectoryPage(dir, module.name + ' - ' + dir.name);
+  return inkWellCard(dir.name, util.formatLastUpdatedTime(dir.lastUpdatedDate),
+      context, util.onTapNextPage(nextPage, context),
+      leading: Icon(Icons.folder));
+}
 
-  Widget directoryCard(Directory dir, BuildContext context) {
-    Widget nextPage = SubdirectoryPage(dir, dir.name);
-    return inkWellCard(
-        dir.name,
-        util.formatLastUpdatedTime(dir.lastUpdatedDate),
-        context,
-        util.onTapNextPage(nextPage, context),
-        leading: Icon(Icons.folder),
-        trailing: Icon(Icons.arrow_right));
-  }
+Widget directoryCard(Directory dir, BuildContext context) {
+  Widget nextPage = SubdirectoryPage(dir, dir.name);
+  return inkWellCard(dir.name, util.formatLastUpdatedTime(dir.lastUpdatedDate),
+      context, util.onTapNextPage(nextPage, context),
+      leading: Icon(Icons.folder), trailing: Icon(Icons.arrow_right));
+}
 
-  Widget moduleRootDirectoryCard(Module module, BuildContext context) {
-    Widget nextPage = ModuleRootDirectoryPage(module);
-    return inkWellCard(
-      module.name,
-      module.courseName,
-      context,
-      util.onTapNextPage(nextPage, context),
-      leading: Icon(Icons.class_),
-    );
-  }
+Widget moduleRootDirectoryCard(Module module, BuildContext context) {
+  Widget nextPage = ModuleRootDirectoryPage(module);
+  return inkWellCard(
+    module.name,
+    module.courseName,
+    context,
+    util.onTapNextPage(nextPage, context),
+    leading: Icon(Icons.class_),
+  );
+}
 
-  Widget taskCard(Task task, BuildContext context) {
-    return Card(
-      child: InkResponse(
-        enableFeedback: true,
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: <Widget>[
-          ListTile(
-            leading: Icon(Icons.class_),
-            title: Text(task.summary),
-            subtitle: Text(task.date),
-          ),
-        ],
-      ),
-      onTap: () => announcementCard(task.announcement, context),
-    )
-    );
-  } 
+Widget taskCard(Task task, BuildContext context) {
+  return inkWellCard(
+    task.title,
+    task.date,
+    context,
+    util.onTapNextPage(new TaskDetail(task), context),
+    trailingButton: IconButton(
+      icon: Icon(Icons.delete),
+      onPressed: () => model.onRemoveTask(task),
+    ),
+  );
+}
 
 // Widget infoCardWithFixedHeight(
 //     String title, String subtitle, String body, BuildContext context) {

@@ -1,41 +1,76 @@
 import 'package:flutter/material.dart';
 import 'package:luminus_api/luminus_api.dart';
 
-class TaskDetail {}
-
 class Task {
   final int id;
-  final String summary;
+  final String title;
+  final String detail;
   final String date;
-  final Announcement announcement;
+  final String dayOfWeek;
+  final int weekNum;
+  final String startTime;
+  final String endTime;
+  final bool isAllDay;
+  final String location;
+  final String tag;
 
   Task(
       {@required this.id,
-      @required this.summary,
+      @required this.title,
+      this.detail,
       @required this.date,
-      @required this.announcement});
+      @required this.dayOfWeek,
+      @required this.weekNum,
+      this.startTime,
+      this.endTime,
+      @required this.isAllDay,
+      this.location,
+      this.tag});
 
   Task copyWith(
-      {int id, String summary, String date, Announcement announcement}) {
+      {int id, String title, String detail, String date, String dayOfWeek, int weekNum, String startTime, 
+      String endTime, bool, isAllDay, String location, String tag}) {
     return Task(
         id: id ?? this.id,
-        summary: summary ?? this.summary,
+        title: title ?? this.title,
+        detail: detail??this.detail,
         date: date ?? this.date,
-        announcement: announcement ?? this.announcement);
+        dayOfWeek: dayOfWeek??this.dayOfWeek,
+        weekNum: weekNum??this.weekNum,
+        startTime: startTime??this.startTime,
+        endTime: endTime??this.endTime,
+        isAllDay: isAllDay??this.isAllDay,
+        location: location??this.location,
+        tag: tag??this.tag,
+        );
   }
 
   Task.fromJson(Map<String, dynamic> json)
       : id = json['id'],
-        summary = json['summary'],
+        title = json['title'],
+        detail = json['detail'],
         date = json['date'],
-        announcement = Announcement.fromJson(json['announcement']);
+        dayOfWeek = json['dayOfWeek'],
+        weekNum = json['weekNum'],
+        startTime = json['startTime'],
+        endTime = json['endTime'],
+        isAllDay = json['isAllDay'],
+        location = json['location'],
+        tag = json['tag'];
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> map = new Map<String, dynamic>();
     map['id'] = this.id;
-    map['summary'] = this.summary;
+    map['title'] = this.title;
+    map['detail'] = this.detail??'';
     map['date'] = this.date;
-    map['announcement'] = this.announcement.toJson();
+    map['dayOfWeek'] = this.dayOfWeek;
+    map['weekNum'] = this.weekNum;
+    map['startTime'] = this.startTime??'';
+    map['endTime'] = this.endTime??'';
+    map['isAllDay'] = this.isAllDay;
+    map['location'] = this.location??'';
+    map['tag'] = this.tag??'';
     return map;
   }
 }

@@ -3,13 +3,19 @@ import 'package:luminus_api/luminus_api.dart';
 
 class AddTaskAction{
   static int _id = 0;
-  final String summary;
+  final String title;
+  final String detail;
   final String date;
-  final Announcement announcement;
+  final String dayOfWeek;
+  final int weekNum;
+  final String startTime;
+  final String endTime;
+  final bool isAllDay;
+  final String location;
+  final String tag;
 
-  AddTaskAction(this.summary, this.date, this.announcement) {
+  AddTaskAction(this.title, this.detail, this.date, this.dayOfWeek, this.weekNum, this.startTime, this.endTime, this.isAllDay, this.location, this.tag) {
     _id++;
-    print("Added");
   }
 
   int get id => _id;
