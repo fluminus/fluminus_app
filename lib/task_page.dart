@@ -157,7 +157,6 @@ class TaskPage extends StatelessWidget {
                     return taskListView(store.state.tasks, context);
                   }),
         ),
-        drawer: Container(child: ReduxDevTools(store)),
       ),
     );
   }
