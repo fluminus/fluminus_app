@@ -6,7 +6,6 @@ import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:collection/collection.dart';
 import 'package:html/parser.dart';
 import 'package:flutter_picker/flutter_picker.dart';
-import 'package:fluminus/util.dart' as util;
 
 Function twoListsAreDeepEqual = const DeepCollectionEquality().equals;
 
@@ -32,7 +31,7 @@ String formatTowDates(DateTime startDate, DateTime endDate) {
       DateFormat("dd MMM yy").format(endDate);
 }
 
-String formatDateAsWeek(DateTime date) {
+String formatDateAsDayOfWeek(DateTime date) {
   return DateFormat("E").format(date).substring(0, 3).toUpperCase();
 }
 
@@ -76,8 +75,8 @@ GestureTapCallback onTapNextPage(Widget nextPage, BuildContext context) {
       };
 }
 
-showPickerNumber(
-    BuildContext context, String summary, DateTime smsStartDate, Announcement announcement) async {
+showPickerThreeNumber(BuildContext context, DateTime smsStartDate,
+    Announcement announcement) async {
   new Picker(
       adapter: NumberPickerAdapter(data: [
         NumberPickerColumn(begin: 0, end: 4),
@@ -104,11 +103,15 @@ showPickerNumber(
       onConfirm: (Picker picker, List value) {
         DateTime date = getPickedDate(value);
         model.onAddTask(
-            summary, util.formatDate(date), util.formatDateAsWeek(date), weekNum(smsStartDate, date),announcement);
+            title: announcement.title,
+            detail: announcement.description,
+            date: formatDate(date),
+            dayOfWeek: formatDateAsDayOfWeek(date),
+            weekNum: weekNum(smsStartDate, date));
       }).showDialog(context);
 }
 
-DateTime getPickedDate (List diffOfMWD) {
+DateTime getPickedDate(List diffOfMWD) {
   DateTime now = new DateTime.now();
   DateTime scheduledDate =
       new DateTime(now.year, now.month + diffOfMWD[0], now.day);
@@ -119,3 +122,25 @@ DateTime getPickedDate (List diffOfMWD) {
 int weekNum(DateTime startDate, DateTime givenDate) {
   return (givenDate.difference(startDate).inDays / 7).floor();
 }
+
+Future<String> showPickerTwoNumber(BuildContext context) async {
+  String result = '';
+  new Picker(
+      adapter: NumberPickerAdapter(data: [
+        NumberPickerColumn(begin: 00, end: 24),
+        NumberPickerColumn(begin: 00, end: 24),
+      ]),
+      delimiter: [
+        PickerDelimiter(
+            column: 1,
+            child: Container(
+                width: 30.0, alignment: Alignment.center, child: Text(" : "))),
+      ],
+      hideHeader: true,
+      onConfirm: (Picker picker, List value) {
+        result = value[0] + " : " + value[1];
+      }).showDialog(context);
+  return result;
+}
+
+

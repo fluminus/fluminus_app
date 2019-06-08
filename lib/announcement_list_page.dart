@@ -65,8 +65,7 @@ class _AnnouncementListPageState extends State<AnnouncementListPage>
         });
       }, (index, context) async{
         Announcement announcement = announcements[index];
-        String summary = announcement.title;
-        util.showPickerNumber(context, summary, data.smsStartDate, announcement);
+        util.showPickerThreeNumber(context, data.smsStartDate, announcement);
         
       }, context, null);
     }

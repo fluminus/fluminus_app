@@ -1,6 +1,6 @@
 import 'package:fluminus/model/task_list_model.dart';
 import 'package:fluminus/redux/store.dart';
-import 'package:fluminus/task_detail_page.dart';
+import 'package:fluminus/new_task_page.dart';
 import 'package:flutter/material.dart';
 import 'package:fluminus/redux/actions.dart';
 import 'package:flutter_redux/flutter_redux.dart';
@@ -14,11 +14,11 @@ import 'data.dart' as data;
 class TaskPage extends StatelessWidget {
   FloatingActionButton addTaskButton(BuildContext context) {
     return FloatingActionButton(
-      child: Icon(Icons.add),
+      child: Icon(Icons.add, color: Colors.white),
       onPressed: () {
         Navigator.push(
           context,
-          MaterialPageRoute(builder: (context) => TaskDetail()),
+          MaterialPageRoute(builder: (context) => TaskDetail(new Task())),
         );
       },
     );
@@ -89,7 +89,7 @@ class TaskPage extends StatelessWidget {
             ));
       },
       itemBuilder: (BuildContext context, int index) {
-        return card.taskCard(tasks[index], context, null);
+        return card.taskCard(tasks[index], context);
       },
       hasSameHeader: (int a, int b) {
         return tasks[a].dayOfWeek == tasks[b].dayOfWeek;
@@ -157,7 +157,6 @@ class TaskPage extends StatelessWidget {
                     return taskListView(store.state.tasks, context);
                   }),
         ),
-        drawer: Container(child: ReduxDevTools(store)),
       ),
     );
   }
