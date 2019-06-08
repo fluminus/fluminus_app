@@ -5,7 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:fluminus/redux/actions.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:redux/redux.dart';
-import 'package:flutter_redux_dev_tools/flutter_redux_dev_tools.dart';
 import 'package:collection/collection.dart';
 import 'package:fluminus/widgets/card.dart' as card;
 import 'package:fluminus/util.dart' as util;
@@ -33,9 +32,7 @@ class TaskPage extends StatelessWidget {
     List<int> keys = tasksListByWeekNum.keys.toList();
     keys.sort((x, y) => x - y);
 
-    return Stack(children: <Widget>[
-      Column(children: <Widget>[
-        Card(
+    Widget cardHeader =  Card(
           child: Container(
             width: MediaQuery.of(context).size.width,
             height: 200.0,
@@ -54,14 +51,21 @@ class TaskPage extends StatelessWidget {
                   style: Theme.of(context).textTheme.caption,
                 )),
           ),
-        ),
+        );
+
+    return Stack(children: <Widget>[
+      Column(children: <Widget>[
+        
         Expanded(
             child: CustomScrollView(shrinkWrap: true, slivers: <Widget>[
           SliverList(
-              delegate: SliverChildListDelegate(keys.map((weekNum) {
+              delegate: SliverChildListDelegate(
+                new List()
+                ..add(cardHeader)
+                ..addAll(keys.map((weekNum) {
             return sideHeaderListView(
                 tasksListByWeekNum[weekNum], headers[weekNum], context);
-          }).toList()))
+          }).toList())))
         ]))
       ]),
       Positioned(
@@ -99,20 +103,20 @@ class TaskPage extends StatelessWidget {
 
   List<Widget> weekHeaders(DateTime smsStartDate, BuildContext context) {
     List<Widget> weekHeaders = new List();
-    int totalWeeks = 18;
+    int totalWeeks = 30;
     int weekNum = smsStartDate.month == 8 ? 0 : 1;
     String info;
     DateTime startDate = smsStartDate;
     DateTime endDate = smsStartDate.add(new Duration(days: 7));
     for (int i = weekNum; i <= totalWeeks; i++, weekNum++) {
-      if (weekNum == 7) {
-        info = "Recess Week";
+      if (i == 7) {
         weekNum--;
-      } else if (weekNum == 14) {
+        info = "Recess Week";
+      } else if (i == 14) {
         info = "Reading Week";
-      } else if (weekNum > 14 && weekNum <= 16) {
+      } else if (i > 14 && i <= 16) {
         info = "Examination";
-      } else if (weekNum > 16) {
+      } else if (i > 16) {
         info = "Vacation";
       } else {
         info = "Week $weekNum";
