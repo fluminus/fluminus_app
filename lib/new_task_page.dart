@@ -14,22 +14,15 @@ class TaskDetail extends StatefulWidget {
 }
 
 class _TaskDetailState extends State<TaskDetail> {
-  String title;
-  String detail;
-  String date;
-  String startTime;
-  String endTime;
-  String location;
-  String tag;
-  TextEditingController titleTextController = new TextEditingController();
-  TextEditingController detailTextController = new TextEditingController();
-  TextEditingController dateTextController = new TextEditingController();
-  TextEditingController startTimeTextController = new TextEditingController();
-  TextEditingController endTimeTextController = new TextEditingController();
-  TextEditingController locationTextController = new TextEditingController();
-  TextEditingController tagTextController = new TextEditingController();
+  TextEditingController titleTextController; 
+  TextEditingController detailTextController; 
+  TextEditingController dateTextController; 
+  TextEditingController startTimeTextController; 
+  TextEditingController endTimeTextController; 
+  TextEditingController locationTextController; 
+  TextEditingController tagTextController; 
 
-  DateTime dateTime;
+  DateTime dateTime = DateTime.now();
 
   Widget basicTextField(String label, TextEditingController textController,
       {String target}) {
@@ -59,7 +52,7 @@ class _TaskDetailState extends State<TaskDetail> {
         child: IgnorePointer(child: basicTextField(label, textController)));
   }
 
-  Future<void> _selectedDate(BuildContext context, String content) async {
+  Future<void> _selectedDate(BuildContext context) async {
     final DateTime pickedDate = await showDatePicker(
         context: context,
         initialDate: DateTime.now(),
@@ -79,8 +72,7 @@ class _TaskDetailState extends State<TaskDetail> {
     if (picked != null)
       setState(() {
         if (target == 'startTime') {
-          startTime = picked.format(context);
-          startTimeTextController.text = startTime;
+          startTimeTextController.text = picked.format(context);
         } else if (target == 'endTime') {
           endTimeTextController.text = picked.format(context);
         }
@@ -90,6 +82,13 @@ class _TaskDetailState extends State<TaskDetail> {
   @override
   void initState() {
     super.initState();
+    titleTextController = new TextEditingController(text: widget.task.title ?? "");
+    detailTextController = new TextEditingController(text:widget.task.detail ?? "");
+    dateTextController = new TextEditingController(text:widget.task.date ?? util.formatDate(DateTime.now()));
+    startTimeTextController = new TextEditingController(text:widget.task.startTime ?? "00 : 00");
+    endTimeTextController = new TextEditingController(text:widget.task.endTime ?? "00: 00");
+    locationTextController = new TextEditingController(text:widget.task.location ?? "00: 00");
+    tagTextController = new TextEditingController(text:widget.task.tag ?? "");
   }
 
   @override
@@ -106,14 +105,7 @@ class _TaskDetailState extends State<TaskDetail> {
 
   @override
   Widget build(BuildContext context) {
-    title = widget.task.title ?? "";
-    detail = widget.task.detail ?? "";
-    date = widget.task.date ?? util.formatDate(DateTime.now());
-    startTime = widget.task.startTime ?? "00 : 00";
-    endTime = widget.task.endTime ?? "00: 00";
-    location = widget.task.location ?? "00: 00";
-    tag = widget.task.tag ?? "";
-
+    
     return Scaffold(
         appBar: AppBar(
           title: Text('New Task'),
@@ -121,23 +113,16 @@ class _TaskDetailState extends State<TaskDetail> {
             IconButton(
               icon: Icon(Icons.check),
               onPressed: () {
-                title = titleTextController.text;
-                detail = detailTextController.text;
-                date = dateTextController.text;
-                startTime = startTimeTextController.text;
-                endTime = endTimeTextController.text;
-                location = locationTextController.text;
-                tag = tagTextController.text;
                 model.onAddTask(
-                    title: title,
-                    detail: detail,
-                    date: date,
+                    title: titleTextController.text,
+                    detail: detailTextController.text,
+                    date: dateTextController.text,
                     dayOfWeek: util.formatDateAsDayOfWeek(dateTime),
                     weekNum: util.weekNum(data.smsStartDate, dateTime),
-                    startTime: startTime,
-                    endTime: endTime,
-                    location: location,
-                    tag: tag);
+                    startTime: startTimeTextController.text,
+                    endTime: endTimeTextController.text,
+                    location: locationTextController.text,
+                    tag: tagTextController.text);
                 Navigator.pop(context);
               },
             ),
@@ -147,7 +132,7 @@ class _TaskDetailState extends State<TaskDetail> {
           basicTextField('TITLE', titleTextController),
           basicTextField('DETAIL', detailTextController),
           clickableText('DATE', () {
-            _selectedDate(context, date);
+            _selectedDate(context);
           }, dateTextController),
           Row(
             children: <Widget>[
