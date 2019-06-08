@@ -55,7 +55,7 @@ class _ModulePageState extends State<ModulePage> {
                     case ConnectionState.active:
                       return Align(
                           alignment: Alignment.center,
-                          child: common.processIndicator);
+                          child: common.progressIndicator);
                       break;
                     case ConnectionState.done:
                       if (snapshot.hasError) {

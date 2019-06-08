@@ -48,7 +48,7 @@ class FilePage extends StatelessWidget {
           } else if (snapshot.hasError) {
             return Text(snapshot.error.toString());
           }
-          return common.processIndicator;
+          return common.progressIndicator;
         }),
       ),
     );
@@ -125,7 +125,7 @@ class _ModuleRootDirectoryPageState extends State<ModuleRootDirectoryPage> {
         } else if (snapshot.hasError) {
           return Text(snapshot.error);
         }
-        return common.processIndicator;
+        return common.progressIndicator;
       }),
     );
   }
@@ -263,7 +263,7 @@ class _SubdirectoryPageState extends State<SubdirectoryPage> {
         } else if (snapshot.hasError) {
           return Text(snapshot.error);
         }
-        return common.processIndicator;
+        return common.progressIndicator;
       }),
     );
   }

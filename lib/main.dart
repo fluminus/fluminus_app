@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import 'package:dynamic_theme/dynamic_theme.dart';
 import 'package:fluminus/announcement_page.dart';
 import 'package:fluminus/task_page.dart';
 import 'package:fluminus/forum_page.dart';
@@ -11,28 +13,52 @@ import 'package:fluminus/profile_page.dart';
 /// Source: https://stackoverflow.com/questions/51119795/how-to-remove-scroll-glow/51119796#51119796
 
 void main() async {
+  Brightness brightness;
+  SharedPreferences prefs = await SharedPreferences.getInstance();
+  brightness =
+      (prefs.getBool('isDark') ?? false) ? Brightness.dark : Brightness.light;
   await DotEnv().load('.env');
-  runApp(MaterialApp(
-      debugShowCheckedModeBanner: false,
-      builder: (context, child) {
-        return ScrollConfiguration(behavior: MyBehavior(), child: child);
-      },
-      theme: ThemeData(
-        brightness: Brightness.light,
-        primaryColor: Colors.lightBlue[800],
-        unselectedWidgetColor: Colors.blueGrey,
-        accentColor: Colors.orange,
-        fontFamily: 'Roboto',
-        textTheme: TextTheme(
-          headline: TextStyle(fontSize: 45.0, fontWeight: FontWeight.bold),
-          title: TextStyle(fontSize: 40.0, fontStyle: FontStyle.normal),
-          caption: TextStyle(fontSize: 30.0, fontWeight: FontWeight.bold),
-          subhead: TextStyle(fontWeight: FontWeight.bold, fontSize: 18.0),
-          subtitle: TextStyle(fontSize: 14.0, color: Colors.grey),
-          body1: TextStyle(fontSize: 14.0, fontFamily: 'Roboto'),
-        ),
-      ),
-      home: BottomNavBar()));
+  runApp(MyApp(
+    brightness: brightness,
+  ));
+}
+
+class MyApp extends StatelessWidget {
+  final Brightness brightness;
+  MyApp({this.brightness});
+  @override
+  Widget build(BuildContext context) {
+    return new DynamicTheme(
+        defaultBrightness: brightness,
+        data: (brightness) => ThemeData(
+              brightness: brightness,
+              primaryColor: brightness == Brightness.dark
+                  ? Colors.black
+                  : Colors.lightBlue[800],
+              unselectedWidgetColor: Colors.blueGrey,
+              accentColor: Colors.orange,
+              fontFamily: 'Roboto',
+              textTheme: TextTheme(
+                headline:
+                    TextStyle(fontSize: 45.0, fontWeight: FontWeight.bold),
+                title: TextStyle(fontSize: 40.0, fontStyle: FontStyle.normal),
+                caption: TextStyle(fontSize: 30.0, fontWeight: FontWeight.bold),
+                subhead: TextStyle(fontWeight: FontWeight.bold, fontSize: 18.0),
+                subtitle: TextStyle(fontSize: 14.0, color: Colors.grey),
+                body1: TextStyle(fontSize: 14.0, fontFamily: 'Roboto'),
+              ),
+            ),
+        themedWidgetBuilder: (context, theme) {
+          return MaterialApp(
+              debugShowCheckedModeBanner: false,
+              theme: theme,
+              builder: (context, child) {
+                return ScrollConfiguration(
+                    behavior: MyBehavior(), child: child);
+              },
+              home: MyHomePage());
+        });
+  }
 }
 
 class MyBehavior extends ScrollBehavior {
@@ -43,12 +69,15 @@ class MyBehavior extends ScrollBehavior {
   }
 }
 
-class BottomNavBar extends StatefulWidget {
+class MyHomePage extends StatefulWidget {
+  MyHomePage({Key key, this.title}) : super(key: key);
+  final String title;
+
   @override
-  _BottomNavBarState createState() => _BottomNavBarState();
+  _MyHomePageState createState() => _MyHomePageState();
 }
 
-class _BottomNavBarState extends State<BottomNavBar> {
+class _MyHomePageState extends State<MyHomePage> {
   int _currentIndex = 0;
   final _pages = [
     AnnouncementPage(),
@@ -61,15 +90,14 @@ class _BottomNavBarState extends State<BottomNavBar> {
   BottomNavigationBarItem _navBarItem(
       IconData activeIcon, IconData defaultIcon, String title) {
     return BottomNavigationBarItem(
-        icon: Icon(
-          defaultIcon,
-          size: 30,
-          color: Theme.of(context).unselectedWidgetColor,
-        ),
+        icon: Icon(defaultIcon,
+            size: 30, color: Theme.of(context).unselectedWidgetColor),
         activeIcon: Icon(
           activeIcon,
           size: 30,
-          color: Theme.of(context).primaryColor,
+          color: Theme.of(context).brightness == Brightness.light
+              ? Theme.of(context).primaryColor
+              : Theme.of(context).accentColor,
         ),
         title: Text(
           title,

@@ -65,7 +65,7 @@ class _AnnouncementPageState extends State<AnnouncementPage>
             appBar: AppBar(
               title: const Text("Announcements"),
             ),
-            body: common.processIndicator,
+            body: common.progressIndicator,
           );
         });
   }

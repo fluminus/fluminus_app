@@ -85,7 +85,7 @@ class _AnnouncementListPageState extends State<AnnouncementListPage>
           } else if (snapshot.hasError) {
             return Text(snapshot.error.toString());
           }
-          return common.processIndicator;
+          return common.progressIndicator;
         },
       );
     }
