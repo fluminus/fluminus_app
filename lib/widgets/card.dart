@@ -75,7 +75,7 @@ Widget inkWellCard(String title, String subtitle, BuildContext context,
         leading: leading ?? leadingButton,
         trailing: trailing ?? trailingButton,
         title: Text(title),
-        subtitle: Text(subtitle, style: TextStyle(fontSize: 13.0)),
+        subtitle: Text(subtitle, style: Theme.of(context).textTheme.body1),
       ),
     ),
   );

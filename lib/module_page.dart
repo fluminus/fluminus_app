@@ -47,7 +47,7 @@ class _ModulePageState extends State<ModulePage> {
             itemCount: 1,
             itemBuilder: (context, index) {
               return FutureBuilder<List<dynamic>>(
-                future: API.getModules(data.authentication),
+                future: API.getModules(data.authentication()),
                 builder: (context, snapshot) {
                   switch (snapshot.connectionState) {
                     case ConnectionState.none:
@@ -55,7 +55,7 @@ class _ModulePageState extends State<ModulePage> {
                     case ConnectionState.active:
                       return Align(
                           alignment: Alignment.center,
-                          child: common.processIndicator);
+                          child: common.progressIndicator);
                       break;
                     case ConnectionState.done:
                       if (snapshot.hasError) {

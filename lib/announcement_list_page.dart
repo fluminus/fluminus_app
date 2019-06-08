@@ -42,7 +42,7 @@ class _AnnouncementListPageState extends State<AnnouncementListPage>
       _refreshedAnnouncements = await util.onLoading(
           _refreshController,
           _announcements,
-          () => API.getAnnouncements(data.authentication, widget.module));
+          () => API.getAnnouncements(data.authentication(), widget.module));
 
       if (_refreshedAnnouncements == null) {
         _refreshController.refreshFailed();
@@ -70,6 +70,8 @@ class _AnnouncementListPageState extends State<AnnouncementListPage>
       }, context, null);
     }
 
+    super.build(context);
+
     if (_announcements != null) {
       return announcementList(_announcements);
     } else {
@@ -82,7 +84,7 @@ class _AnnouncementListPageState extends State<AnnouncementListPage>
           } else if (snapshot.hasError) {
             return Text(snapshot.error.toString());
           }
-          return common.processIndicator;
+          return common.progressIndicator;
         },
       );
     }
@@ -102,7 +104,7 @@ class _AnnouncementListPageState extends State<AnnouncementListPage>
       }
       return _announcements;
     } else {
-      return API.getAnnouncements(data.authentication, widget.module);
+      return API.getAnnouncements(data.authentication(), widget.module);
     }
   }
 

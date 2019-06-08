@@ -1,6 +1,8 @@
+import 'package:dynamic_theme/dynamic_theme.dart';
 import 'package:flutter/material.dart';
+import 'package:fluminus/widgets/theme.dart' as theme;
 
-Widget processIndicator = Center(
+Widget progressIndicator = Center(
   child: Column(
     mainAxisSize: MainAxisSize.min,
     children: <Widget>[
@@ -11,3 +13,11 @@ Widget processIndicator = Center(
     ],
   ),
 );
+
+void toggleBrightness(BuildContext context) {
+  if (Theme.of(context).brightness == Brightness.dark) {
+    DynamicTheme.of(context).setThemeData(theme.lightTheme);
+  } else {
+    DynamicTheme.of(context).setThemeData(theme.darkTheme);
+  }
+}
