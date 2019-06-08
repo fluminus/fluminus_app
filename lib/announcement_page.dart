@@ -23,7 +23,7 @@ class _AnnouncementPageState extends State<AnnouncementPage>
   final AsyncMemoizer<List<Module>> _memoizer = AsyncMemoizer();
   FutureOr<List<Module>> _fetchData() async {
     return this._memoizer.runOnce(() async {
-      return await API.getModules(data.authentication);
+      return await API.getModules(data.authentication());
     });
   }
 

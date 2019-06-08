@@ -38,7 +38,7 @@ class FilePage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(title: const Text("Files")),
       body: Container(
-        child: _paddedfutureBuilder(API.getModules(data.authentication),
+        child: _paddedfutureBuilder(API.getModules(data.authentication()),
             (context, snapshot) {
           if (snapshot.hasData) {
             return moduleRootDirectoyListView(context, snapshot);
@@ -91,7 +91,7 @@ class _ModuleRootDirectoryPageState extends State<ModuleRootDirectoryPage> {
       _refreshedDirectories = await util.onLoading(
           _refreshController,
           _directories,
-          () => API.getModuleDirectories(data.authentication, widget.module));
+          () => API.getModuleDirectories(data.authentication(), widget.module));
 
       if (_refreshedDirectories == null) {
         _refreshController.refreshFailed();
@@ -108,7 +108,7 @@ class _ModuleRootDirectoryPageState extends State<ModuleRootDirectoryPage> {
         title: Text(widget.module.name),
       ),
       body: _paddedfutureBuilder(
-          API.getModuleDirectories(data.authentication, widget.module),
+          API.getModuleDirectories(data.authentication(), widget.module),
           (context, snapshot) {
         if (snapshot.hasData) {
           _directories = snapshot.data;
@@ -150,7 +150,7 @@ class _SubdirectoryPageState extends State<SubdirectoryPage> {
   @override
   void initState() {
     super.initState();
-    _listFuture = API.getItemsFromDirectory(data.authentication, widget.parent);
+    _listFuture = API.getItemsFromDirectory(data.authentication(), widget.parent);
     _statusFuture = _initStatus(_listFuture);
     _refreshController = RefreshController();
   }
@@ -199,7 +199,7 @@ class _SubdirectoryPageState extends State<SubdirectoryPage> {
 
     try {
       var dir = await getApplicationDocumentsDirectory();
-      var url = await API.getDownloadUrl(data.authentication, file);
+      var url = await API.getDownloadUrl(data.authentication(), file);
       await dio.download(url, dir.path + '/' + file.fileName,
           onReceiveProgress: (rec, total) {
         // print("Rec: $rec , Total: $total");
@@ -228,7 +228,7 @@ class _SubdirectoryPageState extends State<SubdirectoryPage> {
   Widget build(BuildContext context) {
     Future<void> onRefresh() async {
       _refreshedFileList = await util.onLoading(_refreshController, _fileList,
-          () => API.getItemsFromDirectory(data.authentication, widget.parent));
+          () => API.getItemsFromDirectory(data.authentication(), widget.parent));
       //TODO: add correct condition
       if (false) {
         _refreshController.refreshFailed();

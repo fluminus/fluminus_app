@@ -10,7 +10,7 @@ class ProfilePage extends StatefulWidget {
 }
 
 class _ProfilePageState extends State<ProfilePage> {
-  Future<Profile> profile = API.getProfile(Data.authentication);
+  Future<Profile> profile = API.getProfile(Data.authentication());
   bool _isDarkMode;
 
   Widget displayName(String name) {
