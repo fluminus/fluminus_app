@@ -92,7 +92,7 @@ class _TaskDetailState extends State<TaskDetail> {
     endTimeTextController =
         new TextEditingController(text: widget.task.endTime ?? "00: 00");
     locationTextController =
-        new TextEditingController(text: widget.task.location ?? "00: 00");
+        new TextEditingController(text: widget.task.location ?? "");
     tagTextController = new TextEditingController(text: widget.task.tag ?? "");
   }
 
@@ -120,7 +120,7 @@ class _TaskDetailState extends State<TaskDetail> {
                       onPressed: () {
                         if (titleTextController.text == '') {
                           Scaffold.of(context).showSnackBar(
-                              util.snackBar('Please fill the title.'));
+                              util.snackBar('Please fill in the title.'));
                         } else {
                           model.onRemoveTask(widget.task);
 

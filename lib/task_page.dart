@@ -16,6 +16,7 @@ class TaskPage extends StatefulWidget {
 }
 
 class _TaskPageState extends State<TaskPage> {
+  
   Widget addTaskButton(
       BuildContext context, ScrollController scrollController) {
     double top = 175.0;
@@ -256,7 +257,7 @@ class _SideHeaderListViewState extends State<SideHeaderListView> {
                 shrinkWrap: true,
                 padding: widget.padding,
                 itemCount: widget.itemCount,
-                itemExtent: widget.itemExtend,
+                //itemExtent: widget.itemExtend,
                 controller: _getScrollController(),
                 itemBuilder: (BuildContext context, int index) {
                   return new Row(

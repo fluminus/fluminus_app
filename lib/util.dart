@@ -7,6 +7,7 @@ import 'package:collection/collection.dart';
 import 'package:html/parser.dart';
 import 'package:flutter_picker/flutter_picker.dart';
 
+
 Function twoListsAreDeepEqual = const DeepCollectionEquality().equals;
 
 String datetimeToFormattedString(DateTime time) {
@@ -145,7 +146,7 @@ Future<String> showPickerTwoNumber(BuildContext context) async {
 
 SnackBar snackBar(String info) {
   return SnackBar(
-    content: Text(info),
+    content: Text(info, textAlign: TextAlign.center,),
   );
 }
 
