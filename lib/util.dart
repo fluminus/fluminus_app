@@ -143,4 +143,10 @@ Future<String> showPickerTwoNumber(BuildContext context) async {
   return result;
 }
 
+SnackBar snackBar(String info) {
+  return SnackBar(
+    content: Text(info),
+  );
+}
+
 

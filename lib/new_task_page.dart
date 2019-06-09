@@ -114,23 +114,31 @@ class _TaskDetailState extends State<TaskDetail> {
         appBar: AppBar(
           title: Text('New Task'),
           actions: <Widget>[
-            IconButton(
-              icon: Icon(Icons.check),
-              onPressed: () {
-                model.onRemoveTask(widget.task);
-                model.onAddTask(
-                    title: titleTextController.text,
-                    detail: detailTextController.text,
-                    date: dateTextController.text,
-                    dayOfWeek: util.formatDateAsDayOfWeek(dateTime),
-                    weekNum: util.weekNum(data.smsStartDate, dateTime),
-                    startTime: startTimeTextController.text,
-                    endTime: endTimeTextController.text,
-                    location: locationTextController.text,
-                    tag: tagTextController.text);
-                Navigator.pop(context);
-              },
-            ),
+            Builder(
+                builder: (context) => IconButton(
+                      icon: Icon(Icons.check),
+                      onPressed: () {
+                        if (titleTextController.text == '') {
+                          Scaffold.of(context).showSnackBar(
+                              util.snackBar('Please fill the title.'));
+                        } else {
+                          model.onRemoveTask(widget.task);
+
+                          model.onAddTask(
+                              title: titleTextController.text,
+                              detail: detailTextController.text,
+                              date: dateTextController.text,
+                              dayOfWeek: util.formatDateAsDayOfWeek(dateTime),
+                              weekNum:
+                                  util.weekNum(data.smsStartDate, dateTime),
+                              startTime: startTimeTextController.text,
+                              endTime: endTimeTextController.text,
+                              location: locationTextController.text,
+                              tag: tagTextController.text);
+                          Navigator.pop(context);
+                        }
+                      },
+                    )),
           ],
         ),
         body: ListView.builder(
