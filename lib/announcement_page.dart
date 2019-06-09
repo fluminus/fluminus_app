@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:async/async.dart';
+import 'package:fluminus/widgets/dialog.dart';
 
 import 'package:flutter/material.dart';
 import 'package:luminus_api/luminus_api.dart';
@@ -22,9 +23,14 @@ class _AnnouncementPageState extends State<AnnouncementPage>
   // I don't know why it doesn't work though...
   final AsyncMemoizer<List<Module>> _memoizer = AsyncMemoizer();
   FutureOr<List<Module>> _fetchData() async {
-    return this._memoizer.runOnce(() async {
+    try {
       return await API.getModules(data.authentication());
-    });
+    } catch (e) {
+      if (e is RestartAuthException) {
+        displayRestartPrompt(context);
+      }
+      rethrow;
+    }
   }
 
   @override
