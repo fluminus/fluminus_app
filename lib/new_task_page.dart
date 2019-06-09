@@ -129,7 +129,7 @@ class _TaskDetailState extends State<TaskDetail> {
             ),
           ],
         ),
-        body: Column(children: <Widget>[
+        body: ListView(children: <Widget>[
           basicTextField('TITLE', titleTextController),
           basicTextField('DETAIL', detailTextController),
           clickableText('DATE', () {

@@ -51,6 +51,23 @@ void displayRefreshTokenDialog(BuildContext context) {
       });
 }
 
+void displayRestartPrompt(BuildContext context) {
+  showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: Text(
+            'Oops!',
+            style: Theme.of(context).textTheme.title,
+          ),
+          content: Text(
+            "Maybe you need a restart to apply this change...",
+            style: Theme.of(context).textTheme.body1,
+          ),
+        );
+      });
+}
+
 void displayUnsupportedFileTypeDialog(String errMsg, BuildContext context) {
   showDialog(
       context: context,
