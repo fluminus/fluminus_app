@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:dio/dio.dart';
 import 'package:open_file/open_file.dart';
@@ -39,7 +40,7 @@ class FilePage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(title: const Text("Files")),
       body: Container(
-        child: _paddedfutureBuilder(db.allModules(), (context, snapshot) {
+        child: _paddedfutureBuilder(db.getAllModules(), (context, snapshot) {
           if (snapshot.hasData) {
             return moduleRootDirectoyListView(context, snapshot);
           } else if (snapshot.hasError) {
@@ -88,10 +89,8 @@ class _ModuleRootDirectoryPageState extends State<ModuleRootDirectoryPage> {
   @override
   Widget build(BuildContext context) {
     Future<void> onRefresh() async {
-      _refreshedDirectories = await util.onLoading(
-          _refreshController,
-          _directories,
-          () => API.getModuleDirectories(data.authentication(), widget.module));
+      _refreshedDirectories = await util.onLoading(_refreshController,
+          _directories, () => db.getModuleDirectories(widget.module));
 
       if (_refreshedDirectories == null) {
         _refreshController.refreshFailed();
@@ -107,8 +106,7 @@ class _ModuleRootDirectoryPageState extends State<ModuleRootDirectoryPage> {
       appBar: AppBar(
         title: Text(widget.module.name),
       ),
-      body: _paddedfutureBuilder(
-          API.getModuleDirectories(data.authentication(), widget.module),
+      body: _paddedfutureBuilder(db.getModuleDirectories(widget.module),
           (context, snapshot) {
         if (snapshot.hasData) {
           _directories = snapshot.data;
@@ -150,8 +148,7 @@ class _SubdirectoryPageState extends State<SubdirectoryPage> {
   @override
   void initState() {
     super.initState();
-    _listFuture =
-        API.getItemsFromDirectory(data.authentication(), widget.parent);
+    _listFuture = db.getItemsFromDirectory(widget.parent);
     _statusFuture = _initStatus(_listFuture);
     _refreshController = RefreshController();
   }
@@ -162,12 +159,17 @@ class _SubdirectoryPageState extends State<SubdirectoryPage> {
     super.dispose();
   }
 
+  // TODO: defer `_initStatus` after rendering out the list of files to optimize performance
   Future<Map<BasicFile, _FileStatus>> _initStatus(
       Future<List<BasicFile>> list) async {
     var t = await list;
     Map<BasicFile, _FileStatus> map = new Map();
     for (var file in t) {
-      map[file] = _FileStatus.normal;
+      if (await db.getFileLocation(file) == null) {
+        map[file] = _FileStatus.normal;
+      } else {
+        map[file] = _FileStatus.downloaded;
+      }
     }
     return map;
   }
@@ -195,44 +197,48 @@ class _SubdirectoryPageState extends State<SubdirectoryPage> {
 
   Future<void> downloadFile(
       File file, Map<BasicFile, _FileStatus> statusList) async {
-    // TODO: use once instance of Dio
-    Dio dio = Dio();
-
-    try {
-      var dir = await getApplicationDocumentsDirectory();
-      var url = await API.getDownloadUrl(data.authentication(), file);
-      await dio.download(url, dir.path + '/' + file.fileName,
-          onReceiveProgress: (rec, total) {
-        // print("Rec: $rec , Total: $total");
-        updateStatus(file, _FileStatus.downloading);
-      });
-    } catch (e) {
-      print(e);
+    var loc = await db.getFileLocation(file);
+    if (loc == null) {
+      try {
+        // TODO: use once instance of Dio
+        Dio dio = Dio();
+        var dir = await getApplicationDocumentsDirectory();
+        var url = await API.getDownloadUrl(await data.authentication(), file);
+        // TODO: compose a meaningful path
+        var path = join(dir.path, file.fileName);
+        await dio.download(url, path, onReceiveProgress: (rec, total) {
+          // print("Rec: $rec , Total: $total");
+          updateStatus(file, _FileStatus.downloading);
+        });
+        await db.updateFileLocation(file, path, DateTime.now());
+        updateStatus(file, _FileStatus.downloaded);
+      } catch (e) {
+        // TODO: error handling
+        print(e);
+      }
+    } else {
+      updateStatus(file, _FileStatus.downloaded);
+      print('cached file loc');
     }
-    updateStatus(file, _FileStatus.downloaded);
-    // print("Download completed");
   }
 
   Future<void> openFile(File file) async {
-    var dir = await getApplicationDocumentsDirectory();
-    var fullPath = dir.path + '/' + file.fileName;
-    // print(fullPath);
+    var fullPath = await db.getFileLocation(file);
     try {
       await OpenFile.open(fullPath);
     } catch (e) {
+      // TODO: error handling
+      print(e);
       // TODO: support opening files in other apps
-      dialog.displayUnsupportedFileTypeDialog(e.toString(), context);
+      // dialog.displayUnsupportedFileTypeDialog(e.toString(), context);
     }
   }
 
   @override
   Widget build(BuildContext context) {
     Future<void> onRefresh() async {
-      _refreshedFileList = await util.onLoading(
-          _refreshController,
-          _fileList,
-          () =>
-              API.getItemsFromDirectory(data.authentication(), widget.parent));
+      _refreshedFileList = await util.onLoading(_refreshController, _fileList,
+          () => db.getItemsFromDirectory(widget.parent));
       //TODO: add correct condition
       if (false) {
         _refreshController.refreshFailed();

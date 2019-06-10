@@ -1,7 +1,4 @@
-import 'dart:convert';
 import 'dart:io';
-
-import 'package:luminus_api/luminus_api.dart' as api;
 import 'package:meta/meta.dart';
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
@@ -52,6 +49,8 @@ class DatabaseHelper {
               uuid TEXT PRIMARY KEY,
               parent_id TEXT NOT NULL,
               is_file BOOLEAN NOT NULL,
+              file_location TEXT,
+              last_updated TEXT,
               name TEXT NOT NULL,
               json TEXT NOT NULL
             )
@@ -90,4 +89,10 @@ Future<void> clearAllTables() async {
   Database db = await DatabaseHelper.instance.database;
   await db.delete(DatabaseHelper.fileTable);
   await db.delete(DatabaseHelper.moduleTable);
+}
+
+Future<int> dbUpdate(String table, Map<String, dynamic> values,
+    {String where, List whereArgs}) async {
+  Database db = await DatabaseHelper.instance.database;
+  return await db.update(table, values, where: where, whereArgs: whereArgs);
 }

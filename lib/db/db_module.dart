@@ -2,7 +2,6 @@ import 'dart:convert';
 
 import 'package:luminus_api/luminus_api.dart' as api;
 import 'package:fluminus/data.dart' as data;
-import 'package:sqflite/sqflite.dart';
 import 'db_helper.dart';
 
 Future<int> insertModule(api.Module mod) async {
@@ -14,27 +13,26 @@ Future<int> insertModule(api.Module mod) async {
   });
 }
 
-Future<List<api.Module>> allModules() async {
+Future<List<api.Module>> getAllModules() async {
   var query = await dbQuery(tableName: DatabaseHelper.moduleTable);
   if (query.isEmpty) {
-    return refreshModules();
-  } else {
-    List<api.Module> res = List();
-    for (var item in query) {
-      // TODO: error handling
-      res.add(api.Module.fromJson(jsonDecode(item['json'])));
-    }
-    print('cached modules');
-    return res;
+    await refreshAllModules();
+    query = await dbQuery(tableName: DatabaseHelper.moduleTable);
   }
+  List<api.Module> res = [];
+  for (var item in query) {
+    // TODO: error handling
+    res.add(api.Module.fromJson(jsonDecode(item['json'])));
+  }
+  print('cached modules');
+  return res;
 }
 
-Future<List<api.Module>> refreshModules() async {
+Future<void> refreshAllModules() async {
   print('refreshing modules');
   var modules = await api.API.getModules(data.authentication());
   await dbDelete(tableName: DatabaseHelper.moduleTable);
   for (var mod in modules) {
     await insertModule(mod);
   }
-  return await allModules();
 }
