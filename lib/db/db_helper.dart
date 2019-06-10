@@ -2,15 +2,20 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:luminus_api/luminus_api.dart' as api;
+import 'package:meta/meta.dart';
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path_provider/path_provider.dart' as path_provider;
+
+export 'db_file.dart';
+export 'db_module.dart';
 
 class DatabaseHelper {
   static final _databaseName = "MyDatabase.db";
   static final _databaseVersion = 1;
 
   static final fileTable = 'file_table';
+  static final moduleTable = 'module_table';
 
   // make this a singleton class
   DatabaseHelper._privateConstructor();
@@ -40,6 +45,8 @@ class DatabaseHelper {
     await db.execute('''
       PRAGMA foreign_keys = 1
       ''');
+
+    /// Create file table
     await db.execute('''
             CREATE TABLE $fileTable (
               uuid TEXT PRIMARY KEY,
@@ -49,5 +56,38 @@ class DatabaseHelper {
               json TEXT NOT NULL
             )
           ''');
+
+    /// Create module table
+    await db.execute('''
+            CREATE TABLE $moduleTable (
+              uuid TEXT PRIMARY KEY,
+              name TEXT NOT NULL,
+              course_name TEXT NOT NULL,
+              json TEXT NOT NULL
+            )
+          ''');
   }
+}
+
+Future<int> dbInsert(String table, Map<String, dynamic> row) async {
+  Database db = await DatabaseHelper.instance.database;
+  return await db.insert(table, row);
+}
+
+Future<List<Map<String, dynamic>>> dbQuery(
+    {@required String tableName, String where, List whereArgs}) async {
+  Database db = await DatabaseHelper.instance.database;
+  return await db.query(tableName, where: where, whereArgs: whereArgs);
+}
+
+Future<int> dbDelete(
+    {@required String tableName, String where, List whereArgs}) async {
+  Database db = await DatabaseHelper.instance.database;
+  return await db.delete(tableName, where: where, whereArgs: whereArgs);
+}
+
+Future<void> clearAllTables() async {
+  Database db = await DatabaseHelper.instance.database;
+  await db.delete(DatabaseHelper.fileTable);
+  await db.delete(DatabaseHelper.moduleTable);
 }

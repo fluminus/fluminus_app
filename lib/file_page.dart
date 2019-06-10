@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:dio/dio.dart';
 import 'package:open_file/open_file.dart';
+import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:luminus_api/luminus_api.dart';
 import 'package:fluminus/widgets/card.dart' as card;
 import 'package:fluminus/widgets/list.dart' as list;
@@ -9,7 +10,7 @@ import 'package:fluminus/widgets/common.dart' as common;
 import 'package:fluminus/util.dart' as util;
 import 'package:fluminus/data.dart' as data;
 import 'package:fluminus/widgets/dialog.dart' as dialog;
-import 'package:pull_to_refresh/pull_to_refresh.dart';
+import 'package:fluminus/db/db_helper.dart' as db;
 
 final EdgeInsets _padding = const EdgeInsets.fromLTRB(14.0, 10.0, 14.0, 0.0);
 
@@ -38,8 +39,7 @@ class FilePage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(title: const Text("Files")),
       body: Container(
-        child: _paddedfutureBuilder(API.getModules(data.authentication()),
-            (context, snapshot) {
+        child: _paddedfutureBuilder(db.allModules(), (context, snapshot) {
           if (snapshot.hasData) {
             return moduleRootDirectoyListView(context, snapshot);
           } else if (snapshot.hasError) {
@@ -150,7 +150,8 @@ class _SubdirectoryPageState extends State<SubdirectoryPage> {
   @override
   void initState() {
     super.initState();
-    _listFuture = API.getItemsFromDirectory(data.authentication(), widget.parent);
+    _listFuture =
+        API.getItemsFromDirectory(data.authentication(), widget.parent);
     _statusFuture = _initStatus(_listFuture);
     _refreshController = RefreshController();
   }
@@ -227,8 +228,11 @@ class _SubdirectoryPageState extends State<SubdirectoryPage> {
   @override
   Widget build(BuildContext context) {
     Future<void> onRefresh() async {
-      _refreshedFileList = await util.onLoading(_refreshController, _fileList,
-          () => API.getItemsFromDirectory(data.authentication(), widget.parent));
+      _refreshedFileList = await util.onLoading(
+          _refreshController,
+          _fileList,
+          () =>
+              API.getItemsFromDirectory(data.authentication(), widget.parent));
       //TODO: add correct condition
       if (false) {
         _refreshController.refreshFailed();
