@@ -1,4 +1,3 @@
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:luminus_api/luminus_api.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -8,7 +7,7 @@ bool _updateCreds = false;
 
 Future<Authentication> authentication() async {
   if (_auth == null) {
-    print('first time');
+    print('first time auth');
     _updateCreds = false;
     final storage = FlutterSecureStorage();
     _auth = Authentication(
@@ -16,14 +15,14 @@ Future<Authentication> authentication() async {
         password: await storage.read(key: 'nusnet_password'));
   } else {
     if (_updateCreds) {
-      print('updating');
+      print('updating auth');
       _updateCreds = false;
       final storage = FlutterSecureStorage();
       _auth = Authentication(
           username: await storage.read(key: 'nusnet_id'),
           password: await storage.read(key: 'nusnet_password'));
     } else {
-      print('cached');
+      // print('cached auth');
     }
   }
   return _auth;

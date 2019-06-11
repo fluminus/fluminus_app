@@ -36,20 +36,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.0.4"
-  built_collection:
-    dependency: transitive
-    description:
-      name: built_collection
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "4.2.2"
-  built_value:
-    dependency: transitive
-    description:
-      name: built_value
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "6.6.0"
   charcode:
     dependency: transitive
     description:
@@ -85,13 +71,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.0.6"
-  crypto_keys:
-    dependency: transitive
-    description:
-      name: crypto_keys
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "0.1.0"
   csslib:
     dependency: transitive
     description:
@@ -141,20 +120,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "3.1.5"
-  fixnum:
-    dependency: transitive
-    description:
-      name: fixnum
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "0.10.9"
   flutter:
     dependency: "direct main"
     description: flutter
     source: sdk
     version: "0.0.0"
   flutter_dotenv:
-    dependency: "direct main"
+    dependency: "direct dev"
     description:
       name: flutter_dotenv
       url: "https://pub.dartlang.org"
@@ -214,6 +186,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.1.7"
+  groovin_widgets:
+    dependency: "direct main"
+    description:
+      name: groovin_widgets
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.4.2"
   html:
     dependency: "direct main"
     description:
@@ -270,13 +249,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.3.3"
-  jose:
-    dependency: transitive
-    description:
-      name: jose
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "0.1.2"
   js:
     dependency: transitive
     description:
@@ -298,20 +270,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.3.18"
-  logging:
-    dependency: transitive
-    description:
-      name: logging
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "0.11.3+2"
   luminus_api:
     dependency: "direct main"
     description:
       name: luminus_api
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.1.14"
+    version: "0.1.15"
   matcher:
     dependency: transitive
     description:
@@ -368,13 +333,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.0.3"
-  openid_client:
-    dependency: "direct main"
-    description:
-      name: openid_client
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "0.2.4"
   package_config:
     dependency: transitive
     description:
@@ -410,20 +368,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.5.0"
-  petitparser:
-    dependency: transitive
-    description:
-      name: petitparser
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "2.2.1"
-  pointycastle:
-    dependency: transitive
-    description:
-      name: pointycastle
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "1.0.1"
   pool:
     dependency: transitive
     description:
@@ -591,7 +535,7 @@ packages:
     source: hosted
     version: "1.1.0"
   test:
-    dependency: "direct main"
+    dependency: "direct dev"
     description:
       name: test
       url: "https://pub.dartlang.org"

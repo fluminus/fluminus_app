@@ -1,7 +1,8 @@
+import 'package:fluminus/file_page.dart';
 import 'package:flutter/material.dart';
+import 'package:luminus_api/luminus_api.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'card.dart';
-
 
 enum CardType {
   announcementCardType,
@@ -9,29 +10,32 @@ enum CardType {
   directoryCardType,
   moduleDirectoryCardType,
   moduleRootDirectoryCardType,
-  taskCardType
+  taskCardType,
+  fileCardType
 }
 
 Widget _certainCard(var item, CardType type, BuildContext context, Map params) {
+  // TODO: make this type safe
   switch (type) {
     case CardType.announcementCardType:
       return announcementCard(item, context);
-      break;
     case CardType.moduleCardType:
       return moduleCard(item, context);
-      break;
     case CardType.directoryCardType:
       return directoryCard(item, context);
-      break;
     case CardType.moduleDirectoryCardType:
       return moduleDirectoryCard(item, context, params['module']);
-      break;
     case CardType.moduleRootDirectoryCardType:
       return moduleRootDirectoryCard(item, context);
-      break;
     case CardType.taskCardType:
       return taskCard(item, context);
-      break;
+    case CardType.fileCardType:
+      File file = item;
+      Map<BasicFile, FileStatus> statusMap = params['status'];
+      Function downloadFile = params['downloadFile'];
+      Function openFile = params['openFile'];
+      return fileCard(
+          file, context, statusMap[item], statusMap, downloadFile, openFile);
   }
   return null;
 }
@@ -48,7 +52,7 @@ Widget itemListView(
           Padding(
               padding: const EdgeInsets.only(bottom: 6.0),
               child:
-                  _certainCard(itemList[index], getCardType(), context, params))
+                  _certainCard(itemList[index], getCardType(itemList[index]), context, params))
         ],
       );
     },
@@ -61,10 +65,12 @@ Widget refreshableListView(
     List itemList,
     Function getCardType,
     BuildContext context,
-    Map params) {
+    Map params,
+    {bool enablePullDown = true,
+    bool enablePullUp = true}) {
   return SmartRefresher(
-      enablePullDown: true,
-      enablePullUp: true,
+      enablePullDown: enablePullDown,
+      enablePullUp: enablePullUp,
       controller: refreshController,
       onRefresh: onRefresh,
       child: itemListView(itemList, getCardType, context, params));
@@ -127,4 +133,3 @@ Widget refreshableAndDismissibleListView(
       child: dismissibleListView(itemList, getCardType, afterSwipingLeft,
           afterSwipingRight, context, params));
 }
-  

@@ -4,6 +4,7 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:luminus_api/luminus_api.dart';
 import 'package:fluminus/widgets/common.dart';
+import 'package:fluminus/db/db_helper.dart' as db;
 import 'data.dart' as data;
 
 class ProfilePage extends StatefulWidget {
@@ -121,6 +122,15 @@ class _ProfilePageState extends State<ProfilePage> {
                   onPressed: () async {
                     await data.deleteCredentials();
                     Navigator.of(context).pushReplacementNamed(LoginPage.tag);
+                  },
+                )),
+            Padding(
+                padding: const EdgeInsets.only(left: 20.0, right: 20.0),
+                child: RaisedButton(
+                  color: Colors.pinkAccent,
+                  child: Text('Clear Database'),
+                  onPressed: () async {
+                    await db.clearAllTables();
                   },
                 )),
           ],
