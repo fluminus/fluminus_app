@@ -11,22 +11,26 @@ import 'package:fluminus/widgets/theme.dart' as theme;
 
 void main() async {
   Brightness brightness;
+  bool hasCredentials;
   SharedPreferences prefs = await SharedPreferences.getInstance();
   brightness =
       (prefs.getBool('isDark') ?? false) ? Brightness.dark : Brightness.light;
+  hasCredentials = (prefs.getBool('hasCred') ?? false);
   await DotEnv().load('.env');
   runApp(App(
     brightness: brightness,
+    hasCredentials: hasCredentials,
   ));
 }
 
 class App extends StatelessWidget {
   final Brightness brightness;
+  final bool hasCredentials;
   final routes = <String, WidgetBuilder>{
     LoginPage.tag: (context) => LoginPage(),
     HomePage.tag: (context) => HomePage(),
   };
-  App({this.brightness});
+  App({this.brightness, this.hasCredentials});
   @override
   Widget build(BuildContext context) {
     return new DynamicTheme(
@@ -40,7 +44,7 @@ class App extends StatelessWidget {
             builder: (context, child) {
               return ScrollConfiguration(behavior: MyBehavior(), child: child);
             },
-            home: LoginPage(),
+            home: hasCredentials ? HomePage() : LoginPage(),
             routes: routes,
           );
         });
