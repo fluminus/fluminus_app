@@ -28,7 +28,7 @@ class _TaskPageState extends State<TaskPage> {
       } else {
         top = 5.0;
       }
-    }
+    } 
     return Positioned(
         top: top,
         right: 20.0,
@@ -69,15 +69,14 @@ class _TaskPageState extends State<TaskPage> {
             padding: const EdgeInsets.only(
                 top: 40.0, left: 25.0, right: 10.0, bottom: 10.0),
             child: Text(
-              util.formatDate(DateTime.now()),
-              style: Theme.of(context).textTheme.caption,
+              util.formatDateAsTitle(DateTime.now()),
+              style: Theme.of(context).textTheme.headline,
             )),
       ),
     );
 
     return Stack(children: <Widget>[
       CustomScrollView(
-          shrinkWrap: true,
           controller: scrollController,
           slivers: <Widget>[
             SliverList(
@@ -105,7 +104,7 @@ class _TaskPageState extends State<TaskPage> {
             width: 50.0,
             child: new Text(
               tasks[index].dayOfWeek,
-              style: Theme.of(context).textTheme.body1,
+              style: Theme.of(context).textTheme.subtitle,
             ));
       },
       itemBuilder: (BuildContext context, int index) {

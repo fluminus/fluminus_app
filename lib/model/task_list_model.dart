@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:luminus_api/luminus_api.dart';
 
@@ -13,6 +15,7 @@ class Task {
   final bool isAllDay;
   final String location;
   final String tag;
+  final Color color;
 
   Task(
       {@required this.id,
@@ -25,11 +28,12 @@ class Task {
       this.endTime,
       @required this.isAllDay,
       this.location,
-      this.tag});
+      this.tag,
+      this.color});
 
   Task copyWith(
       {int id, String title, String detail, String date, String dayOfWeek, int weekNum, String startTime, 
-      String endTime, bool, isAllDay, String location, String tag}) {
+      String endTime, bool, isAllDay, String location, String tag, Color color}) {
     return Task(
         id: id ?? this.id,
         title: title ?? this.title,
@@ -42,6 +46,7 @@ class Task {
         isAllDay: isAllDay??this.isAllDay,
         location: location??this.location,
         tag: tag??this.tag,
+        color: color??this.color
         );
   }
 
@@ -56,7 +61,8 @@ class Task {
         endTime = json['endTime'],
         isAllDay = json['isAllDay'],
         location = json['location'],
-        tag = json['tag'];
+        tag = json['tag'],
+        color = Color(json['color']??ThemeData.light().primaryColor.value);
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> map = new Map<String, dynamic>();
@@ -71,6 +77,7 @@ class Task {
     map['isAllDay'] = this.isAllDay;
     map['location'] = this.location??'';
     map['tag'] = this.tag??'';
+    map['color'] = this.color == null? ThemeData.light().primaryColor.value : this.color.value;
     return map;
   }
 }

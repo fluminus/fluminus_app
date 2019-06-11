@@ -174,7 +174,7 @@ Widget taskCard(Task task, BuildContext context) {
     subtitle: Text(task.date),
     boxDecoration: BoxDecoration(
       border: new Border.all(
-          color: Theme.of(context).primaryColor,
+          color: task.color,
           width: 2.5,
           style: BorderStyle.solid),
       borderRadius: new BorderRadius.all(new Radius.circular(20.0)),

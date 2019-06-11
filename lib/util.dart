@@ -26,6 +26,10 @@ String formatDate(DateTime date) {
   return new DateFormat("dd / MMM / yyyy").format(date);
 }
 
+String formatDateAsTitle(DateTime date) {
+  return new DateFormat("EEEE").format(date) + "\n" + new DateFormat("dd MMMM").format(date);
+}
+
 String formatTowDates(DateTime startDate, DateTime endDate) {
   return DateFormat("dd MMM yy").format(startDate) +
       " - " +
@@ -42,7 +46,6 @@ Future<List> onLoading(
   if (twoListsAreDeepEqual(currList, refreshedList)) {
     controller.loadNoData();
   } else {
-    print("load: got data");
     controller.loadComplete();
   }
   return refreshedList;
