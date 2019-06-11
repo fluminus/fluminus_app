@@ -90,11 +90,12 @@ class _ModuleRootDirectoryPageState extends State<ModuleRootDirectoryPage> {
   Widget build(BuildContext context) {
     Future<void> onRefresh() async {
       _refreshedDirectories = await util.onLoading(_refreshController,
-          _directories, () => db.getModuleDirectories(widget.module));
+          _directories, () => db.refreshAndGetModuleDirectories(widget.module));
 
       if (_refreshedDirectories == null) {
         _refreshController.refreshFailed();
       } else {
+        print('refreshing');
         setState(() {
           _directories = _refreshedDirectories;
         });
@@ -112,7 +113,7 @@ class _ModuleRootDirectoryPageState extends State<ModuleRootDirectoryPage> {
           _directories = snapshot.data;
           return list.refreshableListView(
               _refreshController,
-              () => onRefresh(),
+              onRefresh,
               _directories,
               () => list.CardType.moduleDirectoryCardType,
               context,

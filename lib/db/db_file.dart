@@ -60,10 +60,24 @@ Future<List<Directory>> getModuleDirectories(Module module) async {
 }
 
 Future<void> refreshModuleDirectories(Module module) async {
+  await dbDelete(
+      tableName: DatabaseHelper.fileTable,
+      where: 'parent_id = ?',
+      whereArgs: [module.id]);
   var dirs = await API.getModuleDirectories(data.authentication(), module);
   for (var dir in dirs) {
     await insertFile(dir);
   }
+}
+
+Future<List<Directory>> refreshAndGetModuleDirectories(Module module) async {
+  await refreshModuleDirectories(module);
+  var query = await _queryByParentId(module.id);
+  List<Directory> res = [];
+  for (var item in query) {
+    res.add(Directory.fromJson(jsonDecode(item['json'])));
+  }
+  return res;
 }
 
 Future<List<BasicFile>> getItemsFromDirectory(Directory parent) async {

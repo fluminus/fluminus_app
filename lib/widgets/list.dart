@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'card.dart';
 
-
 enum CardType {
   announcementCardType,
   moduleCardType,
@@ -61,10 +60,12 @@ Widget refreshableListView(
     List itemList,
     Function getCardType,
     BuildContext context,
-    Map params) {
+    Map params,
+    {bool enablePullDown = true,
+    bool enablePullUp = true}) {
   return SmartRefresher(
-      enablePullDown: true,
-      enablePullUp: true,
+      enablePullDown: enablePullDown,
+      enablePullUp: enablePullUp,
       controller: refreshController,
       onRefresh: onRefresh,
       child: itemListView(itemList, getCardType, context, params));
@@ -127,4 +128,3 @@ Widget refreshableAndDismissibleListView(
       child: dismissibleListView(itemList, getCardType, afterSwipingLeft,
           afterSwipingRight, context, params));
 }
-  
