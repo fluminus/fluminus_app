@@ -112,13 +112,24 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
                           Padding(
                             padding:
                                 const EdgeInsets.only(top: 60.0, bottom: 20.0),
-                            child: Container(
-                              width: 160.0,
-                              height: 160.0,
-                              alignment: Alignment.center,
-                              decoration: BoxDecoration(
-                                image: logo,
-                              ),
+                            child: Column(
+                              children: <Widget>[
+                                Container(
+                                  width: 140.0,
+                                  height: 140.0,
+                                  alignment: Alignment.center,
+                                  decoration: BoxDecoration(
+                                    image: logo,
+                                  ),
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.only(top: 20.0),
+                                  child: Text(
+                                    'Welcome to Fluminus!',
+                                    style: Theme.of(context).textTheme.caption,
+                                  ),
+                                )
+                              ],
                             ),
                           ),
                           Container(
@@ -185,7 +196,8 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
                                         key: 'nusnet_password',
                                         value: _password);
                                     updateCredentials();
-                                    SharedPreferences prefs = await SharedPreferences.getInstance();
+                                    SharedPreferences prefs =
+                                        await SharedPreferences.getInstance();
                                     prefs.setBool('hasCred', true);
                                     setState(() {
                                       animationStatus = 1;

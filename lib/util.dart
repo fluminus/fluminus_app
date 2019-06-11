@@ -57,10 +57,10 @@ Future<List> onLoadingTest(RefreshController controller, List currList) async {
   temp.add(currList[0]);
   refreshedList = temp;
   if (twoListsAreDeepEqual(currList, refreshedList)) {
-    print("load no data");
+    // print("load no data");
     controller.loadNoData();
   } else {
-    print("load: got data");
+    // print("load: got data");
     controller.loadComplete();
   }
   return refreshedList;
