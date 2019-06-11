@@ -12,9 +12,10 @@ An overall much better LMS (Learning management system) experience on [LumiNUS](
         * file upload
         * forum posts & reply  //wonderful if we only receive “favourite” ones
         * web lecture update
-    * offline file management (MySQL)
-    * gmail-like announcement management (flag & archive announcements) (MySQL)
+    * offline file management (SQLite) ✔
+    * gmail-like announcement management (flag & archive announcements) ✔
 * A task management part (todo-list)
+    * Basic task management ✔
     * Intelligent suggestions (extract event and time info from announcements, using Google Natural Language API)
     * Progress track (allow users to break one big task into baby steps, and track the progress)
     * Tinder-like gamified task ordering experience (help you prioritize tasks like choosing dates)
@@ -37,5 +38,3 @@ Please look at our [Project board](https://github.com/fluminus/fluminus_app/proj
 [Tan Yuanhong](https://github.com/le0tan)
 
 [Zhang Xiaoyu](https://github.com/ZhangHuafan)
-
-[Raivat Shah](https://github.com/raivatshah)
