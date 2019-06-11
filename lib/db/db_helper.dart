@@ -73,7 +73,7 @@ Future<int> dbInsert(String table, Map<String, dynamic> row) async {
   return await db.insert(table, row);
 }
 
-Future<List<Map<String, dynamic>>> dbQuery(
+Future<List<Map<String, dynamic>>> dbSelect(
     {@required String tableName, String where, List whereArgs}) async {
   Database db = await DatabaseHelper.instance.database;
   return await db.query(tableName, where: where, whereArgs: whereArgs);

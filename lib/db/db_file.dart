@@ -4,7 +4,8 @@ import 'package:luminus_api/luminus_api.dart';
 import 'db_helper.dart';
 import 'package:fluminus/data.dart' as data;
 
-Future<int> insertFile(BasicFile file, {String parentId}) async {
+Future<int> insertFile(BasicFile file,
+    {String parentId, String fileLocation, String lastUpdated}) async {
   if (file is Directory) {
     String json = jsonEncode(file.toJson());
     return await dbInsert(DatabaseHelper.fileTable, {
@@ -22,6 +23,8 @@ Future<int> insertFile(BasicFile file, {String parentId}) async {
       'parent_id': parentId ??
           file.parentID, // LumiNUS sucks so much that for files, [id] and [parent_id] are the same...
       'is_file': true,
+      'file_location': fileLocation,
+      'last_updated': lastUpdated,
       'name': file.fileName,
       'json': json
     });
@@ -32,7 +35,7 @@ Future<int> insertFile(BasicFile file, {String parentId}) async {
 }
 
 Future<List<Map<String, dynamic>>> _queryByParentId(String parentID) async {
-  var query = await dbQuery(
+  var query = await dbSelect(
       tableName: DatabaseHelper.fileTable,
       where: 'parent_id = ?',
       whereArgs: [parentID]);
@@ -40,7 +43,7 @@ Future<List<Map<String, dynamic>>> _queryByParentId(String parentID) async {
 }
 
 Future<List<Map<String, dynamic>>> _queryById(String id) async {
-  var query = await dbQuery(
+  var query = await dbSelect(
       tableName: DatabaseHelper.fileTable, where: 'uuid = ?', whereArgs: [id]);
   return query;
 }
@@ -105,17 +108,31 @@ Future<List<BasicFile>> getItemsFromDirectory(Directory parent) async {
 
 Future<void> refreshItemsFromDirectory(Directory parent) async {
   var items = await API.getItemsFromDirectory(data.authentication(), parent);
+  Set<BasicFile> downloaded = {};
   for (var item in items) {
-    await insertFile(item, parentId: parent.id);
+    if (item is File) {
+      try {
+        var t = await queryFile(item);
+        if (!(t['file_location'] == null || t['last_updated'] == null))
+          downloaded.add(item);
+      } catch (e) {
+        // this exception doesn't need to be handled
+      }
+    }
+  }
+  await dbDelete(
+      tableName: DatabaseHelper.fileTable,
+      where: 'parent_id = ? AND file_location IS NULL AND last_updated IS NULL',
+      whereArgs: [parent.id]);
+  for (var item in items) {
+    if (!downloaded.contains(item)) {
+      await insertFile(item, parentId: parent.id);
+    }
   }
 }
 
 Future<List<BasicFile>> refreshAndGetItemsFromDirectory(
     Directory parent) async {
-  await dbDelete(
-      tableName: DatabaseHelper.fileTable,
-      where: 'parent_id = ?',
-      whereArgs: [parent.id]);
   await refreshItemsFromDirectory(parent);
   var query = await _queryByParentId(parent.id);
   List<BasicFile> res = [];
@@ -139,6 +156,15 @@ Future<String> getFileLocation(File file) async {
     throw Exception('Error in getDownloadUrl');
   }
   return query[0]['file_location'];
+}
+
+Future<Map<String, dynamic>> queryFile(File file) async {
+  var query = await _queryById(file.id);
+  if (query.length != 1) {
+    // TODO: error handling
+    throw Exception('Error in queryFile');
+  }
+  return query[0];
 }
 
 Future<void> updateFileLocation(File file, String path, DateTime time) async {
