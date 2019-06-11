@@ -1,8 +1,10 @@
+import 'package:fluminus/db/db_file.dart';
+import 'package:fluminus/widgets/modal_bottom_sheet.dart';
+import 'package:flutter/material.dart';
+import 'package:luminus_api/luminus_api.dart';
 import 'package:fluminus/model/task_list_model.dart';
 import 'package:fluminus/new_task_page.dart';
 import 'package:fluminus/redux/store.dart';
-import 'package:flutter/material.dart';
-import 'package:luminus_api/luminus_api.dart';
 import 'package:fluminus/util.dart' as util;
 
 import '../file_page.dart';
@@ -63,11 +65,13 @@ Widget inkWellCard(String title, String subtitle, BuildContext context,
     {Icon leading,
     Icon trailing,
     IconButton leadingButton,
-    IconButton trailingButton}) {
+    IconButton trailingButton,
+    GestureLongPressCallback onLongPress}) {
   const double _verticalPadding = 6.0;
   Widget child = InkWell(
     borderRadius: _borderRadius,
     onTap: onTap,
+    onLongPress: onLongPress,
     child: Padding(
       padding: const EdgeInsets.only(
           top: _verticalPadding, bottom: _verticalPadding),
@@ -164,14 +168,27 @@ Widget fileCard(
         return Icon(Icons.error_outline);
     }
   }
+
   return inkWellCard(
-      file.name, util.formatLastUpdatedTime(file.lastUpdatedDate), context, () {
-    if (status == FileStatus.normal) {
-      downloadFile(file, statusMap);
-    } else if (status == FileStatus.downloaded) {
-      openFile(file);
-    }
-  }, leading: getFileCardIcon());
+      file.name,
+      util.formatLastUpdatedTime(file.lastUpdatedDate),
+      context,
+      () {
+        if (status == FileStatus.normal) {
+          downloadFile(file, statusMap);
+        } else if (status == FileStatus.downloaded) {
+          openFile(file);
+        }
+      },
+      leading: getFileCardIcon(),
+      onLongPress: () async {
+        DateTime lastDownloaded = status == FileStatus.downloaded ? await getLastUpdated(file) : null;
+        showModalBottomSheet(
+            context: context,
+            builder: (context) {
+              return fileDetailSheet(context, file, lastDownloaded: lastDownloaded);
+            });
+      });
 }
 
 Widget moduleRootDirectoryCard(Module module, BuildContext context) {

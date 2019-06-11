@@ -75,6 +75,7 @@ class _ModuleRootDirectoryPageState extends State<ModuleRootDirectoryPage> {
   List<Directory> _directories;
   List<Directory> _refreshedDirectories;
   RefreshController _refreshController;
+  final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
 
   @override
   void initState() {
@@ -91,41 +92,59 @@ class _ModuleRootDirectoryPageState extends State<ModuleRootDirectoryPage> {
   @override
   Widget build(BuildContext context) {
     Future<void> onRefresh() async {
-      _refreshedDirectories = await util.onLoading(_refreshController,
-          _directories, () => db.refreshAndGetModuleDirectories(widget.module));
-
-      if (_refreshedDirectories == null) {
-        _refreshController.refreshFailed();
-      } else {
-        print('refreshing');
+      try {
+        _refreshedDirectories = await util.onLoading(
+            _refreshController,
+            _directories,
+            () => db.refreshAndGetModuleDirectories(widget.module));
+        // print('refreshed');
         setState(() {
           _directories = _refreshedDirectories;
         });
         _refreshController.refreshCompleted();
+        _scaffoldKey.currentState.showSnackBar(SnackBar(
+          content: Text('Refreshed!'),
+          duration: Duration(milliseconds: 500),
+        ));
+      } catch (e) {
+        _refreshController.refreshFailed();
+        _scaffoldKey.currentState.showSnackBar(SnackBar(
+          content: Text('Refresh failed!'),
+          duration: Duration(seconds: 2),
+          action: SnackBarAction(
+            label: 'Details',
+            onPressed: () {
+              dialog.displayDialog('Detail', e.toString(), context);
+            },
+          ),
+        ));
       }
     }
 
     return Scaffold(
+      key: _scaffoldKey,
       appBar: AppBar(
         title: Text(widget.module.name),
       ),
-      body: _paddedfutureBuilder(db.getModuleDirectories(widget.module),
-          (context, snapshot) {
-        if (snapshot.hasData) {
-          _directories = snapshot.data;
-          return list.refreshableListView(
-              _refreshController,
-              onRefresh,
-              _directories,
-              (arg) => list.CardType.moduleDirectoryCardType,
-              context,
-              {"module": widget.module},
-              enablePullUp: false);
-        } else if (snapshot.hasError) {
-          return Text(snapshot.error);
-        }
-        return common.progressIndicator;
-      }),
+      body: _paddedfutureBuilder(
+        db.getModuleDirectories(widget.module),
+        (context, snapshot) {
+          if (snapshot.hasData) {
+            _directories = snapshot.data;
+            return list.refreshableListView(
+                _refreshController,
+                onRefresh,
+                _directories,
+                (arg) => list.CardType.moduleDirectoryCardType,
+                context,
+                {"module": widget.module},
+                enablePullUp: false);
+          } else if (snapshot.hasError) {
+            return Text(snapshot.error);
+          }
+          return common.progressIndicator;
+        },
+      ),
     );
   }
 }
@@ -148,6 +167,7 @@ class _SubdirectoryPageState extends State<SubdirectoryPage> {
   RefreshController _refreshController;
   List<BasicFile> _fileList;
   List<BasicFile> _refreshedFileList;
+  final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
 
   @override
   void initState() {
@@ -165,7 +185,7 @@ class _SubdirectoryPageState extends State<SubdirectoryPage> {
 
   // TODO: defer `_initStatus` after rendering out the list of files to optimize performance
   Future<Map<BasicFile, FileStatus>> _initStatus(
-      Future<List<BasicFile>> list) async {
+      FutureOr<List<BasicFile>> list) async {
     var t = await list;
     Map<BasicFile, FileStatus> map = new Map();
     for (var file in t) {
@@ -223,7 +243,7 @@ class _SubdirectoryPageState extends State<SubdirectoryPage> {
       }
     } else {
       updateStatus(file, FileStatus.downloaded);
-      print('cached file loc');
+      // print('cached file loc');
     }
   }
 
@@ -245,19 +265,34 @@ class _SubdirectoryPageState extends State<SubdirectoryPage> {
       try {
         _refreshedFileList = await util.onLoading(_refreshController, _fileList,
             () => db.refreshAndGetItemsFromDirectory(widget.parent));
-        print('refreshed');
         setState(() {
           _fileList = _refreshedFileList;
           _fileListFuture = Future.value(_refreshedFileList);
         });
+        _statusFuture = _initStatus(_fileList);
         _refreshController.refreshCompleted();
+        _scaffoldKey.currentState.showSnackBar(SnackBar(
+          content: Text('Refreshed!'),
+          duration: Duration(milliseconds: 500),
+        ));
+        // print('refreshed');
       } catch (e) {
-        print(e);
         _refreshController.refreshFailed();
+        _scaffoldKey.currentState.showSnackBar(SnackBar(
+          content: Text('Refresh failed!'),
+          duration: Duration(seconds: 2),
+          action: SnackBarAction(
+            label: 'Details',
+            onPressed: () {
+              dialog.displayDialog('Detail', e.toString(), context);
+            },
+          ),
+        ));
       }
     }
 
     return Scaffold(
+      key: _scaffoldKey,
       floatingActionButton: _backToHomeFloatingActionButton(context),
       appBar: AppBar(
         title: Text(this.widget.title),

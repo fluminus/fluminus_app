@@ -17,6 +17,7 @@ ThemeData lightTheme = ThemeData(
 
 ThemeData darkTheme = ThemeData(
     brightness: Brightness.dark,
+    canvasColor: Colors.transparent,
     primaryColor: Colors.black,
     unselectedWidgetColor: Colors.white,
     accentColor: Colors.orange,

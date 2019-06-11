@@ -1,7 +1,6 @@
 import 'dart:convert';
 
 import 'package:luminus_api/luminus_api.dart';
-import 'package:meta/meta.dart';
 import 'db_helper.dart';
 import 'package:fluminus/data.dart' as data;
 
@@ -49,8 +48,11 @@ Future<List<Map<String, dynamic>>> _queryById(String id) async {
 Future<List<Directory>> getModuleDirectories(Module module) async {
   var query = await _queryByParentId(module.id);
   if (query.isEmpty) {
+    // print('refresh module dirs');
     await refreshModuleDirectories(module);
     query = await _queryByParentId(module.id);
+  } else {
+    // print('used cached module dirs');
   }
   List<Directory> res = [];
   for (var item in query) {
@@ -60,6 +62,7 @@ Future<List<Directory>> getModuleDirectories(Module module) async {
 }
 
 Future<void> refreshModuleDirectories(Module module) async {
+  // print(module.id);
   await dbDelete(
       tableName: DatabaseHelper.fileTable,
       where: 'parent_id = ?',
@@ -142,4 +145,13 @@ Future<void> updateFileLocation(File file, String path, DateTime time) async {
   await dbUpdate(DatabaseHelper.fileTable,
       {'file_location': path, 'last_updated': time.toIso8601String()},
       where: 'uuid = ?', whereArgs: [file.id]);
+}
+
+Future<DateTime> getLastUpdated(File file) async {
+  var query = await _queryById(file.id);
+  if (query.length != 1) {
+    // TODO: error handling
+    throw Exception('Error in getLastUpdated');
+  }
+  return DateTime.tryParse(query[0]['last_updated']);
 }
