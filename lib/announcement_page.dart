@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:async/async.dart';
+import 'package:fluminus/widgets/dialog.dart';
 
 import 'package:flutter/material.dart';
 import 'package:luminus_api/luminus_api.dart';
@@ -37,7 +38,7 @@ class _AnnouncementPageState extends State<AnnouncementPage>
   @override
   Widget build(BuildContext context) {
     super.build(context);
-    return DefaultTabController(
+    /*return DefaultTabController(
               length: main.modules.length,
               child: Scaffold(
                 appBar: AppBar(
@@ -57,8 +58,8 @@ class _AnnouncementPageState extends State<AnnouncementPage>
                   }).toList(),
                 ),
               ),
-            );
-    /*return FutureBuilder<List<Module>>(
+            );*/
+    return FutureBuilder<List<Module>>(
         future: this._fetchData(),
         builder: (context, snapshot) {
           if (snapshot.hasData) {
@@ -95,7 +96,7 @@ class _AnnouncementPageState extends State<AnnouncementPage>
             ),
             body: common.progressIndicator,
           );
-        });*/
+        });
   }
 
   @override

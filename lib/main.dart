@@ -11,36 +11,31 @@ import 'data.dart' as data;
 /// Disabling the scroll glow.
 /// Source: https://stackoverflow.com/questions/51119795/how-to-remove-scroll-glow/51119796#51119796
 
-SharedPreferences prefs;
 List<Module> modules;
-Map<Module, List<Announcement>> announcementsByModules = new Map();
 
 void main() async {
-  /*Brightness brightness;
+  Brightness brightness;
+  bool hasCredentials;
   SharedPreferences prefs = await SharedPreferences.getInstance();
+  modules = await API.getModules(data.authentication());
   brightness =
       (prefs.getBool('isDark') ?? false) ? Brightness.dark : Brightness.light;
+  hasCredentials = (prefs.getBool('hasCred') ?? false);
   await DotEnv().load('.env');
   runApp(App(
     brightness: brightness,
-  ));*/
-  prefs = await SharedPreferences.getInstance();
-  modules = await API.getModules(data.authentication());
-  /*for (Module module in modules) {
-    announcementsByModules[module] = await API.getAnnouncements(data.authentication(), module);
-  }*/
-  runApp(MaterialApp(
-      home: HomePage(),
-    ));
+    hasCredentials: hasCredentials,
+  ));
 }
 
 class App extends StatelessWidget {
   final Brightness brightness;
+  final bool hasCredentials;
   final routes = <String, WidgetBuilder>{
     LoginPage.tag: (context) => LoginPage(),
     HomePage.tag: (context) => HomePage(),
   };
-  App({this.brightness});
+  App({this.brightness, this.hasCredentials});
   @override
   Widget build(BuildContext context) {
     return new DynamicTheme(
@@ -54,7 +49,7 @@ class App extends StatelessWidget {
             builder: (context, child) {
               return ScrollConfiguration(behavior: MyBehavior(), child: child);
             },
-            home: LoginPage(),
+            home: hasCredentials ? HomePage() : LoginPage(),
             routes: routes,
           );
         });

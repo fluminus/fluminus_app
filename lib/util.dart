@@ -27,7 +27,7 @@ String formatDate(DateTime date) {
 }
 
 String formatDateAsTitle(DateTime date) {
-  return new DateFormat("EEEE").format(date) + "\n" + new DateFormat("dd MMMM").format(date);
+  return new DateFormat("dd MMMM  yyyy").format(date) + "\n" + new DateFormat("EEEE").format(date);
 }
 
 String formatTowDates(DateTime startDate, DateTime endDate) {

@@ -54,20 +54,28 @@ class _TaskPageState extends State<TaskPage> {
     List<int> keys = tasksListByWeekNum.keys.toList();
     keys.sort((x, y) => x - y);
 
+    String imagePath() {
+      if (Theme.of(context).brightness == Brightness.dark) {
+        return "assets/card_background_dark.jpeg";
+      } else {
+        return "assets/card_background_light.jpeg";
+      }
+    }
+
     Widget cardHeader = Card(
       child: Container(
         width: MediaQuery.of(context).size.width,
         height: 200.0,
         decoration: BoxDecoration(
           image: DecorationImage(
-            image: AssetImage("assets/card_background.jpg"),
+            image: AssetImage(imagePath()),
             fit: BoxFit.fitWidth,
             alignment: Alignment.topCenter,
           ),
         ),
         child: Padding(
             padding: const EdgeInsets.only(
-                top: 40.0, left: 25.0, right: 10.0, bottom: 10.0),
+                top: 25.0, left: 100.0, right: 10.0, bottom: 10.0),
             child: Text(
               util.formatDateAsTitle(DateTime.now()),
               style: Theme.of(context).textTheme.headline,
