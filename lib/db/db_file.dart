@@ -107,6 +107,28 @@ Future<void> refreshItemsFromDirectory(Directory parent) async {
   }
 }
 
+Future<List<BasicFile>> refreshAndGetItemsFromDirectory(
+    Directory parent) async {
+  await dbDelete(
+      tableName: DatabaseHelper.fileTable,
+      where: 'parent_id = ?',
+      whereArgs: [parent.id]);
+  await refreshItemsFromDirectory(parent);
+  var query = await _queryByParentId(parent.id);
+  List<BasicFile> res = [];
+  for (var item in query) {
+    if (item['is_file'] == null) {
+      // TODO: error handling
+      throw Exception('getItemsFromDirectory error');
+    } else if (item['is_file'] == 1) {
+      res.add(File.fromJson(jsonDecode(item['json'])));
+    } else {
+      res.add(Directory.fromJson(jsonDecode(item['json'])));
+    }
+  }
+  return res;
+}
+
 Future<String> getFileLocation(File file) async {
   var query = await _queryById(file.id);
   if (query.length != 1) {

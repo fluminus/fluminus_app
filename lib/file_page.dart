@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
@@ -117,7 +119,8 @@ class _ModuleRootDirectoryPageState extends State<ModuleRootDirectoryPage> {
               _directories,
               () => list.CardType.moduleDirectoryCardType,
               context,
-              {"module": widget.module});
+              {"module": widget.module},
+              enablePullUp: false);
         } else if (snapshot.hasError) {
           return Text(snapshot.error);
         }
@@ -137,20 +140,20 @@ class SubdirectoryPage extends StatefulWidget {
   _SubdirectoryPageState createState() => _SubdirectoryPageState();
 }
 
-enum _FileStatus { normal, downloading, downloaded }
+enum FileStatus { normal, downloading, downloaded }
 
 class _SubdirectoryPageState extends State<SubdirectoryPage> {
-  Future<List<BasicFile>> _listFuture;
-  Future<Map<BasicFile, _FileStatus>> _statusFuture;
+  Future<List<BasicFile>> _fileListFuture;
+  Future<Map<BasicFile, FileStatus>> _statusFuture;
   RefreshController _refreshController;
-  List<dynamic> _fileList;
-  List<dynamic> _refreshedFileList;
+  List<BasicFile> _fileList;
+  List<BasicFile> _refreshedFileList;
 
   @override
   void initState() {
     super.initState();
-    _listFuture = db.getItemsFromDirectory(widget.parent);
-    _statusFuture = _initStatus(_listFuture);
+    _fileListFuture = db.getItemsFromDirectory(widget.parent);
+    _statusFuture = _initStatus(_fileListFuture);
     _refreshController = RefreshController();
   }
 
@@ -161,21 +164,21 @@ class _SubdirectoryPageState extends State<SubdirectoryPage> {
   }
 
   // TODO: defer `_initStatus` after rendering out the list of files to optimize performance
-  Future<Map<BasicFile, _FileStatus>> _initStatus(
+  Future<Map<BasicFile, FileStatus>> _initStatus(
       Future<List<BasicFile>> list) async {
     var t = await list;
-    Map<BasicFile, _FileStatus> map = new Map();
+    Map<BasicFile, FileStatus> map = new Map();
     for (var file in t) {
       if (await db.getFileLocation(file) == null) {
-        map[file] = _FileStatus.normal;
+        map[file] = FileStatus.normal;
       } else {
-        map[file] = _FileStatus.downloaded;
+        map[file] = FileStatus.downloaded;
       }
     }
     return map;
   }
 
-  Future<void> updateStatus(File file, _FileStatus status) async {
+  Future<void> updateStatus(File file, FileStatus status) async {
     var t = await _statusFuture;
     if (!t.containsKey(file)) {
       // TODO: error handling
@@ -186,7 +189,7 @@ class _SubdirectoryPageState extends State<SubdirectoryPage> {
     }
   }
 
-  Future<_FileStatus> getStatus(File file) async {
+  Future<FileStatus> getStatus(File file) async {
     var t = await _statusFuture;
     if (!t.containsKey(file)) {
       // TODO: error handling
@@ -197,7 +200,7 @@ class _SubdirectoryPageState extends State<SubdirectoryPage> {
   }
 
   Future<void> downloadFile(
-      File file, Map<BasicFile, _FileStatus> statusList) async {
+      File file, Map<BasicFile, FileStatus> statusMap) async {
     var loc = await db.getFileLocation(file);
     if (loc == null) {
       try {
@@ -209,16 +212,16 @@ class _SubdirectoryPageState extends State<SubdirectoryPage> {
         var path = join(dir.path, file.fileName);
         await dio.download(url, path, onReceiveProgress: (rec, total) {
           // print("Rec: $rec , Total: $total");
-          updateStatus(file, _FileStatus.downloading);
+          updateStatus(file, FileStatus.downloading);
         });
         await db.updateFileLocation(file, path, DateTime.now());
-        updateStatus(file, _FileStatus.downloaded);
+        updateStatus(file, FileStatus.downloaded);
       } catch (e) {
         // TODO: error handling
         print(e);
       }
     } else {
-      updateStatus(file, _FileStatus.downloaded);
+      updateStatus(file, FileStatus.downloaded);
       print('cached file loc');
     }
   }
@@ -238,16 +241,18 @@ class _SubdirectoryPageState extends State<SubdirectoryPage> {
   @override
   Widget build(BuildContext context) {
     Future<void> onRefresh() async {
-      _refreshedFileList = await util.onLoading(_refreshController, _fileList,
-          () => db.getItemsFromDirectory(widget.parent));
-      //TODO: add correct condition
-      if (false) {
-        _refreshController.refreshFailed();
-      } else {
+      try {
+        _refreshedFileList = await util.onLoading(_refreshController, _fileList,
+            () => db.refreshAndGetItemsFromDirectory(widget.parent));
+        print('refreshed');
         setState(() {
           _fileList = _refreshedFileList;
+          _fileListFuture = Future.value(_refreshedFileList);
         });
         _refreshController.refreshCompleted();
+      } catch (e) {
+        print(e);
+        _refreshController.refreshFailed();
       }
     }
 
@@ -257,17 +262,26 @@ class _SubdirectoryPageState extends State<SubdirectoryPage> {
         title: Text(this.widget.title),
       ),
       body: _paddedfutureBuilder(
-          Future.wait([_listFuture, _statusFuture]).then((response) => {
+          Future.wait([_fileListFuture, _statusFuture]).then((response) => {
                 'listFuture': response[0],
                 'statusFuture': response[1]
               }), (context, snapshot) {
         if (snapshot.hasData) {
-          return SmartRefresher(
-              enablePullDown: true,
-              enablePullUp: true,
-              controller: _refreshController,
-              onRefresh: onRefresh,
-              child: fileListView(context, snapshot));
+          // TODO: it looks like when refreshed this widget is rebuilt twice...
+          _fileList = snapshot.data['listFuture'];
+          Map<BasicFile, FileStatus> statusMap = snapshot.data['statusFuture'];
+          return list.refreshableListView(
+              _refreshController,
+              onRefresh,
+              _fileList,
+              () => list.CardType.fileCardType,
+              context,
+              {
+                'status': statusMap,
+                'downloadFile': downloadFile,
+                'openFile': openFile
+              },
+              enablePullUp: false);
         } else if (snapshot.hasError) {
           return Text(snapshot.error);
         }
@@ -277,9 +291,9 @@ class _SubdirectoryPageState extends State<SubdirectoryPage> {
   }
 
   Widget fileCardWidget(
-      File file, Map<BasicFile, _FileStatus> statusList, BuildContext context,
+      File file, Map<BasicFile, FileStatus> statusList, BuildContext context,
       {Icon trailing}) {
-    _FileStatus status;
+    FileStatus status;
     Icon normal = Icon(Icons.attach_file);
     Icon downloaded = Icon(Icons.done);
     Icon downloading = Icon(Icons.cloud_download);
@@ -287,11 +301,11 @@ class _SubdirectoryPageState extends State<SubdirectoryPage> {
       if (statusList.containsKey(file)) {
         status = statusList[file];
         switch (status) {
-          case _FileStatus.normal:
+          case FileStatus.normal:
             return normal;
-          case _FileStatus.downloaded:
+          case FileStatus.downloaded:
             return downloaded;
-          case _FileStatus.downloading:
+          case FileStatus.downloading:
             return downloading;
           default:
             // TODO: error handling
@@ -306,27 +320,25 @@ class _SubdirectoryPageState extends State<SubdirectoryPage> {
     return card.inkWellCard(
         file.name, util.formatLastUpdatedTime(file.lastUpdatedDate), context,
         () {
-      if (status == _FileStatus.normal) {
+      if (status == FileStatus.normal) {
         downloadFile(file, statusList);
-      } else if (status == _FileStatus.downloaded) {
+      } else if (status == FileStatus.downloaded) {
         openFile(file);
       }
     }, leading: getFileCardIcon());
   }
 
   // try this; https://stackoverflow.com/questions/52021205/usage-of-futurebuilder-with-setstate
-  Widget fileListView(BuildContext context, AsyncSnapshot snapshot) {
+  Widget fileListView(BuildContext context, List fileList, Map statusMap) {
     // _initFileState(snapshot.data);
-    var _fileList = snapshot.data['listFuture'];
-    var statusMap = snapshot.data['statusFuture'];
     return new ListView.builder(
-      itemCount: _fileList.length,
+      itemCount: fileList.length,
       itemBuilder: (BuildContext context, int index) {
         return new Column(
           children: <Widget>[
-            _fileList[index] is File
-                ? fileCardWidget(_fileList[index], statusMap, context)
-                : card.directoryCard(_fileList[index], context)
+            fileList[index] is File
+                ? fileCardWidget(fileList[index], statusMap, context)
+                : card.directoryCard(fileList[index], context)
           ],
         );
       },

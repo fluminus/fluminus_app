@@ -141,6 +141,39 @@ Widget directoryCard(Directory dir, BuildContext context) {
       leading: Icon(Icons.folder), trailing: Icon(Icons.arrow_right));
 }
 
+Widget fileCard(
+    File file,
+    BuildContext context,
+    FileStatus status,
+    Map<BasicFile, FileStatus> statusMap,
+    Function downloadFile,
+    Function openFile) {
+  Icon normal = Icon(Icons.attach_file);
+  Icon downloaded = Icon(Icons.done);
+  Icon downloading = Icon(Icons.cloud_download);
+  Icon getFileCardIcon() {
+    switch (status) {
+      case FileStatus.normal:
+        return normal;
+      case FileStatus.downloaded:
+        return downloaded;
+      case FileStatus.downloading:
+        return downloading;
+      default:
+        // TODO: error handling
+        return Icon(Icons.error_outline);
+    }
+  }
+  return inkWellCard(
+      file.name, util.formatLastUpdatedTime(file.lastUpdatedDate), context, () {
+    if (status == FileStatus.normal) {
+      downloadFile(file, statusMap);
+    } else if (status == FileStatus.downloaded) {
+      openFile(file);
+    }
+  }, leading: getFileCardIcon());
+}
+
 Widget moduleRootDirectoryCard(Module module, BuildContext context) {
   Widget nextPage = ModuleRootDirectoryPage(module);
   return inkWellCard(
