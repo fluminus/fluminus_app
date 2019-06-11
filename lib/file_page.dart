@@ -57,7 +57,7 @@ class FilePage extends StatelessWidget {
   Widget moduleRootDirectoyListView(
       BuildContext context, AsyncSnapshot snapshot) {
     return list.itemListView(snapshot.data,
-        () => list.CardType.moduleRootDirectoryCardType, context, null);
+        (arg) => list.CardType.moduleRootDirectoryCardType, context, null);
   }
 }
 
@@ -117,7 +117,7 @@ class _ModuleRootDirectoryPageState extends State<ModuleRootDirectoryPage> {
               _refreshController,
               onRefresh,
               _directories,
-              () => list.CardType.moduleDirectoryCardType,
+              (arg) => list.CardType.moduleDirectoryCardType,
               context,
               {"module": widget.module},
               enablePullUp: false);
@@ -169,6 +169,7 @@ class _SubdirectoryPageState extends State<SubdirectoryPage> {
     var t = await list;
     Map<BasicFile, FileStatus> map = new Map();
     for (var file in t) {
+      if (!(file is File)) continue;
       if (await db.getFileLocation(file) == null) {
         map[file] = FileStatus.normal;
       } else {
@@ -274,7 +275,9 @@ class _SubdirectoryPageState extends State<SubdirectoryPage> {
               _refreshController,
               onRefresh,
               _fileList,
-              () => list.CardType.fileCardType,
+              (BasicFile arg) => arg is File
+                  ? list.CardType.fileCardType
+                  : list.CardType.directoryCardType,
               context,
               {
                 'status': statusMap,

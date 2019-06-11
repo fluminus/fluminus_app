@@ -52,7 +52,7 @@ Widget itemListView(
           Padding(
               padding: const EdgeInsets.only(bottom: 6.0),
               child:
-                  _certainCard(itemList[index], getCardType(), context, params))
+                  _certainCard(itemList[index], getCardType(itemList[index]), context, params))
         ],
       );
     },
