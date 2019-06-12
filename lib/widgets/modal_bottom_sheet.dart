@@ -10,29 +10,44 @@ Widget fileDetailSheet(BuildContext context, File file,
     Future<void> Function(File) openFile,
     Future<void> Function(File) deleteFile}) {
   List<Widget> content = [];
+  var _subtitleStyle = Theme.of(context).textTheme.body1;
   content.addAll([
     ListTile(
       title: Text('File name'),
-      subtitle: Text(file.fileName),
+      subtitle: Text(
+        file.fileName,
+        style: _subtitleStyle,
+      ),
     ),
     ListTile(
       title: Text('File size'),
-      subtitle:
-          Text((file.fileSize.toInt() / 1048576).toStringAsFixed(2) + ' MB'),
+      subtitle: Text(
+        (file.fileSize.toInt() / 1048576).toStringAsFixed(2) + ' MB',
+        style: _subtitleStyle,
+      ),
     ),
     ListTile(
       title: Text('Last updated at'),
-      subtitle: Text(datetimeStringToFormattedString(file.lastUpdatedDate)),
+      subtitle: Text(
+        datetimeStringToFormattedString(file.lastUpdatedDate),
+        style: _subtitleStyle,
+      ),
     ),
     ListTile(
       title: Text('Created at'),
-      subtitle: Text(datetimeStringToFormattedString(file.createdDate)),
+      subtitle: Text(
+        datetimeStringToFormattedString(file.createdDate),
+        style: _subtitleStyle,
+      ),
     ),
   ]);
   if (lastDownloaded != null) {
     content.add(ListTile(
       title: Text('Downloaded at'),
-      subtitle: Text(datetimeToFormattedString(lastDownloaded)),
+      subtitle: Text(
+        datetimeToFormattedString(lastDownloaded),
+        style: _subtitleStyle,
+      ),
     ));
     content.add(RaisedButton(
       color: Theme.of(context).accentColor,

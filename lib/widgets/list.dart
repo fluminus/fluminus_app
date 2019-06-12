@@ -53,7 +53,7 @@ Widget itemListView(
         mainAxisSize: MainAxisSize.min,
         children: <Widget>[
           Padding(
-              padding: const EdgeInsets.only(bottom: 6.0),
+              padding: const EdgeInsets.only(top: 6.0),
               child: _certainCard(itemList[index], getCardType(itemList[index]),
                   context, params))
         ],

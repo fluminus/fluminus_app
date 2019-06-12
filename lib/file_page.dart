@@ -1,7 +1,9 @@
 import 'dart:async';
 import 'dart:io' as prefix0;
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:path/path.dart' as path_dart;
 import 'package:path_provider/path_provider.dart';
 import 'package:dio/dio.dart';
@@ -18,9 +20,25 @@ import 'package:fluminus/data.dart' as data;
 import 'package:fluminus/widgets/dialog.dart' as dialog;
 import 'package:fluminus/db/db_helper.dart' as db;
 
-final EdgeInsets _padding = const EdgeInsets.fromLTRB(14.0, 10.0, 14.0, 0.0);
+final EdgeInsets _padding = const EdgeInsets.only(left: 14.0, right: 14.0);
+Widget _paddedfutureBuilder(Future future, AsyncWidgetBuilder builder) {
+  return Padding(
+    padding: _padding,
+    child: FutureBuilder(future: future, builder: builder),
+  );
+}
 
-Widget _filePageFloatingActionButton(BuildContext context) {
+enum _SortMethod {
+  normal,
+  name,
+  lastUpdated,
+  createdAt,
+  // downloadedAt,
+  fileSize
+}
+
+Widget _filePageFloatingActionButton(
+    BuildContext context, void Function() sort) {
   SpeedDialChild _actionButton(
       {@required IconData icon,
       @required Color backgroundColor,
@@ -60,16 +78,10 @@ Widget _filePageFloatingActionButton(BuildContext context) {
           backgroundColor: Theme.of(context).buttonColor,
           label: 'Sort',
           onTap: () {
-            print("sort");
+            sort();
+            // print("sort");
           })
     ],
-  );
-}
-
-Widget _paddedfutureBuilder(Future future, AsyncWidgetBuilder builder) {
-  return Padding(
-    padding: _padding,
-    child: FutureBuilder(future: future, builder: builder),
   );
 }
 
@@ -204,6 +216,9 @@ class _SubdirectoryPageState extends State<SubdirectoryPage> {
   RefreshController _refreshController;
   List<BasicFile> _fileList;
   List<BasicFile> _refreshedFileList;
+  // TODO: store last used sorting method
+  _SortMethod _sortMethod = _SortMethod.normal;
+  bool _sortAscend = true;
   final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
 
   @override
@@ -360,9 +375,105 @@ class _SubdirectoryPageState extends State<SubdirectoryPage> {
       }
     }
 
+    void sortItems(BuildContext context,
+        {_SortMethod method = _SortMethod.normal, bool isAscend = true}) {
+      final c = isAscend ? 1 : -1;
+      setState(() {
+        int Function(BasicFile, BasicFile) comparator;
+        switch (method) {
+          case _SortMethod.normal:
+            comparator = (BasicFile fileA, BasicFile fileB) =>
+                c * fileA.name.compareTo(fileB.name);
+            break;
+          case _SortMethod.name:
+            comparator = (BasicFile fileA, BasicFile fileB) =>
+                c * fileA.name.compareTo(fileB.name);
+            break;
+          case _SortMethod.lastUpdated:
+            comparator = (BasicFile fileA, BasicFile fileB) {
+              var a = DateTime.parse(fileA.lastUpdatedDate);
+              var b = DateTime.parse(fileB.lastUpdatedDate);
+              return a.compareTo(b);
+            };
+            break;
+          case _SortMethod.fileSize:
+            comparator = (BasicFile fileA, BasicFile fileB) {
+              if (fileA is File && fileB is File) {
+                return ((fileA.fileSize - fileB.fileSize) * c).toInt();
+              } else if (fileA is File && !(fileB is File)) {
+                return -1;
+              } else if (!(fileA is File) && fileB is File) {
+                return 1;
+              } else {
+                return fileA.name.compareTo(fileB.name);
+              }
+            };
+            break;
+          case _SortMethod.createdAt:
+            comparator = (BasicFile fileA, BasicFile fileB) {
+              var a = DateTime.parse(fileA.createdDate);
+              var b = DateTime.parse(fileB.createdDate);
+              return a.compareTo(b);
+            };
+            break;
+            break;
+          default:
+            break;
+        }
+        _fileList.sort(comparator);
+        _fileListFuture = Future.value(_fileList);
+      });
+      _scaffoldKey.currentState.showSnackBar(SnackBar(
+        content: Text('Sorted!'),
+        duration: Duration(milliseconds: 500),
+      ));
+    }
+
+    void showSortMethods() {
+      var sms = SortMethodSelect(
+        _SortMethod.values,
+        onMethodChanged: (selection) {
+          setState(() {
+            _sortMethod = selection;
+            // print(_sortMethod.toString());
+          });
+        },
+        onAscendChanged: (checked) {
+          setState(() {
+            _sortAscend = checked;
+            // print(_sortAscend);
+          });
+        },
+        initAscend: _sortAscend,
+        initMethod: _sortMethod,
+      );
+      showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            //Here we will build the content of the dialog
+            return AlertDialog(
+              title: Text('Sort Method'),
+              content: SingleChildScrollView(
+                child: sms,
+              ),
+              actions: <Widget>[
+                FlatButton(
+                  child: Text("Confirm"),
+                  onPressed: () {
+                    sortItems(context,
+                        method: _sortMethod, isAscend: _sortAscend);
+                    Navigator.of(context).pop();
+                  },
+                )
+              ],
+            );
+          });
+    }
+
     return Scaffold(
       key: _scaffoldKey,
-      floatingActionButton: _filePageFloatingActionButton(context),
+      floatingActionButton:
+          _filePageFloatingActionButton(context, showSortMethods),
       appBar: AppBar(
         title: Text(this.widget.title),
       ),
@@ -395,6 +506,79 @@ class _SubdirectoryPageState extends State<SubdirectoryPage> {
         }
         return common.progressIndicator;
       }),
+    );
+  }
+}
+
+class SortMethodSelect extends StatefulWidget {
+  final List<_SortMethod> choices;
+  final Function(_SortMethod) onMethodChanged;
+  final Function(bool) onAscendChanged;
+  bool initAscend;
+  _SortMethod initMethod;
+  SortMethodSelect(
+    this.choices, {
+    @required this.onMethodChanged,
+    @required this.onAscendChanged,
+    @required this.initAscend,
+    @required this.initMethod,
+  });
+  @override
+  _SortMethodSelectState createState() =>
+      _SortMethodSelectState(initMethod, initAscend);
+}
+
+class _SortMethodSelectState extends State<SortMethodSelect> {
+  _SortMethod selectedChoice;
+  bool checked;
+  _SortMethodSelectState(this.selectedChoice, this.checked);
+  // this function will build and return the choice list
+  _buildChoiceList() {
+    List<Widget> choices = List();
+    widget.choices.forEach((item) {
+      choices.add(Container(
+        padding: const EdgeInsets.all(2.0),
+        child: ChoiceChip(
+          selectedColor: Theme.of(context).accentColor,
+          label: Text(describeEnum(item)),
+          selected: selectedChoice == item,
+          onSelected: (selected) {
+            setState(() {
+              selectedChoice = item;
+              widget.onMethodChanged(selectedChoice);
+            });
+          },
+        ),
+      ));
+    });
+    return choices;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    var checkbox = Row(
+      children: <Widget>[
+        Checkbox(
+          checkColor: Theme.of(context).backgroundColor,
+          activeColor: Theme.of(context).accentColor,
+          onChanged: (bool value) {
+            setState(() {
+              checked = value;
+              widget.onAscendChanged(value);
+            });
+          },
+          value: checked,
+        ),
+        Text('In ascending order')
+      ],
+    );
+    return Column(
+      children: <Widget>[
+        Wrap(
+          children: _buildChoiceList(),
+        ),
+        checkbox,
+      ],
     );
   }
 }
