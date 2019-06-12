@@ -7,6 +7,9 @@ import 'package:path_provider/path_provider.dart';
 import 'package:dio/dio.dart';
 import 'package:open_file/open_file.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
+import 'package:flutter_speed_dial/flutter_speed_dial.dart';
+import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+
 import 'package:luminus_api/luminus_api.dart';
 import 'package:fluminus/widgets/list.dart' as list;
 import 'package:fluminus/widgets/common.dart' as common;
@@ -17,15 +20,49 @@ import 'package:fluminus/db/db_helper.dart' as db;
 
 final EdgeInsets _padding = const EdgeInsets.fromLTRB(14.0, 10.0, 14.0, 0.0);
 
-FloatingActionButton _backToHomeFloatingActionButton(BuildContext context) {
-  return FloatingActionButton(
-    child: Icon(Icons.home),
-    onPressed: () {
-      // Pop to the front page
-      // reference: https://stackoverflow.com/questions/49672706/flutter-navigation-pop-to-index-1
-      Navigator.popUntil(
-          context, ModalRoute.withName(Navigator.defaultRouteName));
-    },
+Widget _filePageFloatingActionButton(BuildContext context) {
+  SpeedDialChild _actionButton(
+      {@required IconData icon,
+      @required Color backgroundColor,
+      @required String label,
+      @required void Function() onTap}) {
+    return SpeedDialChild(
+        child: Icon(icon),
+        backgroundColor: backgroundColor,
+        label: label,
+        labelBackgroundColor: Theme.of(context).backgroundColor,
+        labelStyle: Theme.of(context).primaryTextTheme.body1,
+        onTap: onTap);
+  }
+
+  return SpeedDial(
+    animatedIcon: AnimatedIcons.menu_close,
+    animatedIconTheme: Theme.of(context).accentIconTheme,
+    closeManually: false,
+    curve: Curves.bounceIn,
+    overlayColor: Colors.black,
+    overlayOpacity: 0.5,
+    backgroundColor: Theme.of(context).accentColor,
+    foregroundColor: Theme.of(context).accentIconTheme.color,
+    elevation: 8.0,
+    shape: CircleBorder(),
+    children: [
+      _actionButton(
+          icon: Icons.home,
+          backgroundColor: Colors.amberAccent,
+          label: 'Back to modules',
+          onTap: () {
+            Navigator.popUntil(
+                context, ModalRoute.withName(Navigator.defaultRouteName));
+          }),
+      _actionButton(
+          icon: MdiIcons.sort,
+          backgroundColor: Theme.of(context).buttonColor,
+          label: 'Sort',
+          onTap: () {
+            print("sort");
+          })
+    ],
   );
 }
 
@@ -325,7 +362,7 @@ class _SubdirectoryPageState extends State<SubdirectoryPage> {
 
     return Scaffold(
       key: _scaffoldKey,
-      floatingActionButton: _backToHomeFloatingActionButton(context),
+      floatingActionButton: _filePageFloatingActionButton(context),
       appBar: AppBar(
         title: Text(this.widget.title),
       ),
