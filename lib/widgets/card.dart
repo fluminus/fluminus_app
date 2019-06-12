@@ -175,14 +175,16 @@ Widget fileCard(
       () {
         if (status == FileStatus.normal) {
           downloadFile(file, statusMap);
-        } else if (status == FileStatus.downloaded) {
+        } else if (status == FileStatus.downloaded || status == FileStatus.deleted) {
           openFile(file);
         }
       },
       leading: getFileCardIcon(),
       onLongPress: () async {
         DateTime lastDownloaded =
-            status == FileStatus.downloaded ? await getLastUpdated(file) : null;
+            (status == FileStatus.downloaded || status == FileStatus.deleted)
+                ? await getLastUpdated(file)
+                : null;
         showModalBottomSheet(
             context: context,
             builder: (context) {
