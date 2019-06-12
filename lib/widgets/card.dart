@@ -150,8 +150,9 @@ Widget fileCard(
     BuildContext context,
     FileStatus status,
     Map<BasicFile, FileStatus> statusMap,
-    Function downloadFile,
-    Function openFile) {
+    Future<void> Function(File, Map<BasicFile, FileStatus>) downloadFile,
+    Future<void> Function(File) openFile,
+    Future<void> Function(File, Map<BasicFile, FileStatus>) deleteFile) {
   Icon getFileCardIcon() {
     switch (status) {
       case FileStatus.normal:
@@ -172,11 +173,12 @@ Widget fileCard(
       file.name,
       util.formatLastUpdatedTime(file.lastUpdatedDate),
       context,
-      () {
+      () async {
         if (status == FileStatus.normal) {
-          downloadFile(file, statusMap);
-        } else if (status == FileStatus.downloaded || status == FileStatus.deleted) {
-          openFile(file);
+          await downloadFile(file, statusMap);
+        } else if (status == FileStatus.downloaded ||
+            status == FileStatus.deleted) {
+          await openFile(file);
         }
       },
       leading: getFileCardIcon(),
@@ -189,7 +191,10 @@ Widget fileCard(
             context: context,
             builder: (context) {
               return fileDetailSheet(context, file,
-                  lastDownloaded: lastDownloaded);
+                  lastDownloaded: lastDownloaded,
+                  downloadFile: (File file) => downloadFile(file, statusMap),
+                  openFile: openFile,
+                  deleteFile: (File file) => deleteFile(file, statusMap));
             });
       });
 }

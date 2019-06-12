@@ -164,6 +164,12 @@ Future<List<BasicFile>> refreshAndGetItemsFromDirectory(
   return res;
 }
 
+Future<int> deleteDownloadedFile(File file) async {
+  return await dbUpdate(DatabaseHelper.fileTable,
+      {'file_location': null, 'download_time': null, 'deleted': null},
+      where: 'uuid = ?', whereArgs: [file.id]);
+}
+
 Future<String> getFileLocation(File file) async {
   var query = await _selectById(file.id);
   if (query.length != 1) {

@@ -7,27 +7,80 @@ import 'package:luminus_api/luminus_api.dart';
 import 'package:groovin_widgets/groovin_widgets.dart';
 
 Widget fileDetailSheet(BuildContext context, File file,
-    {FileStatus status = FileStatus.normal, DateTime lastDownloaded}) {
+    {FileStatus status = FileStatus.normal,
+    DateTime lastDownloaded,
+    Future<void> Function(File) downloadFile,
+    Future<void> Function(File) openFile,
+    Future<void> Function(File) deleteFile}) {
+  List<Widget> content = [];
+  content.addAll([
+    ListTile(
+      title: Text('File name'),
+      subtitle: Text(file.fileName),
+    ),
+    ListTile(
+      title: Text('File size'),
+      subtitle:
+          Text((file.fileSize.toInt() / 1048576).toStringAsFixed(2) + ' MB'),
+    ),
+    ListTile(
+      title: Text('Last updated at'),
+      subtitle: Text(datetimeStringToFormattedString(file.lastUpdatedDate)),
+    ),
+    ListTile(
+      title: Text('Created at'),
+      subtitle: Text(datetimeStringToFormattedString(file.createdDate)),
+    ),
+  ]);
+  if (lastDownloaded != null) {
+    content.add(ListTile(
+      title: Text('Downloaded at'),
+      subtitle: Text(datetimeToFormattedString(lastDownloaded)),
+    ));
+    content.add(RaisedButton(
+      color: Theme.of(context).accentColor,
+      child: Text(
+        'Open File',
+      ),
+      onPressed: () async {
+        await openFile(file);
+      },
+    ));
+    content.add(RaisedButton(
+      color: Colors.blueAccent,
+      child: Text(
+        'Download Again',
+      ),
+      onPressed: () {
+        downloadFile(file);
+      },
+    ));
+    content.add(RaisedButton(
+      color: Colors.redAccent,
+      child: Text(
+        'Delete',
+        style: TextStyle(fontWeight: FontWeight.bold),
+      ),
+      onPressed: () {
+        deleteFile(file);
+      },
+    ));
+  } else {
+    content.add(RaisedButton(
+      color: Colors.blueAccent,
+      child: Text(
+        'Download',
+      ),
+      onPressed: () async {
+        await downloadFile(file);
+      },
+    ));
+  }
   return Container(
-    height: 500.0,
     color: Colors.transparent,
-    child: Container(
-      child: Column(mainAxisSize: MainAxisSize.min, children: [
-        Padding(
-          padding: const EdgeInsets.all(10.0),
-          child: ModalDrawerHandle(
-            handleColor: Theme.of(context).accentColor,
-          ),
-        ),
-        Padding(
-          padding: const EdgeInsets.all(14.0),
-          child: Text(jsonEncode(file.toJson())),
-        ),
-        Text('Last download time: ' +
-            (lastDownloaded == null
-                ? 'not downloaded'
-                : datetimeToFormattedString(lastDownloaded)))
-      ]),
+    child: ListView(
+      children: content,
+      padding: const EdgeInsets.all(10.0),
     ),
   );
 }

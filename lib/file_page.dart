@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io' as prefix0;
 
 import 'package:flutter/material.dart';
 import 'package:path/path.dart';
@@ -230,26 +231,33 @@ class _SubdirectoryPageState extends State<SubdirectoryPage> {
       File file, Map<BasicFile, FileStatus> statusMap) async {
     var loc = await db.getFileLocation(file);
     if (loc == null) {
-      try {
-        // TODO: use once instance of Dio
-        Dio dio = Dio();
-        var dir = await getApplicationDocumentsDirectory();
-        var url = await API.getDownloadUrl(await data.authentication(), file);
-        // TODO: compose a meaningful path
-        var path = join(dir.path, file.fileName);
-        await dio.download(url, path, onReceiveProgress: (rec, total) {
-          // print("Rec: $rec , Total: $total");
-          updateStatus(file, FileStatus.downloading);
-        });
-        await db.updateFileLocation(file, path, DateTime.now());
-        updateStatus(file, FileStatus.downloaded);
-      } catch (e) {
-        // TODO: error handling
-        print(e);
-      }
+      // TODO: use once instance of Dio
+      Dio dio = Dio();
+      var dir = await getApplicationDocumentsDirectory();
+      var url = await API.getDownloadUrl(await data.authentication(), file);
+      // TODO: compose a meaningful path
+      var path = join(dir.path, file.fileName);
+      await dio.download(url, path, onReceiveProgress: (rec, total) {
+        // print("Rec: $rec , Total: $total");
+        updateStatus(file, FileStatus.downloading);
+      });
+      await db.updateFileLocation(file, path, DateTime.now());
+      updateStatus(file, FileStatus.downloaded);
     } else {
       updateStatus(file, FileStatus.downloaded);
       // print('cached file loc');
+    }
+  }
+
+  Future<void> deleteFile(
+      File file, Map<BasicFile, FileStatus> statusMap) async {
+    var loc = await db.getFileLocation(file);
+    if(loc == null) {
+      throw Exception("Can't delete a file that doesn't exist");
+    } else {
+      await prefix0.File(loc).delete();
+      await db.deleteDownloadedFile(file);
+      updateStatus(file, FileStatus.normal);
     }
   }
 
@@ -323,7 +331,8 @@ class _SubdirectoryPageState extends State<SubdirectoryPage> {
               {
                 'status': statusMap,
                 'downloadFile': downloadFile,
-                'openFile': openFile
+                'openFile': openFile,
+                'deleteFile': deleteFile
               },
               enablePullUp: false);
         } else if (snapshot.hasError) {
