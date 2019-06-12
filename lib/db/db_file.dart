@@ -165,9 +165,23 @@ Future<List<BasicFile>> refreshAndGetItemsFromDirectory(
 }
 
 Future<int> deleteDownloadedFile(File file) async {
-  return await dbUpdate(DatabaseHelper.fileTable,
-      {'file_location': null, 'download_time': null, 'deleted': null},
-      where: 'uuid = ?', whereArgs: [file.id]);
+  var t = await dbSelect(
+      tableName: DatabaseHelper.fileTable,
+      where: 'uuid = ?',
+      whereArgs: [file.id]);
+  if (t.length != 1) {
+    // TODO: error handling
+    throw Exception('error in deleteDownloadedFile');
+  } else if (t[0]['deleted'] == 1) {
+    return await dbDelete(
+        tableName: DatabaseHelper.fileTable,
+        where: 'uuid = ?',
+        whereArgs: [file.id]);
+  } else {
+    return await dbUpdate(DatabaseHelper.fileTable,
+        {'file_location': null, 'download_time': null, 'deleted': null},
+        where: 'uuid = ?', whereArgs: [file.id]);
+  }
 }
 
 Future<String> getFileLocation(File file) async {

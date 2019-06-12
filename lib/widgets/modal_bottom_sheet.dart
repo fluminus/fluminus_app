@@ -1,10 +1,7 @@
-import 'dart:convert';
-
 import 'package:fluminus/file_page.dart';
 import 'package:fluminus/util.dart';
 import 'package:flutter/material.dart';
 import 'package:luminus_api/luminus_api.dart';
-import 'package:groovin_widgets/groovin_widgets.dart';
 
 Widget fileDetailSheet(BuildContext context, File file,
     {FileStatus status = FileStatus.normal,

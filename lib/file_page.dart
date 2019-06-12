@@ -8,7 +8,6 @@ import 'package:dio/dio.dart';
 import 'package:open_file/open_file.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:luminus_api/luminus_api.dart';
-import 'package:fluminus/widgets/card.dart' as card;
 import 'package:fluminus/widgets/list.dart' as list;
 import 'package:fluminus/widgets/common.dart' as common;
 import 'package:fluminus/util.dart' as util;
@@ -252,11 +251,16 @@ class _SubdirectoryPageState extends State<SubdirectoryPage> {
   Future<void> deleteFile(
       File file, Map<BasicFile, FileStatus> statusMap) async {
     var loc = await db.getFileLocation(file);
-    if(loc == null) {
+    if (loc == null) {
       throw Exception("Can't delete a file that doesn't exist");
     } else {
       await prefix0.File(loc).delete();
       await db.deleteDownloadedFile(file);
+      var t = await db.getItemsFromDirectory(widget.parent);
+      setState(() {
+        _fileList = t;
+        _fileListFuture = Future.value(_fileList);
+      });
       updateStatus(file, FileStatus.normal);
     }
   }
