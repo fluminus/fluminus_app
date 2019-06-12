@@ -117,14 +117,10 @@ Future<void> refreshItemsFromDirectory(Directory parent) async {
   Set<BasicFile> downloadedInResponse = {};
   for (var item in items) {
     if (item is File) {
-      try {
-        var t = await selectFile(item);
-        // print(t);
-        if (!(t['file_location'] == null || t['download_time'] == null))
-          downloadedInResponse.add(item);
-      } catch (e) {
-        // this exception doesn't need to be handled
-      }
+      var t = await selectFile(item);
+      if (t == null) continue;
+      if (!(t['file_location'] == null || t['download_time'] == null))
+        downloadedInResponse.add(item);
     }
   }
   for (var item in downloadedInDatabase) {
@@ -196,8 +192,7 @@ Future<String> getFileLocation(File file) async {
 Future<Map<String, dynamic>> selectFile(File file) async {
   var query = await _selectById(file.id);
   if (query.length != 1) {
-    // TODO: error handling
-    throw Exception('Error in queryFile');
+    return null;
   }
   return query[0];
 }

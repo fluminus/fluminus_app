@@ -280,37 +280,47 @@ class _SubdirectoryPageState extends State<SubdirectoryPage> {
 
   Future<void> downloadFile(
       File file, Map<BasicFile, FileStatus> statusMap) async {
-    var loc = await db.getFileLocation(file);
-    if (loc == null) {
-      Dio dio = Dio();
-      try {
-        // TODO: use once instance of Dio
-        var dir = await getApplicationDocumentsDirectory();
-        var url = await API.getDownloadUrl(await data.authentication(), file);
-        // TODO: compose a meaningful path
-        var path = path_dart.join(dir.path, file.fileName);
-        try {
-          await dio.download(url, path, onReceiveProgress: (rec, total) {
-            // print("Rec: $rec , Total: $total");
-            updateStatus(file, FileStatus.downloading);
-          });
-        } catch (e) {
-          // TODO: error handling
-          dialog.displayDialog('hehe', e.toString(), context);
-          updateStatus(file, FileStatus.normal);
-        }
-        await db.updateFileLocation(file, path, DateTime.now());
-        updateStatus(file, FileStatus.downloaded);
-      } catch (e) {
-        dialog.displayDialog(
-            'Error',
-            "Try to pull and refresh the current list.\n\nError message: " +
-                e.toString(),
-            context);
-      }
+    /// forced refresh before downloading for edge cases like
+    /// if you deleted a file before manually refresh the page
+    /// and the file is removed from the server before you try to re-download it
+    /// since the file isn't marked deleted in the database
+    /// you will receive an error trying to download it
+    await refresh();
+    if ((await db.selectFile(file)) == null) {
+      dialog.displayDialog('Oops', 'This file no longer exists 😱', context);
     } else {
-      updateStatus(file, FileStatus.downloaded);
-      // print('cached file loc');
+      var loc = await db.getFileLocation(file);
+      if (loc == null) {
+        Dio dio = Dio();
+        try {
+          // TODO: use once instance of Dio
+          var dir = await getApplicationDocumentsDirectory();
+          var url = await API.getDownloadUrl(await data.authentication(), file);
+          // TODO: compose a meaningful path
+          var path = path_dart.join(dir.path, file.fileName);
+          try {
+            await dio.download(url, path, onReceiveProgress: (rec, total) {
+              // print("Rec: $rec , Total: $total");
+              updateStatus(file, FileStatus.downloading);
+            });
+          } catch (e) {
+            // TODO: error handling
+            dialog.displayDialog('hehe', e.toString(), context);
+            updateStatus(file, FileStatus.normal);
+          }
+          await db.updateFileLocation(file, path, DateTime.now());
+          updateStatus(file, FileStatus.downloaded);
+        } catch (e) {
+          dialog.displayDialog(
+              'Error',
+              "Try to pull and refresh the current list.\n\nError message: " +
+                  e.toString(),
+              context);
+        }
+      } else {
+        updateStatus(file, FileStatus.downloaded);
+        // print('cached file loc');
+      }
     }
   }
 
@@ -343,17 +353,21 @@ class _SubdirectoryPageState extends State<SubdirectoryPage> {
     }
   }
 
+  Future<void> refresh() async {
+    _refreshedFileList = await util.onLoading(_refreshController, _fileList,
+        () => db.refreshAndGetItemsFromDirectory(widget.parent));
+    setState(() {
+      _fileList = _refreshedFileList;
+      _fileListFuture = Future.value(_refreshedFileList);
+    });
+    _statusFuture = _initStatus(_fileList);
+  }
+
   @override
   Widget build(BuildContext context) {
     Future<void> onRefresh() async {
       try {
-        _refreshedFileList = await util.onLoading(_refreshController, _fileList,
-            () => db.refreshAndGetItemsFromDirectory(widget.parent));
-        setState(() {
-          _fileList = _refreshedFileList;
-          _fileListFuture = Future.value(_refreshedFileList);
-        });
-        _statusFuture = _initStatus(_fileList);
+        await refresh();
         _refreshController.refreshCompleted();
         _scaffoldKey.currentState.showSnackBar(SnackBar(
           content: Text('Refreshed!'),
