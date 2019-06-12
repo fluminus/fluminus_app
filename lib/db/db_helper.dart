@@ -50,7 +50,8 @@ class DatabaseHelper {
               parent_id TEXT NOT NULL,
               is_file BOOLEAN NOT NULL,
               file_location TEXT,
-              last_updated TEXT,
+              download_time TEXT,
+              deleted BOOLEAN,
               name TEXT NOT NULL,
               json TEXT NOT NULL
             )

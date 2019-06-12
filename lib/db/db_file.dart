@@ -24,7 +24,7 @@ Future<int> insertFile(BasicFile file,
           file.parentID, // LumiNUS sucks so much that for files, [id] and [parent_id] are the same...
       'is_file': true,
       'file_location': fileLocation,
-      'last_updated': lastUpdated,
+      'download_time': lastUpdated,
       'name': file.fileName,
       'json': json
     });
@@ -34,7 +34,7 @@ Future<int> insertFile(BasicFile file,
   }
 }
 
-Future<List<Map<String, dynamic>>> _queryByParentId(String parentID) async {
+Future<List<Map<String, dynamic>>> _selectByParentId(String parentID) async {
   var query = await dbSelect(
       tableName: DatabaseHelper.fileTable,
       where: 'parent_id = ?',
@@ -42,18 +42,18 @@ Future<List<Map<String, dynamic>>> _queryByParentId(String parentID) async {
   return query;
 }
 
-Future<List<Map<String, dynamic>>> _queryById(String id) async {
+Future<List<Map<String, dynamic>>> _selectById(String id) async {
   var query = await dbSelect(
       tableName: DatabaseHelper.fileTable, where: 'uuid = ?', whereArgs: [id]);
   return query;
 }
 
 Future<List<Directory>> getModuleDirectories(Module module) async {
-  var query = await _queryByParentId(module.id);
+  var query = await _selectByParentId(module.id);
   if (query.isEmpty) {
     // print('refresh module dirs');
     await refreshModuleDirectories(module);
-    query = await _queryByParentId(module.id);
+    query = await _selectByParentId(module.id);
   } else {
     // print('used cached module dirs');
   }
@@ -78,7 +78,7 @@ Future<void> refreshModuleDirectories(Module module) async {
 
 Future<List<Directory>> refreshAndGetModuleDirectories(Module module) async {
   await refreshModuleDirectories(module);
-  var query = await _queryByParentId(module.id);
+  var query = await _selectByParentId(module.id);
   List<Directory> res = [];
   for (var item in query) {
     res.add(Directory.fromJson(jsonDecode(item['json'])));
@@ -87,10 +87,10 @@ Future<List<Directory>> refreshAndGetModuleDirectories(Module module) async {
 }
 
 Future<List<BasicFile>> getItemsFromDirectory(Directory parent) async {
-  var query = await _queryByParentId(parent.id);
+  var query = await _selectByParentId(parent.id);
   if (query.isEmpty) {
     await refreshItemsFromDirectory(parent);
-    query = await _queryByParentId(parent.id);
+    query = await _selectByParentId(parent.id);
   }
   List<BasicFile> res = [];
   for (var item in query) {
@@ -108,24 +108,39 @@ Future<List<BasicFile>> getItemsFromDirectory(Directory parent) async {
 
 Future<void> refreshItemsFromDirectory(Directory parent) async {
   var items = await API.getItemsFromDirectory(data.authentication(), parent);
-  Set<BasicFile> downloaded = {};
+  var downloadedInDatabase = await dbSelect(
+      tableName: DatabaseHelper.fileTable,
+      where:
+          'parent_id = ? AND file_location IS NOT NULL AND download_time IS NOT NULL',
+      whereArgs: [parent.id]);
+  // print(downloadedInDatabase);
+  Set<BasicFile> downloadedInResponse = {};
   for (var item in items) {
     if (item is File) {
       try {
-        var t = await queryFile(item);
-        if (!(t['file_location'] == null || t['last_updated'] == null))
-          downloaded.add(item);
+        var t = await selectFile(item);
+        // print(t);
+        if (!(t['file_location'] == null || t['download_time'] == null))
+          downloadedInResponse.add(item);
       } catch (e) {
         // this exception doesn't need to be handled
       }
     }
   }
+  for (var item in downloadedInDatabase) {
+    File f = File.fromJson(jsonDecode(item['json']));
+    if (!downloadedInResponse.contains(f)) {
+      await dbUpdate(DatabaseHelper.fileTable, {'deleted': true},
+          where: 'uuid = ?', whereArgs: [f.id]);
+    }
+  }
   await dbDelete(
       tableName: DatabaseHelper.fileTable,
-      where: 'parent_id = ? AND file_location IS NULL AND last_updated IS NULL',
+      where:
+          'parent_id = ? AND file_location IS NULL AND download_time IS NULL',
       whereArgs: [parent.id]);
   for (var item in items) {
-    if (!downloaded.contains(item)) {
+    if (!downloadedInResponse.contains(item)) {
       await insertFile(item, parentId: parent.id);
     }
   }
@@ -134,7 +149,7 @@ Future<void> refreshItemsFromDirectory(Directory parent) async {
 Future<List<BasicFile>> refreshAndGetItemsFromDirectory(
     Directory parent) async {
   await refreshItemsFromDirectory(parent);
-  var query = await _queryByParentId(parent.id);
+  var query = await _selectByParentId(parent.id);
   List<BasicFile> res = [];
   for (var item in query) {
     if (item['is_file'] == null) {
@@ -150,7 +165,7 @@ Future<List<BasicFile>> refreshAndGetItemsFromDirectory(
 }
 
 Future<String> getFileLocation(File file) async {
-  var query = await _queryById(file.id);
+  var query = await _selectById(file.id);
   if (query.length != 1) {
     // TODO: error handling
     throw Exception('Error in getDownloadUrl');
@@ -158,8 +173,8 @@ Future<String> getFileLocation(File file) async {
   return query[0]['file_location'];
 }
 
-Future<Map<String, dynamic>> queryFile(File file) async {
-  var query = await _queryById(file.id);
+Future<Map<String, dynamic>> selectFile(File file) async {
+  var query = await _selectById(file.id);
   if (query.length != 1) {
     // TODO: error handling
     throw Exception('Error in queryFile');
@@ -169,15 +184,15 @@ Future<Map<String, dynamic>> queryFile(File file) async {
 
 Future<void> updateFileLocation(File file, String path, DateTime time) async {
   await dbUpdate(DatabaseHelper.fileTable,
-      {'file_location': path, 'last_updated': time.toIso8601String()},
+      {'file_location': path, 'download_time': time.toIso8601String()},
       where: 'uuid = ?', whereArgs: [file.id]);
 }
 
 Future<DateTime> getLastUpdated(File file) async {
-  var query = await _queryById(file.id);
+  var query = await _selectById(file.id);
   if (query.length != 1) {
     // TODO: error handling
     throw Exception('Error in getLastUpdated');
   }
-  return DateTime.tryParse(query[0]['last_updated']);
+  return DateTime.tryParse(query[0]['download_time']);
 }

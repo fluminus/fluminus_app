@@ -159,7 +159,7 @@ class SubdirectoryPage extends StatefulWidget {
   _SubdirectoryPageState createState() => _SubdirectoryPageState();
 }
 
-enum FileStatus { normal, downloading, downloaded }
+enum FileStatus { normal, downloading, downloaded, deleted }
 
 class _SubdirectoryPageState extends State<SubdirectoryPage> {
   Future<List<BasicFile>> _fileListFuture;
@@ -190,10 +190,16 @@ class _SubdirectoryPageState extends State<SubdirectoryPage> {
     Map<BasicFile, FileStatus> map = new Map();
     for (var file in t) {
       if (!(file is File)) continue;
-      if (await db.getFileLocation(file) == null) {
+      var query = await db.selectFile(file);
+      // print(query);
+      if (query['file_location'] == null) {
         map[file] = FileStatus.normal;
       } else {
-        map[file] = FileStatus.downloaded;
+        if (query['deleted'] == 1) {
+          map[file] = FileStatus.deleted;
+        } else {
+          map[file] = FileStatus.downloaded;
+        }
       }
     }
     return map;
@@ -325,61 +331,6 @@ class _SubdirectoryPageState extends State<SubdirectoryPage> {
         }
         return common.progressIndicator;
       }),
-    );
-  }
-
-  Widget fileCardWidget(
-      File file, Map<BasicFile, FileStatus> statusList, BuildContext context,
-      {Icon trailing}) {
-    FileStatus status;
-    Icon normal = Icon(Icons.attach_file);
-    Icon downloaded = Icon(Icons.done);
-    Icon downloading = Icon(Icons.cloud_download);
-    Icon getFileCardIcon() {
-      if (statusList.containsKey(file)) {
-        status = statusList[file];
-        switch (status) {
-          case FileStatus.normal:
-            return normal;
-          case FileStatus.downloaded:
-            return downloaded;
-          case FileStatus.downloading:
-            return downloading;
-          default:
-            // TODO: error handling
-            return Icon(Icons.error_outline);
-        }
-      } else {
-        // TODO: error handling
-        return Icon(Icons.error_outline);
-      }
-    }
-
-    return card.inkWellCard(
-        file.name, util.formatLastUpdatedTime(file.lastUpdatedDate), context,
-        () {
-      if (status == FileStatus.normal) {
-        downloadFile(file, statusList);
-      } else if (status == FileStatus.downloaded) {
-        openFile(file);
-      }
-    }, leading: getFileCardIcon());
-  }
-
-  // try this; https://stackoverflow.com/questions/52021205/usage-of-futurebuilder-with-setstate
-  Widget fileListView(BuildContext context, List fileList, Map statusMap) {
-    // _initFileState(snapshot.data);
-    return new ListView.builder(
-      itemCount: fileList.length,
-      itemBuilder: (BuildContext context, int index) {
-        return new Column(
-          children: <Widget>[
-            fileList[index] is File
-                ? fileCardWidget(fileList[index], statusMap, context)
-                : card.directoryCard(fileList[index], context)
-          ],
-        );
-      },
     );
   }
 }
