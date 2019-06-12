@@ -2,7 +2,7 @@ import 'dart:async';
 import 'dart:io' as prefix0;
 
 import 'package:flutter/material.dart';
-import 'package:path/path.dart';
+import 'package:path/path.dart' as path_dart;
 import 'package:path_provider/path_provider.dart';
 import 'package:dio/dio.dart';
 import 'package:open_file/open_file.dart';
@@ -230,18 +230,32 @@ class _SubdirectoryPageState extends State<SubdirectoryPage> {
       File file, Map<BasicFile, FileStatus> statusMap) async {
     var loc = await db.getFileLocation(file);
     if (loc == null) {
-      // TODO: use once instance of Dio
       Dio dio = Dio();
-      var dir = await getApplicationDocumentsDirectory();
-      var url = await API.getDownloadUrl(await data.authentication(), file);
-      // TODO: compose a meaningful path
-      var path = join(dir.path, file.fileName);
-      await dio.download(url, path, onReceiveProgress: (rec, total) {
-        // print("Rec: $rec , Total: $total");
-        updateStatus(file, FileStatus.downloading);
-      });
-      await db.updateFileLocation(file, path, DateTime.now());
-      updateStatus(file, FileStatus.downloaded);
+      try {
+        // TODO: use once instance of Dio
+        var dir = await getApplicationDocumentsDirectory();
+        var url = await API.getDownloadUrl(await data.authentication(), file);
+        // TODO: compose a meaningful path
+        var path = path_dart.join(dir.path, file.fileName);
+        try {
+          await dio.download(url, path, onReceiveProgress: (rec, total) {
+            // print("Rec: $rec , Total: $total");
+            updateStatus(file, FileStatus.downloading);
+          });
+        } catch (e) {
+          // TODO: error handling
+          dialog.displayDialog('hehe', e.toString(), context);
+          updateStatus(file, FileStatus.normal);
+        }
+        await db.updateFileLocation(file, path, DateTime.now());
+        updateStatus(file, FileStatus.downloaded);
+      } catch (e) {
+        dialog.displayDialog(
+            'Error',
+            "Try to pull and refresh the current list.\n\nError message: " +
+                e.toString(),
+            context);
+      }
     } else {
       updateStatus(file, FileStatus.downloaded);
       // print('cached file loc');
