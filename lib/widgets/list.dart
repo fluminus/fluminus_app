@@ -32,10 +32,13 @@ Widget _certainCard(var item, CardType type, BuildContext context, Map params) {
     case CardType.fileCardType:
       File file = item;
       Map<BasicFile, FileStatus> statusMap = params['status'];
-      Function downloadFile = params['downloadFile'];
-      Function openFile = params['openFile'];
-      return fileCard(
-          file, context, statusMap[item], statusMap, downloadFile, openFile);
+      Future<void> Function(File, Map<BasicFile, FileStatus>) downloadFile =
+          params['downloadFile'];
+      Future<void> Function(File) openFile = params['openFile'];
+      Future<void> Function(File, Map<BasicFile, FileStatus>) deleteFile =
+          params['deleteFile'];
+      return fileCard(file, context, statusMap[item], statusMap, downloadFile,
+          openFile, deleteFile);
   }
   return null;
 }
@@ -50,9 +53,9 @@ Widget itemListView(
         mainAxisSize: MainAxisSize.min,
         children: <Widget>[
           Padding(
-              padding: const EdgeInsets.only(bottom: 6.0),
-              child:
-                  _certainCard(itemList[index], getCardType(itemList[index]), context, params))
+              padding: const EdgeInsets.only(top: 6.0),
+              child: _certainCard(itemList[index], getCardType(itemList[index]),
+                  context, params))
         ],
       );
     },
