@@ -36,7 +36,7 @@ dependencies:
   zefyr: ^0.5.0
   material_design_icons_flutter: ^3.2.3695
   dynamic_theme: ^1.0.1
-  groovin_widgets: ^1.4.2
+  flutter_speed_dial: ^1.2.1
   # Storage
   shared_preferences: ^0.5.0
   sqflite: ^1.1.0
@@ -44,6 +44,7 @@ dependencies:
   # Utility
   luminus_api: ^0.1.15
   collection: ^1.14.11
+  groovin_widgets: ^1.4.2
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.

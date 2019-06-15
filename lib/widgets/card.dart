@@ -6,8 +6,6 @@ import 'package:luminus_api/luminus_api.dart';
 import 'package:fluminus/model/task_list_model.dart';
 import 'package:fluminus/new_task_page.dart';
 import 'package:fluminus/redux/store.dart';
-import 'package:flutter/material.dart';
-import 'package:luminus_api/luminus_api.dart';
 import 'package:groovin_widgets/groovin_widgets.dart';
 import 'package:fluminus/util.dart' as util;
 
@@ -154,19 +152,19 @@ Widget fileCard(
     BuildContext context,
     FileStatus status,
     Map<BasicFile, FileStatus> statusMap,
-    Function downloadFile,
-    Function openFile) {
-  Icon normal = Icon(Icons.attach_file);
-  Icon downloaded = Icon(Icons.done);
-  Icon downloading = Icon(Icons.cloud_download);
+    Future<void> Function(File, Map<BasicFile, FileStatus>) downloadFile,
+    Future<void> Function(File) openFile,
+    Future<void> Function(File, Map<BasicFile, FileStatus>) deleteFile) {
   Icon getFileCardIcon() {
     switch (status) {
       case FileStatus.normal:
-        return normal;
+        return Icon(Icons.attach_file);
       case FileStatus.downloaded:
-        return downloaded;
+        return Icon(Icons.done);
       case FileStatus.downloading:
-        return downloading;
+        return Icon(Icons.cloud_download);
+      case FileStatus.deleted:
+        return Icon(Icons.remove_from_queue);
       default:
         // TODO: error handling
         return Icon(Icons.error_outline);
@@ -177,20 +175,28 @@ Widget fileCard(
       file.name,
       util.formatLastUpdatedTime(file.lastUpdatedDate),
       context,
-      () {
+      () async {
         if (status == FileStatus.normal) {
-          downloadFile(file, statusMap);
-        } else if (status == FileStatus.downloaded) {
-          openFile(file);
+          await downloadFile(file, statusMap);
+        } else if (status == FileStatus.downloaded ||
+            status == FileStatus.deleted) {
+          await openFile(file);
         }
       },
       leading: getFileCardIcon(),
       onLongPress: () async {
-        DateTime lastDownloaded = status == FileStatus.downloaded ? await getLastUpdated(file) : null;
+        DateTime lastDownloaded =
+            (status == FileStatus.downloaded || status == FileStatus.deleted)
+                ? await getLastUpdated(file)
+                : null;
         showModalBottomSheet(
             context: context,
             builder: (context) {
-              return fileDetailSheet(context, file, lastDownloaded: lastDownloaded);
+              return fileDetailSheet(context, file,
+                  lastDownloaded: lastDownloaded,
+                  downloadFile: (File file) => downloadFile(file, statusMap),
+                  openFile: openFile,
+                  deleteFile: (File file) => deleteFile(file, statusMap));
             });
       });
 }

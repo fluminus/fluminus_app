@@ -8,7 +8,6 @@ import 'package:fluminus/announcement_list_page.dart';
 import 'package:fluminus/data.dart' as data;
 import 'package:fluminus/widgets/common.dart' as common;
 import 'package:shared_preferences/shared_preferences.dart';
-
 import 'main.dart' as main;
 
 class AnnouncementPage extends StatefulWidget {
@@ -38,7 +37,7 @@ class _AnnouncementPageState extends State<AnnouncementPage>
   @override
   Widget build(BuildContext context) {
     super.build(context);
-    /*return DefaultTabController(
+    return DefaultTabController(
               length: main.modules.length,
               child: Scaffold(
                 appBar: AppBar(
@@ -58,8 +57,8 @@ class _AnnouncementPageState extends State<AnnouncementPage>
                   }).toList(),
                 ),
               ),
-            );*/
-    return FutureBuilder<List<Module>>(
+            );
+    /*return FutureBuilder<List<Module>>(
         future: this._fetchData(),
         builder: (context, snapshot) {
           if (snapshot.hasData) {
@@ -96,7 +95,7 @@ class _AnnouncementPageState extends State<AnnouncementPage>
             ),
             body: common.progressIndicator,
           );
-        });
+        });*/
   }
 
   @override
