@@ -15,7 +15,7 @@ class Task {
   final bool isAllDay;
   final String location;
   final String tag;
-  final Color color;
+  final int colorIndex;
 
   Task(
       {@required this.id,
@@ -29,11 +29,11 @@ class Task {
       @required this.isAllDay,
       this.location,
       this.tag,
-      this.color});
+      this.colorIndex});
 
   Task copyWith(
       {int id, String title, String detail, String date, String dayOfWeek, int weekNum, String startTime, 
-      String endTime, bool, isAllDay, String location, String tag, Color color}) {
+      String endTime, bool, isAllDay, String location, String tag, int color}) {
     return Task(
         id: id ?? this.id,
         title: title ?? this.title,
@@ -46,7 +46,7 @@ class Task {
         isAllDay: isAllDay??this.isAllDay,
         location: location??this.location,
         tag: tag??this.tag,
-        color: color??this.color
+        colorIndex: color??this.colorIndex
         );
   }
 
@@ -62,7 +62,7 @@ class Task {
         isAllDay = json['isAllDay'],
         location = json['location'],
         tag = json['tag'],
-        color = Color(json['color']??ThemeData.light().primaryColor.value);
+        colorIndex = json['color'];
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> map = new Map<String, dynamic>();
@@ -77,7 +77,7 @@ class Task {
     map['isAllDay'] = this.isAllDay;
     map['location'] = this.location??'';
     map['tag'] = this.tag??'';
-    map['color'] = this.color == null? ThemeData.light().primaryColor.value : this.color.value;
+    map['color'] = this.colorIndex??0;
     return map;
   }
 }

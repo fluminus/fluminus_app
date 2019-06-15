@@ -11,8 +11,12 @@ Future<Authentication> authentication() async {
     _updateCreds = false;
     final storage = FlutterSecureStorage();
     _auth = Authentication(
-        username: await storage.read(key: 'nusnet_id'),
+        username: await storage.read(key: 'nusnet_id'),    
         password: await storage.read(key: 'nusnet_password'));
+        /*print(_auth.username);
+        String id = await storage.read(key: 'nusnet_id';
+        print(id);*/
+        
   } else {
     if (_updateCreds) {
       print('updating auth');

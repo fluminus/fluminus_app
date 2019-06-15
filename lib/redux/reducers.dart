@@ -13,7 +13,7 @@ List<Task> taskReducer(List<Task> state, action) {
   if (action is AddTaskAction) {
     List<Task> tasks = []
       .. addAll(state)
-      .. add(Task(id: action.id, title: action.title, detail: action.detail, date: action.date, dayOfWeek: action.dayOfWeek, weekNum: action.weekNum, startTime: action.startTime, endTime: action.endTime, isAllDay: action.isAllDay, location: action.location, tag: action.tag, color: action.color));
+      .. add(Task(id: action.id, title: action.title, detail: action.detail, date: action.date, dayOfWeek: action.dayOfWeek, weekNum: action.weekNum, startTime: action.startTime, endTime: action.endTime, isAllDay: action.isAllDay, location: action.location, tag: action.tag, colorIndex: action.colorIndex));
       print(tasks);
       return tasks;
   }

@@ -3,6 +3,9 @@ import 'package:fluminus/home_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/animation.dart';
+import 'package:luminus_api/luminus_api.dart';
+import 'main.dart' as main;
+import 'data.dart' as data;
 import 'dart:async';
 import 'package:flutter/services.dart';
 import 'package:flutter/scheduler.dart' show timeDilation;
@@ -195,6 +198,7 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
                                     await storage.write(
                                         key: 'nusnet_password',
                                         value: _password);
+                                    main.modules = await API.getModules(data.authentication());
                                     updateCredentials();
                                     SharedPreferences prefs =
                                         await SharedPreferences.getInstance();

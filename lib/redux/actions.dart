@@ -14,9 +14,9 @@ class AddTaskAction{
   final bool isAllDay;
   final String location;
   final String tag;
-  final Color color;
+  final int colorIndex;
 
-  AddTaskAction(this.title, this.detail, this.date, this.dayOfWeek, this.weekNum, this.startTime, this.endTime, this.isAllDay, this.location, this.tag, this.color) {
+  AddTaskAction(this.title, this.detail, this.date, this.dayOfWeek, this.weekNum, this.startTime, this.endTime, this.isAllDay, this.location, this.tag, this.colorIndex) {
     _id++;
   }
 

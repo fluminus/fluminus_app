@@ -75,10 +75,10 @@ class _TaskPageState extends State<TaskPage> {
         ),
         child: Padding(
             padding: const EdgeInsets.only(
-                top: 25.0, left: 100.0, right: 10.0, bottom: 10.0),
+                top: 25.0, left: 90.0, right: 10.0, bottom: 10.0),
             child: Text(
               util.formatDateAsTitle(DateTime.now()),
-              style: Theme.of(context).textTheme.headline,
+              style: Theme.of(context).textTheme.caption,
             )),
       ),
     );

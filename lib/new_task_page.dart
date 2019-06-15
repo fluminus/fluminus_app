@@ -1,6 +1,7 @@
 import 'package:fluminus/main.dart';
 import 'package:fluminus/model/task_list_model.dart';
 import 'package:fluminus/redux/store.dart';
+import 'package:fluminus/widgets/theme.dart';
 import 'package:flutter/material.dart';
 import 'package:fluminus/util.dart' as util;
 import 'package:shared_preferences/shared_preferences.dart';
@@ -22,7 +23,7 @@ class _TaskDetailState extends State<TaskDetail> {
   TextEditingController endTimeTextController;
   TextEditingController locationTextController;
   String tag;
-  Color color;
+  int colorIndex;
 
   DateTime dateTime = DateTime.now();
 
@@ -101,7 +102,7 @@ class _TaskDetailState extends State<TaskDetail> {
     locationTextController =
         new TextEditingController(text: widget.task.location ?? "");
     tag = widget.task.tag ?? 'General';
-    color = widget.task.color ?? ThemeData.light().primaryColor;
+    colorIndex = widget.task.colorIndex ?? 0;
   }
 
   @override
@@ -126,11 +127,6 @@ class _TaskDetailState extends State<TaskDetail> {
     ..addAll(modules.map((module) => module.name).toList())
     ..add('General');
 
-  List<Color> colors = [
-    ThemeData.light().primaryColor,
-    Colors.orange,
-    Colors.red
-  ];
 
   @override
   Widget build(BuildContext context) {
@@ -159,7 +155,7 @@ class _TaskDetailState extends State<TaskDetail> {
                               endTime: endTimeTextController.text,
                               location: locationTextController.text,
                               tag: tag,
-                              color: color);
+                              colorIndex: colorIndex);
                           Navigator.pop(context);
                         }
                       },
@@ -170,6 +166,9 @@ class _TaskDetailState extends State<TaskDetail> {
             shrinkWrap: true,
             itemCount: 1,
             itemBuilder: (context, index) {
+              List<Color> colors = Theme.of(context).brightness == Brightness.light?
+              lightColors : darkColors;
+
               return Column(children: <Widget>[
                 basicField('TITLE', basicTextField(titleTextController)),
                 basicField('DETAIL', basicTextField(detailTextController)),
@@ -225,17 +224,17 @@ class _TaskDetailState extends State<TaskDetail> {
                       mainAxisAlignment: MainAxisAlignment.start,
                       children:<Widget>[
                         Text('COLOR     '),
-                        DropdownButton<Color>(
+                        DropdownButton<int>(
                           style: Theme.of(context).textTheme.subtitle,
-                          value: color,
-                          onChanged: (Color newColor) {
+                          value: colorIndex,
+                          onChanged: (int newColorIndex) {
                             setState(() {
-                              color = newColor;
+                              colorIndex = newColorIndex;
                             });
                           },
                           items: colors
-                              .map((color) => DropdownMenuItem<Color>(
-                                    value: color,
+                              .map((color) => DropdownMenuItem<int>(
+                                    value: colors.indexOf(color),
                                     child: Container(
                                       width: 40.0,
                                       height: 20.0,

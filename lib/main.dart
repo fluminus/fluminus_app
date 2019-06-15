@@ -17,10 +17,13 @@ void main() async {
   Brightness brightness;
   bool hasCredentials;
   SharedPreferences prefs = await SharedPreferences.getInstance();
-  modules = await API.getModules(data.authentication());
+  
   brightness =
       (prefs.getBool('isDark') ?? false) ? Brightness.dark : Brightness.light;
   hasCredentials = (prefs.getBool('hasCred') ?? false);
+  if(hasCredentials) {
+    modules = await API.getModules(data.authentication());
+  }
   await DotEnv().load('.env');
   runApp(App(
     brightness: brightness,

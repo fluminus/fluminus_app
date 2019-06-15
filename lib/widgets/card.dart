@@ -1,5 +1,6 @@
 import 'package:fluminus/db/db_file.dart';
 import 'package:fluminus/widgets/modal_bottom_sheet.dart';
+import 'package:fluminus/widgets/theme.dart';
 import 'package:flutter/material.dart';
 import 'package:luminus_api/luminus_api.dart';
 import 'package:fluminus/model/task_list_model.dart';
@@ -216,9 +217,9 @@ Widget paddedRowInfo(String label, String info, EdgeInsetsGeometry padding, Buil
 }
 
 Widget taskCard(Task task, BuildContext context) {
-  
   final TextStyle lableStyle = Theme.of(context).textTheme.body2;
   final EdgeInsetsGeometry padding = EdgeInsets.only(left:20, right: 20, bottom: 7);
+  final colors = Theme.of(context).brightness == Brightness.light ? lightColors : darkColors;
   return Padding(
     padding: EdgeInsets.only(bottom: 10),
   child: GroovinExpansionTile(
@@ -226,7 +227,7 @@ Widget taskCard(Task task, BuildContext context) {
     subtitle: Text(task.date),
     boxDecoration: BoxDecoration(
       border: new Border.all(
-          color: task.color,
+          color: colors[task.colorIndex],
           width: 2.5,
           style: BorderStyle.solid),
       borderRadius: new BorderRadius.all(new Radius.circular(20.0)),

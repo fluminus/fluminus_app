@@ -1,4 +1,5 @@
 import 'package:fluminus/login_page.dart';
+import 'package:fluminus/widgets/theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -96,6 +97,7 @@ class _ProfilePageState extends State<ProfilePage> {
                 children: <Widget>[
                   Text('Spooky Mode 💀'),
                   Switch(
+                    activeColor: blue,
                     value: _isDarkMode =
                         Theme.of(context).brightness == Brightness.dark,
                     onChanged: (val) async {
@@ -117,7 +119,7 @@ class _ProfilePageState extends State<ProfilePage> {
             Padding(
                 padding: const EdgeInsets.only(left: 20.0, right: 20.0),
                 child: RaisedButton(
-                  color: Colors.red,
+                  color: greyGreen,
                   child: Text('Log Out'),
                   onPressed: () async {
                     await data.deleteCredentials();
@@ -127,7 +129,7 @@ class _ProfilePageState extends State<ProfilePage> {
             Padding(
                 padding: const EdgeInsets.only(left: 20.0, right: 20.0),
                 child: RaisedButton(
-                  color: Colors.pinkAccent,
+                  color: blue,
                   child: Text('Clear Database'),
                   onPressed: () async {
                     await db.clearAllTables();
