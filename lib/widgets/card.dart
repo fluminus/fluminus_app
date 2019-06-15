@@ -1,8 +1,10 @@
+import 'package:fluminus/db/db_file.dart';
+import 'package:fluminus/widgets/modal_bottom_sheet.dart';
+import 'package:flutter/material.dart';
+import 'package:luminus_api/luminus_api.dart';
 import 'package:fluminus/model/task_list_model.dart';
 import 'package:fluminus/new_task_page.dart';
 import 'package:fluminus/redux/store.dart';
-import 'package:flutter/material.dart';
-import 'package:luminus_api/luminus_api.dart';
 import 'package:fluminus/util.dart' as util;
 
 import '../file_page.dart';
@@ -63,11 +65,13 @@ Widget inkWellCard(String title, String subtitle, BuildContext context,
     {Icon leading,
     Icon trailing,
     IconButton leadingButton,
-    IconButton trailingButton}) {
+    IconButton trailingButton,
+    GestureLongPressCallback onLongPress}) {
   const double _verticalPadding = 6.0;
   Widget child = InkWell(
     borderRadius: _borderRadius,
     onTap: onTap,
+    onLongPress: onLongPress,
     child: Padding(
       padding: const EdgeInsets.only(
           top: _verticalPadding, bottom: _verticalPadding),
@@ -139,6 +143,60 @@ Widget directoryCard(Directory dir, BuildContext context) {
   return inkWellCard(dir.name, util.formatLastUpdatedTime(dir.lastUpdatedDate),
       context, util.onTapNextPage(nextPage, context),
       leading: Icon(Icons.folder), trailing: Icon(Icons.arrow_right));
+}
+
+Widget fileCard(
+    File file,
+    BuildContext context,
+    FileStatus status,
+    Map<BasicFile, FileStatus> statusMap,
+    Future<void> Function(File, Map<BasicFile, FileStatus>) downloadFile,
+    Future<void> Function(File) openFile,
+    Future<void> Function(File, Map<BasicFile, FileStatus>) deleteFile) {
+  Icon getFileCardIcon() {
+    switch (status) {
+      case FileStatus.normal:
+        return Icon(Icons.attach_file);
+      case FileStatus.downloaded:
+        return Icon(Icons.done);
+      case FileStatus.downloading:
+        return Icon(Icons.cloud_download);
+      case FileStatus.deleted:
+        return Icon(Icons.remove_from_queue);
+      default:
+        // TODO: error handling
+        return Icon(Icons.error_outline);
+    }
+  }
+
+  return inkWellCard(
+      file.name,
+      util.formatLastUpdatedTime(file.lastUpdatedDate),
+      context,
+      () async {
+        if (status == FileStatus.normal) {
+          await downloadFile(file, statusMap);
+        } else if (status == FileStatus.downloaded ||
+            status == FileStatus.deleted) {
+          await openFile(file);
+        }
+      },
+      leading: getFileCardIcon(),
+      onLongPress: () async {
+        DateTime lastDownloaded =
+            (status == FileStatus.downloaded || status == FileStatus.deleted)
+                ? await getLastUpdated(file)
+                : null;
+        showModalBottomSheet(
+            context: context,
+            builder: (context) {
+              return fileDetailSheet(context, file,
+                  lastDownloaded: lastDownloaded,
+                  downloadFile: (File file) => downloadFile(file, statusMap),
+                  openFile: openFile,
+                  deleteFile: (File file) => deleteFile(file, statusMap));
+            });
+      });
 }
 
 Widget moduleRootDirectoryCard(Module module, BuildContext context) {

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-void _displayDialog(String title, String content, BuildContext context) {
+void displayDialog(String title, String content, BuildContext context) {
   showDialog(
       context: context,
       builder: (context) {

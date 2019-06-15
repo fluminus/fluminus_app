@@ -8,7 +8,7 @@ ThemeData lightTheme = ThemeData(
     fontFamily: 'Roboto',
     textTheme: TextTheme(
       headline: TextStyle(fontSize: 45.0, fontWeight: FontWeight.bold),
-      title: TextStyle(fontSize: 40.0, fontStyle: FontStyle.normal),
+      title: TextStyle(fontSize: 30.0, fontStyle: FontStyle.normal),
       caption: TextStyle(fontSize: 30.0, fontWeight: FontWeight.bold),
       subhead: TextStyle(fontWeight: FontWeight.bold, fontSize: 18.0),
       subtitle: TextStyle(fontSize: 14.0, color: Colors.grey),
@@ -23,7 +23,7 @@ ThemeData darkTheme = ThemeData(
     fontFamily: 'Roboto',
     textTheme: TextTheme(
       headline: TextStyle(fontSize: 45.0, fontWeight: FontWeight.bold),
-      title: TextStyle(fontSize: 40.0, fontStyle: FontStyle.normal),
+      title: TextStyle(fontSize: 30.0, fontStyle: FontStyle.normal),
       caption: TextStyle(fontSize: 30.0, fontWeight: FontWeight.bold, color: Colors.black),
       subhead: TextStyle(fontWeight: FontWeight.bold, fontSize: 18.0),
       subtitle: TextStyle(fontSize: 14.0, color: Colors.grey),
