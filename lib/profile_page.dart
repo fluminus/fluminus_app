@@ -7,6 +7,7 @@ import 'package:luminus_api/luminus_api.dart';
 import 'package:fluminus/widgets/common.dart';
 import 'package:fluminus/db/db_helper.dart' as db;
 import 'data.dart' as data;
+import 'main.dart' as main;
 
 class ProfilePage extends StatefulWidget {
   @override
@@ -14,7 +15,7 @@ class ProfilePage extends StatefulWidget {
 }
 
 class _ProfilePageState extends State<ProfilePage> {
-  Future<Profile> profile = API.getProfile(data.authentication());
+  Profile profile = main.profile;
   bool _isDarkMode;
 
   Widget displayName(String name) {
@@ -68,7 +69,7 @@ class _ProfilePageState extends State<ProfilePage> {
         body: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: <Widget>[
-            FutureBuilder(
+            /*FutureBuilder(
                 future: profile,
                 builder: (context, snapshot) {
                   if (snapshot.hasData) {
@@ -87,7 +88,8 @@ class _ProfilePageState extends State<ProfilePage> {
                       ],
                     ),
                   );
-                }),
+                }),*/
+            profileWidget(profile),
             Padding(
               padding: const EdgeInsets.only(top: 20.0),
             ),
