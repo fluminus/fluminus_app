@@ -112,7 +112,7 @@ class _TaskPageState extends State<TaskPage> {
             width: 50.0,
             child: new Text(
               tasks[index].dayOfWeek,
-              style: Theme.of(context).textTheme.subtitle,
+              style: Theme.of(context).textTheme.subhead,
             ));
       },
       itemBuilder: (BuildContext context, int index) {

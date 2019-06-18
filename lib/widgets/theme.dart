@@ -44,8 +44,8 @@ ThemeData lightTheme = ThemeData(
       headline: TextStyle(fontSize: 45.0, fontWeight: FontWeight.bold),
       title: TextStyle(fontSize: 40.0, fontStyle: FontStyle.normal),
       caption: TextStyle(fontSize: 30.0, fontWeight: FontWeight.bold, color: Colors.blueGrey),
-      subhead: TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold,),
-      subtitle: TextStyle(fontSize: 14.0, color: Colors.grey),
+      subhead: TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold,),
+      subtitle: TextStyle(fontSize: 18.0, color: Colors.grey),
       body1: TextStyle(fontSize: 14.0, fontFamily: 'Roboto'),
       body2: TextStyle(fontSize: 16.0, fontFamily: 'Roboto', color: ThemeData.light().primaryColor)
     ),
@@ -68,8 +68,8 @@ ThemeData darkTheme = ThemeData(
       headline: TextStyle(fontSize: 45.0, fontWeight: FontWeight.bold, color: lightGrey),
       title: TextStyle(fontSize: 40.0, fontStyle: FontStyle.normal, color: lightGrey),
       caption: TextStyle(fontSize: 30.0, fontWeight: FontWeight.bold,color: lightGrey),
-      subhead: TextStyle(fontWeight: FontWeight.bold, fontSize: 20.0, color: lightGrey),
-      subtitle: TextStyle(fontSize: 18.0, color: Colors.blueGrey),
+      subhead: TextStyle(fontWeight: FontWeight.bold, fontSize: 20.0, color: lightBlue),
+      subtitle: TextStyle(fontSize: 18.0, color: lightGrey),
       body1: TextStyle(fontSize: 14.0, color: lightGrey),
       body2: TextStyle(fontSize: 16.0, color: lightGrey)
     ));

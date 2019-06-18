@@ -516,7 +516,7 @@ class _SubdirectoryPageState extends State<SubdirectoryPage> {
               },
               enablePullUp: false);
         } else if (snapshot.hasError) {
-          return Text(snapshot.error);
+          return Text(snapshot.error.toString());
         }
         return common.progressIndicator;
       }),

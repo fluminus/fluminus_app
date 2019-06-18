@@ -67,7 +67,7 @@ class _AnnouncementListPageState extends State<AnnouncementListPage>
         Announcement announcement = announcements[index];
         util.showPickerThreeNumber(context, data.smsStartDate, announcement);
         
-      }, context, null);
+      }, context, {'module': widget.module});
     }
 
     super.build(context);

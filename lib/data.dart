@@ -45,6 +45,4 @@ Future<void> deleteCredentials() async {
   prefs.setBool('hasCred', true);
 }
 
-List<Module> modules;
-List<Announcement> announcements = new List();
 DateTime smsStartDate = DateTime.now();
