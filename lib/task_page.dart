@@ -21,9 +21,7 @@ class _TaskPageState extends State<TaskPage> {
       BuildContext context, ScrollController scrollController) {
     double top = 175.0;
     if (scrollController.hasClients) {
-      if (scrollController.offset <= 0.0) {
-        top = 175.0;
-      } else if (top - scrollController.offset >= 5.0) {
+      if (top - scrollController.offset >= 5.0) {
         top -= scrollController.offset;
       } else {
         top = 5.0;
