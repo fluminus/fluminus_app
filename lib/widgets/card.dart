@@ -1,10 +1,14 @@
 import 'package:fluminus/db/db_file.dart';
 import 'package:fluminus/widgets/modal_bottom_sheet.dart';
+import 'package:fluminus/widgets/theme.dart';
 import 'package:flutter/material.dart';
 import 'package:luminus_api/luminus_api.dart';
 import 'package:fluminus/model/task_list_model.dart';
 import 'package:fluminus/new_task_page.dart';
 import 'package:fluminus/redux/store.dart';
+import 'package:flutter/material.dart';
+import 'package:luminus_api/luminus_api.dart';
+import 'package:groovin_widgets/groovin_widgets.dart';
 import 'package:fluminus/util.dart' as util;
 
 import '../file_page.dart';
@@ -210,17 +214,67 @@ Widget moduleRootDirectoryCard(Module module, BuildContext context) {
   );
 }
 
+Widget paddedRowInfo(String label, String info, EdgeInsetsGeometry padding, BuildContext context, {TextStyle lableStyle, TextStyle infoStyle,}) {
+  
+  return Padding(
+        padding: padding,
+        child: Row(children: <Widget>[
+        Text(label, style: lableStyle),
+        Text(info)
+      ],));
+}
+
 Widget taskCard(Task task, BuildContext context) {
-  return inkWellCard(
-    task.title,
-    task.date,
-    context,
-    util.onTapNextPage(new TaskDetail(task), context),
-    trailingButton: IconButton(
-      icon: Icon(Icons.delete),
-      onPressed: () => model.onRemoveTask(task),
+  final TextStyle lableStyle = Theme.of(context).textTheme.body2;
+  final EdgeInsetsGeometry padding = EdgeInsets.only(left:20, right: 20, bottom: 7);
+  final colors = Theme.of(context).brightness == Brightness.light ? lightColors : darkColors;
+  return Padding(
+    padding: EdgeInsets.only(bottom: 10),
+  child: GroovinExpansionTile(
+    title: Text(task.title),
+    subtitle: Text(task.date),
+    boxDecoration: BoxDecoration(
+      border: new Border.all(
+          color: colors[task.colorIndex],
+          width: 2.5,
+          style: BorderStyle.solid),
+      borderRadius: new BorderRadius.all(new Radius.circular(20.0)),
     ),
-  );
+    inkwellRadius: _borderRadius,
+    children: <Widget>[
+      paddedRowInfo('TIME:  ', task.startTime + ' - ' + task.endTime, padding, context, lableStyle: lableStyle),
+      paddedRowInfo('LOCATION:  ', task.location, padding, context, lableStyle: lableStyle),
+      paddedRowInfo('DETAIL:  ', '', padding, context, lableStyle: lableStyle),
+      Container(
+        padding: padding,
+        alignment: Alignment.centerLeft,
+        child: Text(task.detail)),
+      Row(
+        children: <Widget>[
+          Expanded(
+              flex: 1,
+              child: FlatButton.icon(
+                icon: Icon(
+                  Icons.delete,
+                ),
+                label: Text('DELETE'),
+                onPressed: () => model.onRemoveTask(task),
+              )),
+          Expanded(
+              flex: 1,
+              child: FlatButton.icon(
+                  icon: Icon(
+                    Icons.edit,
+                  ),
+                  label: Text('EDIT'),
+                  onPressed: () => Navigator.push(context,
+                          MaterialPageRoute(builder: (context) {
+                        return TaskDetail(task);
+                      })))),
+        ],
+      )
+    ],
+  ));
 }
 
 // Widget infoCardWithFixedHeight(

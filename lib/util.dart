@@ -7,6 +7,7 @@ import 'package:collection/collection.dart';
 import 'package:html/parser.dart';
 import 'package:flutter_picker/flutter_picker.dart';
 
+
 Function twoListsAreDeepEqual = const DeepCollectionEquality().equals;
 
 String datetimeToFormattedString(DateTime time) {
@@ -25,6 +26,10 @@ String formatDate(DateTime date) {
   return new DateFormat("dd / MMM / yyyy").format(date);
 }
 
+String formatDateAsTitle(DateTime date) {
+  return new DateFormat("dd MMMM  yyyy").format(date) + "\n" + new DateFormat("EEEE").format(date);
+}
+
 String formatTowDates(DateTime startDate, DateTime endDate) {
   return DateFormat("dd MMM yy").format(startDate) +
       " - " +
@@ -41,7 +46,6 @@ Future<List> onLoading(
   if (twoListsAreDeepEqual(currList, refreshedList)) {
     controller.loadNoData();
   } else {
-    // print("load: got data");
     controller.loadComplete();
   }
   return refreshedList;
@@ -104,7 +108,7 @@ showPickerThreeNumber(BuildContext context, DateTime smsStartDate,
         DateTime date = getPickedDate(value);
         model.onAddTask(
             title: announcement.title,
-            detail: announcement.description,
+            detail: parsedHtmlText(announcement.description),
             date: formatDate(date),
             dayOfWeek: formatDateAsDayOfWeek(date),
             weekNum: weekNum(smsStartDate, date));
@@ -142,3 +146,11 @@ Future<String> showPickerTwoNumber(BuildContext context) async {
       }).showDialog(context);
   return result;
 }
+
+SnackBar snackBar(String info) {
+  return SnackBar(
+    content: Text(info, textAlign: TextAlign.center,),
+  );
+}
+
+

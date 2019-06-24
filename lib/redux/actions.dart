@@ -1,4 +1,5 @@
 import 'package:fluminus/model/task_list_model.dart';
+import 'package:flutter/rendering.dart';
 import 'package:luminus_api/luminus_api.dart';
 
 class AddTaskAction{
@@ -13,8 +14,9 @@ class AddTaskAction{
   final bool isAllDay;
   final String location;
   final String tag;
+  final int colorIndex;
 
-  AddTaskAction(this.title, this.detail, this.date, this.dayOfWeek, this.weekNum, this.startTime, this.endTime, this.isAllDay, this.location, this.tag) {
+  AddTaskAction(this.title, this.detail, this.date, this.dayOfWeek, this.weekNum, this.startTime, this.endTime, this.isAllDay, this.location, this.tag, this.colorIndex) {
     _id++;
   }
 
