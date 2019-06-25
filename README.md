@@ -1,6 +1,8 @@
 # Fluminus App
 
-[![Build Status](https://travis-ci.com/fluminus/fluminus_app.svg?branch=master)](https://travis-ci.com/fluminus/fluminus_app) [![License](https://img.shields.io/badge/license-Apache2-blue.svg)](https://github.com/fluminus/fluminus_app/blob/feature__refresh/LICENSE)
+[![Build Status](https://travis-ci.com/fluminus/fluminus_app.svg?branch=master)](https://travis-ci.com/fluminus/fluminus_app) 
+[![Codemagic build status](https://api.codemagic.io/apps/5d109d3d99fdb7140ed490bd/5d109d3d99fdb7140ed490bc/status_badge.svg)](https://codemagic.io/apps/5d109d3d99fdb7140ed490bd/5d109d3d99fdb7140ed490bc/latest_build)
+[![License](https://img.shields.io/badge/license-Apache2-blue.svg)](https://github.com/fluminus/fluminus_app/blob/feature__refresh/LICENSE)
 
 An overall much better LMS (Learning management system) experience on [LumiNUS](https://luminus.nus.edu.sg/), and more to truly *illuminate your learning path*, written in [Dart](https://dart.dev/), built with [Flutter](https://flutter.dev/), available for **all** mobile platforms.
 
