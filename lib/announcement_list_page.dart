@@ -61,11 +61,13 @@ class _AnnouncementListPageState extends State<AnnouncementListPage>
           announcements,
           () => list.CardType.announcementCardType, (index) {
         setState(() {
-          announcements.removeAt(index);
+          Announcement removedAnnouncement = announcements.removeAt(index);
+          Scaffold.of(context).showSnackBar(
+                              util.snackBar('Announcement archived'));
         });
       }, (index, context) async{
         Announcement announcement = announcements[index];
-        util.showPickerThreeNumber(context, data.smsStartDate, announcement);
+        util.showPickerThreeNumber(context, data.smsStartDate, widget.module,announcement);
         
       }, context, {'module': widget.module});
     }

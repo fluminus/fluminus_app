@@ -299,6 +299,7 @@ Widget taskCard(Task task, BuildContext context) {
       child: GroovinExpansionTile(
         title: Text(task.title),
         subtitle: Text(task.date),
+        initiallyExpanded: false,
         boxDecoration: BoxDecoration(
           border: new Border.all(
               color: colors[task.colorIndex],
