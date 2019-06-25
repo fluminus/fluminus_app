@@ -18,10 +18,11 @@ class AnnouncementListPage extends StatefulWidget {
 
 class _AnnouncementListPageState extends State<AnnouncementListPage>
     with AutomaticKeepAliveClientMixin<AnnouncementListPage> {
-  List<dynamic> _announcements;
-  List<dynamic> _refreshedAnnouncements;
+  List<Announcement> _announcements;
+  List<Announcement> _newAnnouncements;
   RefreshController _refreshController;
   Future<SharedPreferences> _sprefs = SharedPreferences.getInstance();
+  DateTime lastRefreshedDate = data.smsStartDate;
 
   @override
   void initState() {
@@ -39,16 +40,22 @@ class _AnnouncementListPageState extends State<AnnouncementListPage>
   @override
   Widget build(BuildContext context) {
     Future<void> onRefresh() async {
-      _refreshedAnnouncements = await util.onLoading(
+      _newAnnouncements = await util.onLoading(
           _refreshController,
           _announcements,
           () => API.getAnnouncements(data.authentication(), widget.module));
-
-      if (_refreshedAnnouncements == null) {
+      sortAnnouncements(_newAnnouncements);
+      _newAnnouncements = _newAnnouncements.takeWhile((x){print(x.createdDate); return (DateTime.parse(x.createdDate).isAfter(lastRefreshedDate));}).toList();
+      if (_newAnnouncements == null) {
         _refreshController.refreshFailed();
       } else {
+        //print(_newAnnouncements);
+        if (_newAnnouncements.length == 0) {
+          util.snackBar('Already up to date');
+        }
+        lastRefreshedDate = DateTime.now();
         setState(() {
-          _announcements = _refreshedAnnouncements;
+          _announcements.addAll(_newAnnouncements);
         });
         _refreshController.refreshCompleted();
       }
@@ -57,7 +64,7 @@ class _AnnouncementListPageState extends State<AnnouncementListPage>
     Widget announcementList(List<dynamic> announcements) {
       return list.refreshableAndDismissibleListView(
           _refreshController,
-          () => onRefresh(),
+          () => onRefresh(), 
           announcements,
           () => list.CardType.announcementCardType, (index) {
         setState(() {
@@ -75,13 +82,15 @@ class _AnnouncementListPageState extends State<AnnouncementListPage>
     super.build(context);
 
     if (_announcements != null) {
+      sortAnnouncements(_announcements);
       return announcementList(_announcements);
     } else {
       return FutureBuilder<List<dynamic>>(
         future: _read(),
         builder: (context, snapshot) {
           if (snapshot.hasData) {
-            _announcements = snapshot.data;
+            _announcements = snapshot.data; 
+            sortAnnouncements(_announcements);
             return announcementList(_announcements);
           } else if (snapshot.hasError) {
             return Text(snapshot.error.toString());
@@ -94,6 +103,10 @@ class _AnnouncementListPageState extends State<AnnouncementListPage>
 
   @override
   bool get wantKeepAlive => true;
+
+  sortAnnouncements(List<Announcement> announcements) {
+    announcements.sort((a, b) => DateTime.parse(b.createdDate).compareTo(DateTime.parse(a.createdDate)));
+  }
 
   Future<List<dynamic>> _read() async {
     final prefs = await _sprefs;

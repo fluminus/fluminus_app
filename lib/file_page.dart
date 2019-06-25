@@ -152,13 +152,13 @@ class _ModuleRootDirectoryPageState extends State<ModuleRootDirectoryPage> {
         });
         _refreshController.refreshCompleted();
         _scaffoldKey.currentState.showSnackBar(SnackBar(
-          content: Text('Refreshed!'),
+          content: Text('Refreshed'),
           duration: Duration(milliseconds: 500),
         ));
       } catch (e) {
         _refreshController.refreshFailed();
         _scaffoldKey.currentState.showSnackBar(SnackBar(
-          content: Text('Refresh failed!'),
+          content: Text('Refresh failed'),
           duration: Duration(seconds: 2),
           action: SnackBarAction(
             label: 'Details',

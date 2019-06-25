@@ -297,6 +297,7 @@ Widget taskCard(Task task, BuildContext context) {
   return Padding(
       padding: EdgeInsets.only(bottom: 10),
       child: GroovinExpansionTile(
+        key: ValueKey(task.id),
         title: Text(task.title),
         subtitle: Text(task.date),
         initiallyExpanded: false,
