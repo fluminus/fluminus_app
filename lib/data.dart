@@ -1,6 +1,7 @@
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:luminus_api/luminus_api.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'main.dart' as main;
 
 Authentication _auth;
 bool _updateCreds = false;
@@ -11,8 +12,12 @@ Future<Authentication> authentication() async {
     _updateCreds = false;
     final storage = FlutterSecureStorage();
     _auth = Authentication(
-        username: await storage.read(key: 'nusnet_id'),
+        username: await storage.read(key: 'nusnet_id'),    
         password: await storage.read(key: 'nusnet_password'));
+        /*print(_auth.username);
+        String id = await storage.read(key: 'nusnet_id';
+        print(id);*/
+        
   } else {
     if (_updateCreds) {
       print('updating auth');
@@ -41,6 +46,10 @@ Future<void> deleteCredentials() async {
   prefs.setBool('hasCred', true);
 }
 
-List<Module> modules;
-List<Announcement> announcements = new List();
 DateTime smsStartDate = DateTime.now();
+
+Future<void> loadData() async{
+  Authentication auth = await authentication();
+  main.modules = await API.getModules(auth);
+  main.profile = await API.getProfile(auth);
+}

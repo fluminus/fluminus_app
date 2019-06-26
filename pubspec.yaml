@@ -19,6 +19,8 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  # Firebase
+  firebase_messaging: ^5.0.4
   # Network
   http: ^0.12.0+2
   html: ^0.14.0+2
@@ -34,7 +36,6 @@ dependencies:
   flutter_redux: ^0.5.3
   flutter_redux_dev_tools: ^0.3.0
   zefyr: ^0.5.0
-  side_header_list_view: ^0.0.4
   material_design_icons_flutter: ^3.2.3695
   dynamic_theme: ^1.0.1
   flutter_speed_dial: ^1.2.1
@@ -45,6 +46,8 @@ dependencies:
   # Utility
   luminus_api: ^0.1.15
   collection: ^1.14.11
+  groovin_widgets: ^1.4.2
+  flutter_swiper: ^1.1.6
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
@@ -78,7 +81,8 @@ flutter:
   # To add assets to your application, add an assets section, like this:
   # assets:
   assets:
-   - assets/card_background.jpg
+   - assets/card_background_light.jpeg
+   - assets/card_background_dark.jpeg
    - assets/logo.png
    - assets/tick.png
    - .env

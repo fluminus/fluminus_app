@@ -1,4 +1,4 @@
-package com.example.fluminus_app;
+package com.leotan.fluminus;
 
 import android.os.Bundle;
 import io.flutter.app.FlutterActivity;

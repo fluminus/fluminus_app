@@ -164,6 +164,7 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
                                         TextFormField(
                                           obscureText: true,
                                           decoration: InputDecoration(
+                                            labelText: 'PASSWORD',
                                             hintText: 'Password',
                                             icon: Icon(Icons.lock_outline),
                                           ),
@@ -202,6 +203,7 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
                                     setState(() {
                                       animationStatus = 1;
                                     });
+                                    await loadData();
                                     _playAnimation();
                                   },
                                   child: SignInButton()),

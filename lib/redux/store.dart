@@ -1,4 +1,5 @@
 import 'package:fluminus/model/task_list_model.dart';
+import 'package:flutter/material.dart';
 import 'package:luminus_api/luminus_api.dart';
 import 'package:redux/redux.dart';
 import 'package:redux_dev_tools/redux_dev_tools.dart';
@@ -17,14 +18,14 @@ ViewModel model = ViewModel.create(store);
 
 class ViewModel {
   final List<Task> tasks;
-  final Function({String title, String detail, String date, String dayOfWeek, int weekNum, String startTime, String endTime, bool isAllDay, String location, String tag}) onAddTask;
+  final Function({String title, String detail, String date, String dayOfWeek, int weekNum, String startTime, String endTime, bool isAllDay, String location, String tag, int colorIndex}) onAddTask;
   final Function(Task) onRemoveTask;
 
   ViewModel({this.tasks, this.onAddTask, this.onRemoveTask});
 
   factory ViewModel.create(Store<TaskListState> store) {
-    _onAddTask({String title, String detail, String date, String dayOfWeek, int weekNum, String startTime, String endTime, bool isAllDay, String location, String tag}) {
-      store.dispatch(AddTaskAction(title, detail??'', date, dayOfWeek, weekNum, startTime??'', endTime??'', isAllDay, location??'', tag??''));
+    _onAddTask({String title, String detail, String date, String dayOfWeek, int weekNum, String startTime, String endTime, bool isAllDay, String location, String tag, int colorIndex}) {
+      store.dispatch(AddTaskAction(title, detail??'', date, dayOfWeek, weekNum, startTime??'', endTime??'', isAllDay, location??'', tag??'', colorIndex));
     }
 
     _onRemoveTask(Task task) {
