@@ -1,3 +1,5 @@
+import 'package:dio/dio.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:fluminus/login_page.dart';
 import 'package:fluminus/widgets/theme.dart';
 import 'package:flutter/material.dart';
@@ -137,7 +139,25 @@ class _ProfilePageState extends State<ProfilePage> {
                     await db.clearAllTables();
                   },
                 )),
+            Padding(
+                padding: const EdgeInsets.only(left: 20.0, right: 20.0),
+                child: RaisedButton(
+                  color: Colors.cyanAccent,
+                  child: Text('Activate notifications'),
+                  onPressed: () async {
+                    await activatePushNotification();
+                  },
+                )),
           ],
         ));
   }
+}
+
+Future<void> activatePushNotification() async {
+  Dio dio = Dio();
+  final storage = FlutterSecureStorage();
+  final FirebaseMessaging _firebaseMsg = FirebaseMessaging();
+  var id = await storage.read(key: 'nusnet_id');
+  await dio.get('http://127.0.0.1:3003/api/notification/activate',
+      queryParameters: {'id': id, 'fcm_token': await _firebaseMsg.getToken()});
 }

@@ -19,6 +19,8 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  # Firebase
+  firebase_messaging: ^5.0.4
   # Network
   http: ^0.12.0+2
   html: ^0.14.0+2
