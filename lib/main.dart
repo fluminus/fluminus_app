@@ -1,18 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:luminus_api/luminus_api.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-// import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:dynamic_theme/dynamic_theme.dart';
 import 'package:fluminus/home_page.dart';
 import 'package:fluminus/login_page.dart';
 import 'package:fluminus/widgets/theme.dart' as theme;
 import 'data.dart' as data;
 
-/// Disabling the scroll glow.
-/// Source: https://stackoverflow.com/questions/51119795/how-to-remove-scroll-glow/51119796#51119796
-
-List<Module> modules;
-
+// Source: https://stackoverflow.com/questions/51119795/how-to-remove-scroll-glow/51119796#51119796
+// Disabling the scroll glow.
 void main() async {
   Brightness brightness;
   bool hasCredentials;
@@ -22,9 +18,8 @@ void main() async {
       (prefs.getBool('isDark') ?? false) ? Brightness.dark : Brightness.light;
   hasCredentials = (prefs.getBool('hasCred') ?? false);
   if(hasCredentials) {
-    modules = await API.getModules(data.authentication());
+    data.modules = await API.getModules(data.authentication());
   }
-  // await DotEnv().load('.env');
   runApp(App(
     brightness: brightness,
     hasCredentials: hasCredentials,

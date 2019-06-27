@@ -7,27 +7,22 @@ bool _updateCreds = false;
 
 Future<Authentication> authentication() async {
   final storage = FlutterSecureStorage();
-  print(await storage.read(key: 'nusnet_id'));
+  // print(await storage.read(key: 'nusnet_id'));
+  // print(await storage.read(key: 'nusnet_password'));
   if (_auth == null) {
-    print('first time auth');
+    // print('first time auth');
     _updateCreds = false;
-    
     _auth = Authentication(
-        username: await storage.read(key: 'nusnet_id'),    
+        username: await storage.read(key: 'nusnet_id'),
         password: await storage.read(key: 'nusnet_password'));
-        /*print(_auth.username);
-        String id = await storage.read(key: 'nusnet_id';
-        print(id);*/
+  } else if (_updateCreds) {
+    // print('updating auth');
+    _updateCreds = false;
+    _auth = Authentication(
+        username: await storage.read(key: 'nusnet_id'),
+        password: await storage.read(key: 'nusnet_password'));
   } else {
-    if (_updateCreds) {
-      print('updating auth');
-      _updateCreds = false;
-      _auth = Authentication(
-          username: await storage.read(key: 'nusnet_id'),
-          password: await storage.read(key: 'nusnet_password'));
-    } else {
-      // print('cached auth');
-    }
+    // print('cached auth');
   }
   return _auth;
 }
