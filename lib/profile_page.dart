@@ -9,7 +9,6 @@ import 'package:luminus_api/luminus_api.dart';
 import 'package:fluminus/widgets/common.dart';
 import 'package:fluminus/db/db_helper.dart' as db;
 import 'data.dart' as data;
-import 'main.dart' as main;
 
 class ProfilePage extends StatefulWidget {
   @override
@@ -17,7 +16,7 @@ class ProfilePage extends StatefulWidget {
 }
 
 class _ProfilePageState extends State<ProfilePage> {
-  Profile profile = main.profile;
+  Profile profile = data.profile;
   bool _isDarkMode;
 
   Widget displayName(String name) {

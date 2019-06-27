@@ -8,7 +8,6 @@ import 'package:fluminus/announcement_list_page.dart';
 import 'package:fluminus/data.dart' as data;
 import 'package:fluminus/widgets/common.dart' as common;
 import 'package:shared_preferences/shared_preferences.dart';
-import 'main.dart' as main;
 import 'util.dart' as util;
 
 class AnnouncementPage extends StatefulWidget {
@@ -40,7 +39,7 @@ class _AnnouncementPageState extends State<AnnouncementPage>
   @override
   Widget build(BuildContext context) {
     super.build(context);
-    if (main.modules == null) {
+    if (data.modules == null) {
       return Scaffold(
         appBar: AppBar(
           title: Text(appBarTitle),
@@ -48,13 +47,13 @@ class _AnnouncementPageState extends State<AnnouncementPage>
       );
     } else {
       return DefaultTabController(
-        length: main.modules.length,
+        length: data.modules.length,
         child: Scaffold(
           appBar: AppBar(
             title: Text(appBarTitle),
             bottom: TabBar(
               isScrollable: true,
-              tabs: main.modules.map((Module module) {
+              tabs: data.modules.map((Module module) {
                 return Tab(
                   text: module.name,
                 );
@@ -62,7 +61,7 @@ class _AnnouncementPageState extends State<AnnouncementPage>
             ),
           ),
           body: TabBarView(
-            children: main.modules.map((Module module) {
+            children: data.modules.map((Module module) {
               return AnnouncementListPage(module: module);
             }).toList(),
           ),

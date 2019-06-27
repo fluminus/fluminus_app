@@ -1,7 +1,6 @@
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:luminus_api/luminus_api.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'main.dart' as main;
 
 Authentication _auth;
 bool _updateCreds = false;
@@ -43,8 +42,11 @@ Future<void> deleteCredentials() async {
 
 DateTime smsStartDate = DateTime.now();
 
+List<Module> modules;
+Profile profile;
+
 Future<void> loadData() async{
   Authentication auth = await authentication();
-  main.modules = await API.getModules(auth);
-  main.profile = await API.getProfile(auth);
+  modules = await API.getModules(auth);
+  profile = await API.getProfile(auth);
 }
