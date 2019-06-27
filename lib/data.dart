@@ -44,9 +44,16 @@ DateTime smsStartDate = DateTime.now();
 
 List<Module> modules;
 Profile profile;
+Profile profilePlaceholder = Profile(
+    userID: 'E0261888',
+    userNameOriginal: 'John Doe',
+    userMatricNo: 'A0177888Y',
+    email: 'user@email.com',
+    displayPhoto: false);
 
-Future<void> loadData() async{
+Future<void> loadData() async {
   Authentication auth = await authentication();
   modules = await API.getModules(auth);
   profile = await API.getProfile(auth);
+  print(profile);
 }

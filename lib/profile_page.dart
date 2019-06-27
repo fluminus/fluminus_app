@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:dio/dio.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:fluminus/login_page.dart';
@@ -40,7 +42,7 @@ class _ProfilePageState extends State<ProfilePage> {
     );
   }
 
-  Widget profileWidget(Profile data) {
+  Widget profileWidget(Profile profile) {
     return Padding(
       padding: const EdgeInsets.only(top: 10.0),
       child: Column(
@@ -49,14 +51,14 @@ class _ProfilePageState extends State<ProfilePage> {
           Padding(
               padding:
                   const EdgeInsets.only(left: 20.0, right: 20.0, top: 10.0),
-              child: displayName(data.userNameOriginal)),
+              child: displayName(profile.userNameOriginal)),
           Padding(
             padding: const EdgeInsets.only(left: 20.0),
-            child: displayMatricNumber(data.userMatricNo),
+            child: displayMatricNumber(profile.userMatricNo),
           ),
           Padding(
             padding: const EdgeInsets.only(left: 20.0, top: 20.0, right: 20.0),
-            child: displayPersonalParticular(data.email),
+            child: displayPersonalParticular(profile.email),
           ),
         ],
       ),
@@ -70,27 +72,20 @@ class _ProfilePageState extends State<ProfilePage> {
         body: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: <Widget>[
-            /*FutureBuilder(
-                future: profile,
-                builder: (context, snapshot) {
-                  if (snapshot.hasData) {
-                    Profile data = snapshot.data;
-                    return profileWidget(data);
-                  } else if (snapshot.hasError) {
-                    return Text(snapshot.error.toString());
-                  }
-                  return Container(
-                    child: Column(
-                      children: <Widget>[
-                        Padding(
-                          padding: const EdgeInsets.all(30.0),
-                          child: CircularProgressIndicator(),
-                        ),
-                      ],
-                    ),
-                  );
-                }),*/
-            profileWidget(profile),
+            profile == null
+                ? FutureBuilder(
+                    future: API.getProfile(data.authentication()),
+                    builder: (context, AsyncSnapshot<Profile> snapshot) {
+                      if (snapshot.connectionState == ConnectionState.done) {
+                        Profile prof = snapshot.data;
+                        data.profile = prof;
+                        return profileWidget(prof);
+                      } else {
+                        return profileWidget(data.profilePlaceholder);
+                      }
+                    },
+                  )
+                : profileWidget(profile),
             Padding(
               padding: const EdgeInsets.only(top: 20.0),
             ),
