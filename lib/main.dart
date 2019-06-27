@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:luminus_api/luminus_api.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
+// import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:dynamic_theme/dynamic_theme.dart';
 import 'package:fluminus/home_page.dart';
 import 'package:fluminus/login_page.dart';
@@ -24,7 +24,7 @@ void main() async {
   if(hasCredentials) {
     modules = await API.getModules(data.authentication());
   }
-  await DotEnv().load('.env');
+  // await DotEnv().load('.env');
   runApp(App(
     brightness: brightness,
     hasCredentials: hasCredentials,

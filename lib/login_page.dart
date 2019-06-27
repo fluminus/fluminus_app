@@ -198,7 +198,7 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
                                     await storage.write(
                                         key: 'nusnet_password',
                                         value: _password);
-                                    main.modules = await API.getModules(data.authentication());
+                                    // main.modules = await API.getModules(data.authentication());
                                     updateCredentials();
                                     SharedPreferences prefs =
                                         await SharedPreferences.getInstance();
