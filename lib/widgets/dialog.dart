@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-void _displayDialog(String title, String content, BuildContext context) {
+void displayDialog(String title, String content, BuildContext context) {
   showDialog(
       context: context,
       builder: (context) {
@@ -47,6 +47,23 @@ void displayRefreshTokenDialog(BuildContext context) {
                 },
                 child: Text('Ignore')),
           ],
+        );
+      });
+}
+
+void displayRestartPrompt(BuildContext context) {
+  showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: Text(
+            'Oops!',
+            style: Theme.of(context).textTheme.title,
+          ),
+          content: Text(
+            "Maybe you need a restart to apply this change...",
+            style: Theme.of(context).textTheme.body1,
+          ),
         );
       });
 }

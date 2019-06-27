@@ -1,0 +1,69 @@
+{
+  "project_info": {
+    "project_number": "886795072477",
+    "firebase_url": "https://f-luminus.firebaseio.com",
+    "project_id": "f-luminus",
+    "storage_bucket": "f-luminus.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:886795072477:android:947dd54549c1fdc7",
+        "android_client_info": {
+          "package_name": "com.example.fluminus_app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "886795072477-8b2a64n4655cjf2r4qnsh58pnff3os01.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC1WrJTWC43I-1l5cnx5n6sSKZqumOTKAE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "886795072477-8b2a64n4655cjf2r4qnsh58pnff3os01.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:886795072477:android:a324551fd07d5c4d",
+        "android_client_info": {
+          "package_name": "com.leotan.fluminus"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "886795072477-8b2a64n4655cjf2r4qnsh58pnff3os01.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC1WrJTWC43I-1l5cnx5n6sSKZqumOTKAE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "886795072477-8b2a64n4655cjf2r4qnsh58pnff3os01.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

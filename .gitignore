@@ -71,3 +71,4 @@
 
 # Credentials
 .env
+pubspec.lock
