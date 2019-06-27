@@ -68,8 +68,8 @@ ThemeData darkTheme = ThemeData(
       headline: TextStyle(fontSize: 45.0, fontWeight: FontWeight.bold, color: lightGrey),
       title: TextStyle(fontSize: 40.0, fontStyle: FontStyle.normal, color: lightGrey),
       caption: TextStyle(fontSize: 30.0, fontWeight: FontWeight.bold,color: lightGrey),
-      subhead: TextStyle(fontWeight: FontWeight.bold, fontSize: 20.0, color: lightGrey),
-      subtitle: TextStyle(fontSize: 18.0, color: Colors.blueGrey),
+      subhead: TextStyle(fontWeight: FontWeight.bold, fontSize: 20.0, color: lightBlue),
+      subtitle: TextStyle(fontSize: 18.0, color: lightGrey),
       body1: TextStyle(fontSize: 14.0, color: lightGrey),
       body2: TextStyle(fontSize: 16.0, color: lightGrey)
     ));

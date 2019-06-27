@@ -79,7 +79,7 @@ GestureTapCallback onTapNextPage(Widget nextPage, BuildContext context) {
       };
 }
 
-showPickerThreeNumber(BuildContext context, DateTime smsStartDate,
+showPickerThreeNumber(BuildContext context, DateTime smsStartDate, Module module,
     Announcement announcement) async {
   new Picker(
       adapter: NumberPickerAdapter(data: [
@@ -111,7 +111,9 @@ showPickerThreeNumber(BuildContext context, DateTime smsStartDate,
             detail: parsedHtmlText(announcement.description),
             date: formatDate(date),
             dayOfWeek: formatDateAsDayOfWeek(date),
-            weekNum: weekNum(smsStartDate, date));
+            weekNum: weekNum(smsStartDate, date),
+            tag:module.name,
+            colorIndex: 0);
       }).showDialog(context);
 }
 
@@ -147,9 +149,13 @@ Future<String> showPickerTwoNumber(BuildContext context) async {
   return result;
 }
 
-SnackBar snackBar(String info) {
+SnackBar snackBar(String info, {String actionName, Function action}) {
   return SnackBar(
     content: Text(info, textAlign: TextAlign.center,),
+    /*action: SnackBarAction(
+      label: actionName,
+      onPressed: action
+    ),*/
   );
 }
 

@@ -7,6 +7,7 @@ import 'package:fluminus/login_page.dart';
 import 'package:fluminus/widgets/theme.dart' as theme;
 import 'data.dart' as data;
 
+
 // Source: https://stackoverflow.com/questions/51119795/how-to-remove-scroll-glow/51119796#51119796
 // Disabling the scroll glow.
 void main() async {
@@ -18,7 +19,7 @@ void main() async {
       (prefs.getBool('isDark') ?? false) ? Brightness.dark : Brightness.light;
   hasCredentials = (prefs.getBool('hasCred') ?? false);
   if(hasCredentials) {
-    data.modules = await API.getModules(data.authentication());
+    await data.loadData();
   }
   runApp(App(
     brightness: brightness,

@@ -8,8 +8,8 @@ import 'package:fluminus/announcement_list_page.dart';
 import 'package:fluminus/data.dart' as data;
 import 'package:fluminus/widgets/common.dart' as common;
 import 'package:shared_preferences/shared_preferences.dart';
-
 import 'main.dart' as main;
+import 'util.dart' as util;
 
 class AnnouncementPage extends StatefulWidget {
   const AnnouncementPage({Key key}) : super(key: key);
@@ -35,31 +35,41 @@ class _AnnouncementPageState extends State<AnnouncementPage>
     });
   }
 
+  final String appBarTitle = "Announcements";
+
   @override
   Widget build(BuildContext context) {
     super.build(context);
-    /*return DefaultTabController(
-              length: main.modules.length,
-              child: Scaffold(
-                appBar: AppBar(
-                  title: const Text("Announcements"),
-                  bottom: TabBar(
-                    isScrollable: true,
-                    tabs: main.modules.map((Module module) {
-                      return Tab(
-                        text: module.name,
-                      );
-                    }).toList(),
-                  ),
-                ),
-                body: TabBarView(
-                  children: main.modules.map((Module module) {
-                    return AnnouncementListPage(module: module);
-                  }).toList(),
-                ),
-              ),
-            );*/
-    return FutureBuilder<List<Module>>(
+    if (main.modules == null) {
+      return Scaffold(
+        appBar: AppBar(
+          title: Text(appBarTitle),
+        ),
+      );
+    } else {
+      return DefaultTabController(
+        length: main.modules.length,
+        child: Scaffold(
+          appBar: AppBar(
+            title: Text(appBarTitle),
+            bottom: TabBar(
+              isScrollable: true,
+              tabs: main.modules.map((Module module) {
+                return Tab(
+                  text: module.name,
+                );
+              }).toList(),
+            ),
+          ),
+          body: TabBarView(
+            children: main.modules.map((Module module) {
+              return AnnouncementListPage(module: module);
+            }).toList(),
+          ),
+        ),
+      );
+    }
+    /*return FutureBuilder<List<Module>>(
         future: this._fetchData(),
         builder: (context, snapshot) {
           if (snapshot.hasData) {
@@ -96,7 +106,7 @@ class _AnnouncementPageState extends State<AnnouncementPage>
             ),
             body: common.progressIndicator,
           );
-        });
+        });*/
   }
 
   @override
