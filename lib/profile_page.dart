@@ -163,6 +163,15 @@ class _ProfilePageState extends State<ProfilePage> {
             Padding(
                 padding: const EdgeInsets.only(left: 20.0, right: 20.0),
                 child: RaisedButton(
+                  color: Theme.of(context).buttonColor,
+                  child: Text('Test crashlytics'),
+                  onPressed: () {
+                    throw Exception('Crashlytics test');
+                  },
+                )),
+            Padding(
+                padding: const EdgeInsets.only(left: 20.0, right: 20.0),
+                child: RaisedButton(
                   color: Theme.of(context).unselectedWidgetColor,
                   child: Text('Clear Database'),
                   onPressed: () async {

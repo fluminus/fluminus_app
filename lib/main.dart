@@ -35,19 +35,19 @@ void main() async {
       Zone.current.handleUncaughtError(details.exception, details.stack);
     }
   };
-  await FlutterCrashlytics().initialize();
-  runZoned<Future<Null>>(() async {
+  FlutterCrashlytics().initialize().then((val) {
+    print('Crashlytics initialized.');
+  });
+  runZoned<Future<Null>>(() {
     runApp(App(
       brightness: brightness,
       hasCredentials: hasCredentials,
     ));
-  }, onError: (error, stackTrace) async {
+  }, onError: (error, stackTrace) {
     // Whenever an error occurs, call the `reportCrash` function. This will send
     // Dart errors to our dev console or Crashlytics depending on the environment.
-    await FlutterCrashlytics()
-        .reportCrash(error, stackTrace, forceCrash: false);
+    FlutterCrashlytics().reportCrash(error, stackTrace, forceCrash: true);
   });
-
 }
 
 class App extends StatelessWidget {
