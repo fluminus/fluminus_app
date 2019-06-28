@@ -1,7 +1,7 @@
 // import 'dart:async';
 // import 'dart:io';
 
-import 'package:fluminus/widgets/placeholder.dart';
+// import 'package:fluminus/widgets/placeholder.dart';
 import 'package:flutter/material.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 // import 'package:firebase_messaging/firebase_messaging.dart';
