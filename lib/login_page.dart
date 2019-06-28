@@ -1,19 +1,25 @@
 import 'package:fluminus/data.dart';
 import 'package:fluminus/home_page.dart';
+import 'package:fluminus/widgets/dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
-import 'package:flutter/animation.dart';
 import 'dart:async';
 import 'package:flutter/services.dart';
 import 'package:flutter/scheduler.dart' show timeDilation;
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:luminus_api/luminus_api.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:fluminus/data.dart' as data;
 
 const double _signinButtonWidth = 200.0;
 const double _signinButtonHeight = 60.0;
 const Color _signinButtonColor = const Color.fromRGBO(247, 64, 106, 1.0);
 var _signinTextStyle =
     (BuildContext context) => Theme.of(context).textTheme.subhead;
+DecorationImage logo = DecorationImage(
+  image: ExactAssetImage('assets/logo.png'),
+  fit: BoxFit.cover,
+);
 
 class LoginPage extends StatefulWidget {
   static String tag = 'login-page';
@@ -23,31 +29,10 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
-  AnimationController _loginButtonController;
-  var animationStatus = 0;
   String _id;
   String _password;
+  String _buttonText = 'Sign in';
   final _formKey = GlobalKey<FormState>();
-
-  @override
-  void initState() {
-    super.initState();
-    _loginButtonController = AnimationController(
-        duration: Duration(milliseconds: 3000), vsync: this);
-  }
-
-  @override
-  void dispose() {
-    _loginButtonController.dispose();
-    super.dispose();
-  }
-
-  Future<Null> _playAnimation() async {
-    try {
-      await _loginButtonController.forward();
-      await _loginButtonController.reverse();
-    } on TickerCanceled {}
-  }
 
   Future<bool> _onWillPop() {
     return showDialog(
@@ -184,32 +169,51 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
                           )
                         ],
                       ),
-                      animationStatus == 0
-                          ? Padding(
-                              padding: const EdgeInsets.only(bottom: 50.0),
-                              child: InkWell(
-                                  onTap: () async {
-                                    final storage = FlutterSecureStorage();
-                                    this._formKey.currentState.save();
-                                    await storage.write(
-                                        key: 'nusnet_id', value: _id);
-                                    await storage.write(
-                                        key: 'nusnet_password',
-                                        value: _password);
-                                    updateCredentials();
-                                    SharedPreferences prefs =
-                                        await SharedPreferences.getInstance();
-                                    prefs.setBool('hasCred', true);
-                                    setState(() {
-                                      animationStatus = 1;
-                                    });
-                                    await loadData();
-                                    _playAnimation();
-                                  },
-                                  child: SignInButton()),
-                            )
-                          : StaggerAnimation(
-                              buttonController: _loginButtonController.view),
+                      Padding(
+                        padding: const EdgeInsets.only(bottom: 50.0),
+                        child: InkWell(
+                            onTap: () async {
+                              final storage = FlutterSecureStorage();
+                              this._formKey.currentState.save();
+                              await storage.write(key: 'nusnet_id', value: _id);
+                              await storage.write(
+                                  key: 'nusnet_password', value: _password);
+                              updateCredentials();
+                              SharedPreferences prefs =
+                                  await SharedPreferences.getInstance();
+                              prefs.setBool('hasCred', true);
+                              try {
+                                setState(() {
+                                  this._buttonText = "Signing in...";
+                                });
+                                data.modules =
+                                    await API.getModules(data.authentication());
+                                setState(() {
+                                  this._buttonText = "Signed in!";
+                                });
+                                Navigator.pushReplacementNamed(
+                                    context, HomePage.tag);
+                              } catch (e) {
+                                if (e is RestartAuthException) {
+                                  Navigator.pushReplacementNamed(
+                                      context, HomePage.tag);
+                                } else {
+                                  setState(() {
+                                    this._buttonText = "Sign in";
+                                  });
+                                  if (e is WrongCredentialsException) {
+                                    displayDialog(
+                                        'Wrong credentials',
+                                        'Please provide correct NUSNET ID and password and try again.',
+                                        context);
+                                  } else {
+                                    rethrow;
+                                  }
+                                }
+                              }
+                            },
+                            child: SignInButton(this._buttonText)),
+                      ),
                     ],
                   ),
                 ],
@@ -218,125 +222,9 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
   }
 }
 
-class StaggerAnimation extends StatelessWidget {
-  StaggerAnimation({Key key, this.buttonController})
-      : buttonSqueezeanimation = Tween(
-          begin: _signinButtonWidth,
-          end: _signinButtonHeight,
-        ).animate(
-          CurvedAnimation(
-            parent: buttonController,
-            curve: Interval(
-              0.0,
-              0.150,
-            ),
-          ),
-        ),
-        buttomZoomOut = Tween(
-          begin: _signinButtonHeight,
-          end: 1000.0,
-        ).animate(
-          CurvedAnimation(
-            parent: buttonController,
-            curve: Interval(
-              0.550,
-              0.999,
-              curve: Curves.bounceOut,
-            ),
-          ),
-        ),
-        containerCircleAnimation = EdgeInsetsTween(
-          begin: const EdgeInsets.only(bottom: 50.0),
-          end: const EdgeInsets.only(bottom: 0.0),
-        ).animate(
-          CurvedAnimation(
-            parent: buttonController,
-            curve: Interval(
-              0.500,
-              0.800,
-              curve: Curves.ease,
-            ),
-          ),
-        ),
-        super(key: key);
-
-  final AnimationController buttonController;
-  final Animation<EdgeInsets> containerCircleAnimation;
-  final Animation buttonSqueezeanimation;
-  final Animation buttomZoomOut;
-
-  Future<Null> _playAnimation() async {
-    try {
-      await buttonController.forward();
-      await buttonController.reverse();
-    } on TickerCanceled {}
-  }
-
-  Widget _buildAnimation(BuildContext context, Widget child) {
-    return Padding(
-      padding: buttomZoomOut.value == _signinButtonHeight
-          ? const EdgeInsets.only(bottom: 50.0)
-          : containerCircleAnimation.value,
-      child: InkWell(
-          onTap: () {
-            _playAnimation();
-          },
-          child: buttomZoomOut.value <= 300
-              ? Container(
-                  width: buttomZoomOut.value == _signinButtonHeight
-                      ? buttonSqueezeanimation.value
-                      : buttomZoomOut.value,
-                  height: buttomZoomOut.value == _signinButtonHeight
-                      ? _signinButtonHeight
-                      : buttomZoomOut.value,
-                  alignment: FractionalOffset.center,
-                  decoration: BoxDecoration(
-                    color: const Color.fromRGBO(247, 64, 106, 1.0),
-                    borderRadius: buttomZoomOut.value < 400
-                        ? BorderRadius.all(const Radius.circular(30.0))
-                        : BorderRadius.all(const Radius.circular(0.0)),
-                  ),
-                  child: buttonSqueezeanimation.value > 75.0
-                      ? Text(
-                          "Sign In",
-                          style: _signinTextStyle(context),
-                        )
-                      : buttomZoomOut.value < 300.0
-                          ? CircularProgressIndicator(
-                              value: null,
-                              strokeWidth: 3.0,
-                              valueColor:
-                                  AlwaysStoppedAnimation<Color>(Colors.white),
-                            )
-                          : null)
-              : Container(
-                  width: buttomZoomOut.value,
-                  height: buttomZoomOut.value,
-                  decoration: BoxDecoration(
-                    shape: buttomZoomOut.value < 500
-                        ? BoxShape.circle
-                        : BoxShape.rectangle,
-                    color: const Color.fromRGBO(247, 64, 106, 1.0),
-                  ),
-                )),
-    );
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    buttonController.addListener(() {
-      if (buttonController.isCompleted) {
-        Navigator.pushReplacementNamed(context, HomePage.tag);
-      }
-    });
-    return AnimatedBuilder(
-      builder: _buildAnimation,
-      animation: buttonController,
-    );
-  }
-}
-
 class SignInButton extends StatelessWidget {
+  final String content;
+  SignInButton(this.content);
   @override
   Widget build(BuildContext context) {
     return (Container(
@@ -349,14 +237,9 @@ class SignInButton extends StatelessWidget {
             BorderRadius.all(const Radius.circular(_signinButtonHeight / 2.0)),
       ),
       child: Text(
-        "Sign In",
+        content,
         style: _signinTextStyle(context),
       ),
     ));
   }
 }
-
-DecorationImage logo = DecorationImage(
-  image: ExactAssetImage('assets/logo.png'),
-  fit: BoxFit.cover,
-);

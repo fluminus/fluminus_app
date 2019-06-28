@@ -1,4 +1,3 @@
-import 'package:fluminus/main.dart';
 import 'package:fluminus/model/task_list_model.dart';
 import 'package:fluminus/redux/store.dart';
 import 'package:fluminus/widgets/theme.dart';
@@ -124,7 +123,7 @@ class _TaskDetailState extends State<TaskDetail> {
   }
 
   List<String> tags = new List()
-    ..addAll(modules.map((module) => module.name).toList())
+    ..addAll(data.modules.map((module) => module.name).toList())
     ..add('General');
 
 
