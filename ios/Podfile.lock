@@ -1,4 +1,7 @@
 PODS:
+  - Crashlytics (3.13.2):
+    - Fabric (~> 1.10.2)
+  - Fabric (1.10.2)
   - Firebase/Core (6.3.0):
     - Firebase/CoreOnly
     - FirebaseAnalytics (= 6.0.2)
@@ -38,6 +41,10 @@ PODS:
     - GoogleUtilities/UserDefaults (~> 6.2)
     - Protobuf (~> 3.1)
   - Flutter (1.0.0)
+  - flutter_crashlytics (0.0.1):
+    - Crashlytics
+    - Fabric
+    - Flutter
   - flutter_picker (0.0.1):
     - Flutter
   - flutter_secure_storage (3.2.0):
@@ -88,10 +95,13 @@ PODS:
     - FMDB (~> 2.7.2)
   - url_launcher (0.0.1):
     - Flutter
+  - webview_flutter (0.0.1):
+    - Flutter
 
 DEPENDENCIES:
   - firebase_messaging (from `.symlinks/plugins/firebase_messaging/ios`)
   - Flutter (from `.symlinks/flutter/ios`)
+  - flutter_crashlytics (from `.symlinks/plugins/flutter_crashlytics/ios`)
   - flutter_picker (from `.symlinks/plugins/flutter_picker/ios`)
   - flutter_secure_storage (from `.symlinks/plugins/flutter_secure_storage/ios`)
   - image_picker (from `.symlinks/plugins/image_picker/ios`)
@@ -100,9 +110,12 @@ DEPENDENCIES:
   - shared_preferences (from `.symlinks/plugins/shared_preferences/ios`)
   - sqflite (from `.symlinks/plugins/sqflite/ios`)
   - url_launcher (from `.symlinks/plugins/url_launcher/ios`)
+  - webview_flutter (from `.symlinks/plugins/webview_flutter/ios`)
 
 SPEC REPOS:
   https://github.com/cocoapods/specs.git:
+    - Crashlytics
+    - Fabric
     - Firebase
     - FirebaseAnalytics
     - FirebaseAnalyticsInterop
@@ -120,6 +133,8 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/firebase_messaging/ios"
   Flutter:
     :path: ".symlinks/flutter/ios"
+  flutter_crashlytics:
+    :path: ".symlinks/plugins/flutter_crashlytics/ios"
   flutter_picker:
     :path: ".symlinks/plugins/flutter_picker/ios"
   flutter_secure_storage:
@@ -136,8 +151,12 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/sqflite/ios"
   url_launcher:
     :path: ".symlinks/plugins/url_launcher/ios"
+  webview_flutter:
+    :path: ".symlinks/plugins/webview_flutter/ios"
 
 SPEC CHECKSUMS:
+  Crashlytics: 611738c7847f8291a1a51084e35987b86ba6b3ee
+  Fabric: 706c8b8098fff96c33c0db69cbf81f9c551d0d74
   Firebase: 8432d732974498afd5987e9001a05f90f1a3d625
   firebase_messaging: 7aeb61164b030eb2589f18e1e1518dfaaca2a7e3
   FirebaseAnalytics: 470ddab7253b21ad5a40bebd4a9903d7ae19386a
@@ -146,6 +165,7 @@ SPEC CHECKSUMS:
   FirebaseInstanceID: f20243a1d828e0e9a3798b995174dedc16f1b32a
   FirebaseMessaging: 0ac5310133e6ada4cdd44d42e92038855214a5e9
   Flutter: 58dd7d1b27887414a370fcccb9e645c08ffd7a6a
+  flutter_crashlytics: 7b5bba7233066381c8e18343435342ba05f3053c
   flutter_picker: 8ff0d7440b4e8327fcc9e6b21a39ef9369e697c7
   flutter_secure_storage: 0c5779648ff644110e507909b77a57e620cbbf8b
   FMDB: 2ce00b547f966261cd18927a3ddb07cb6f3db82a
@@ -159,6 +179,7 @@ SPEC CHECKSUMS:
   shared_preferences: 1feebfa37bb57264736e16865e7ffae7fc99b523
   sqflite: ff1d9da63c06588cc8d1faf7256d741f16989d5a
   url_launcher: 0067ddb8f10d36786672aa0722a21717dba3a298
+  webview_flutter: 1aa7604e6cdb451a9b7ed2c37d5454c0b440246b
 
 PODFILE CHECKSUM: 7fb83752f59ead6285236625b82473f90b1cb932
 
