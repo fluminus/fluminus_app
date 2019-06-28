@@ -42,6 +42,7 @@ dependencies:
   flutter_speed_dial: ^1.2.1
   groovin_widgets: ^1.4.2
   flutter_swiper: ^1.1.6
+  webview_flutter: ^0.3.9+1
   # Storage
   shared_preferences: ^0.5.0
   sqflite: ^1.1.0
