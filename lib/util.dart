@@ -42,13 +42,14 @@ String formatDateAsDayOfWeek(DateTime date) {
 
 Future<List> onLoading(
     RefreshController controller, List currList, Function getData) async {
-  List refreshedList = await getData();
-  if (twoListsAreDeepEqual(currList, refreshedList)) {
-    controller.loadNoData();
-  } else {
-    controller.loadComplete();
-  }
-  return refreshedList;
+  // List refreshedList = await getData();
+  // if (twoListsAreDeepEqual(currList, refreshedList)) {
+  //   controller.loadNoData();
+  // } else {
+  //   controller.loadComplete();
+  // }
+  // return refreshedList;
+  return await getData();
 }
 
 Future<List> onLoadingTest(RefreshController controller, List currList) async {
