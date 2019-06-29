@@ -40,6 +40,20 @@ Future<void> deleteCredentials() async {
   prefs.setBool('hasCred', false);
 }
 
-List<Module> modules;
-List<Announcement> announcements = new List();
 DateTime smsStartDate = DateTime.now();
+
+List<Module> modules;
+Profile profile;
+Profile profilePlaceholder = Profile(
+    userID: 'E0261888',
+    userNameOriginal: 'John Doe',
+    userMatricNo: 'A0177888Y',
+    email: 'user@email.com',
+    displayPhoto: false);
+
+Future<void> loadData() async {
+  Authentication auth = await authentication();
+  modules = await API.getModules(auth);
+  profile = await API.getProfile(auth);
+  print(profile);
+}

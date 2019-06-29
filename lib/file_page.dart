@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:io' as prefix0;
 
+import 'package:fluminus/widgets/dialog.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
@@ -152,13 +153,13 @@ class _ModuleRootDirectoryPageState extends State<ModuleRootDirectoryPage> {
         });
         _refreshController.refreshCompleted();
         _scaffoldKey.currentState.showSnackBar(SnackBar(
-          content: Text('Refreshed!'),
+          content: Text('Refreshed'),
           duration: Duration(milliseconds: 500),
         ));
       } catch (e) {
         _refreshController.refreshFailed();
         _scaffoldKey.currentState.showSnackBar(SnackBar(
-          content: Text('Refresh failed!'),
+          content: Text('Refresh failed'),
           duration: Duration(seconds: 2),
           action: SnackBarAction(
             label: 'Details',
@@ -344,10 +345,23 @@ class _SubdirectoryPageState extends State<SubdirectoryPage> {
   Future<void> openFile(File file) async {
     var fullPath = await db.getFileLocation(file);
     try {
-      await OpenFile.open(fullPath);
+      String res = await OpenFile.open(fullPath);
+      if (res != 'done') {
+        throw Exception("File doesn't exist");
+      }
     } catch (e) {
-      // TODO: error handling
-      print(e);
+      try {
+        displayDialog("Error", "It looks like the file has been moved or deleted outside of our app...", context);
+        await db.deleteDownloadedFile(file);
+        var t = await db.getItemsFromDirectory(widget.parent);
+        setState(() {
+          _fileList = t;
+          _fileListFuture = Future.value(_fileList);
+        });
+        updateStatus(file, FileStatus.normal);
+      } catch (e) {
+        print(e);
+      }
       // TODO: support opening files in other apps
       // dialog.displayUnsupportedFileTypeDialog(e.toString(), context);
     }
@@ -516,7 +530,7 @@ class _SubdirectoryPageState extends State<SubdirectoryPage> {
               },
               enablePullUp: false);
         } else if (snapshot.hasError) {
-          return Text(snapshot.error);
+          return Text(snapshot.error.toString());
         }
         return common.progressIndicator;
       }),

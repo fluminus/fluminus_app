@@ -3,15 +3,13 @@ import 'package:fluminus/home_page.dart';
 import 'package:fluminus/widgets/dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
-import 'package:flutter/animation.dart';
-import 'package:luminus_api/luminus_api.dart';
-import 'main.dart' as main;
-import 'data.dart' as data;
 import 'dart:async';
 import 'package:flutter/services.dart';
 import 'package:flutter/scheduler.dart' show timeDilation;
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:luminus_api/luminus_api.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:fluminus/data.dart' as data;
 
 const double _signinButtonWidth = 200.0;
 const double _signinButtonHeight = 60.0;
@@ -151,6 +149,7 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
                                         TextFormField(
                                           obscureText: true,
                                           decoration: InputDecoration(
+                                            labelText: 'PASSWORD',
                                             hintText: 'Password',
                                             icon: Icon(Icons.lock_outline),
                                           ),
