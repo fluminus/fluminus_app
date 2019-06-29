@@ -85,13 +85,6 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "0.1.2"
-  dart2_constant:
-    dependency: transitive
-    description:
-      name: dart2_constant
-      url: "https://pub.flutter-io.cn"
-    source: hosted
-    version: "1.0.2+dart2"
   dio:
     dependency: "direct main"
     description:
@@ -99,13 +92,6 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "2.1.7"
-  dotenv:
-    dependency: transitive
-    description:
-      name: dotenv
-      url: "https://pub.flutter-io.cn"
-    source: hosted
-    version: "1.0.0"
   dynamic_theme:
     dependency: "direct main"
     description:
@@ -132,6 +118,13 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
+  flutter_crashlytics:
+    dependency: "direct main"
+    description:
+      name: flutter_crashlytics
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "1.0.0"
   flutter_dotenv:
     dependency: "direct dev"
     description:
@@ -145,7 +138,7 @@ packages:
       name: flutter_launcher_icons
       url: "https://pub.flutter-io.cn"
     source: hosted
-    version: "0.7.2"
+    version: "0.7.2+1"
   flutter_page_indicator:
     dependency: transitive
     description:
@@ -159,7 +152,7 @@ packages:
       name: flutter_picker
       url: "https://pub.flutter-io.cn"
     source: hosted
-    version: "1.0.12"
+    version: "1.0.13"
   flutter_redux:
     dependency: "direct main"
     description:
@@ -304,7 +297,7 @@ packages:
       name: luminus_api
       url: "https://pub.flutter-io.cn"
     source: hosted
-    version: "0.1.16"
+    version: "0.1.17"
   matcher:
     dependency: transitive
     description:
@@ -639,6 +632,13 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "1.0.13"
+  webview_flutter:
+    dependency: "direct main"
+    description:
+      name: webview_flutter
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "0.3.9+1"
   xml:
     dependency: transitive
     description:

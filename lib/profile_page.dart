@@ -1,15 +1,17 @@
-import 'package:dio/dio.dart';
+import 'dart:async';
+import 'dart:io';
+
+// import 'package:dio/dio.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:fluminus/login_page.dart';
-import 'package:fluminus/widgets/theme.dart';
+// import 'package:fluminus/widgets/theme.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+// import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:luminus_api/luminus_api.dart';
 import 'package:fluminus/widgets/common.dart';
 import 'package:fluminus/db/db_helper.dart' as db;
 import 'data.dart' as data;
-import 'main.dart' as main;
 
 class ProfilePage extends StatefulWidget {
   @override
@@ -17,8 +19,9 @@ class ProfilePage extends StatefulWidget {
 }
 
 class _ProfilePageState extends State<ProfilePage> {
-  Profile profile = main.profile;
+  Profile profile = data.profile;
   bool _isDarkMode;
+  bool _enablePushNotifications = false;
 
   Widget displayName(String name) {
     return Text(
@@ -41,7 +44,7 @@ class _ProfilePageState extends State<ProfilePage> {
     );
   }
 
-  Widget profileWidget(Profile data) {
+  Widget profileWidget(Profile profile) {
     return Padding(
       padding: const EdgeInsets.only(top: 10.0),
       child: Column(
@@ -50,14 +53,31 @@ class _ProfilePageState extends State<ProfilePage> {
           Padding(
               padding:
                   const EdgeInsets.only(left: 20.0, right: 20.0, top: 10.0),
-              child: displayName(data.userNameOriginal)),
+              child: displayName(profile.userNameOriginal)),
           Padding(
             padding: const EdgeInsets.only(left: 20.0),
-            child: displayMatricNumber(data.userMatricNo),
+            child: displayMatricNumber(profile.userMatricNo),
           ),
           Padding(
             padding: const EdgeInsets.only(left: 20.0, top: 20.0, right: 20.0),
-            child: displayPersonalParticular(data.email),
+            child: displayPersonalParticular(profile.email),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget switchWidget(
+      String text, bool defaultValue, void Function(bool) onChanged) {
+    return Padding(
+      padding: const EdgeInsets.only(left: 20.0, right: 20.0),
+      child: Row(
+        children: <Widget>[
+          Text(text),
+          Switch(
+            activeColor: Theme.of(context).toggleableActiveColor,
+            value: defaultValue,
+            onChanged: onChanged,
           ),
         ],
       ),
@@ -71,51 +91,61 @@ class _ProfilePageState extends State<ProfilePage> {
         body: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: <Widget>[
-            /*FutureBuilder(
-                future: profile,
-                builder: (context, snapshot) {
-                  if (snapshot.hasData) {
-                    Profile data = snapshot.data;
-                    return profileWidget(data);
-                  } else if (snapshot.hasError) {
-                    return Text(snapshot.error.toString());
-                  }
-                  return Container(
-                    child: Column(
-                      children: <Widget>[
-                        Padding(
-                          padding: const EdgeInsets.all(30.0),
-                          child: CircularProgressIndicator(),
-                        ),
-                      ],
-                    ),
-                  );
-                }),*/
-            profileWidget(profile),
+            profile == null
+                ? FutureBuilder(
+                    future: API.getProfile(data.authentication()),
+                    builder: (context, AsyncSnapshot<Profile> snapshot) {
+                      if (snapshot.connectionState == ConnectionState.done) {
+                        Profile prof = snapshot.data;
+                        data.profile = prof;
+                        return profileWidget(prof);
+                      } else {
+                        return profileWidget(data.profilePlaceholder);
+                      }
+                    },
+                  )
+                : profileWidget(profile),
             Padding(
               padding: const EdgeInsets.only(top: 20.0),
             ),
-            Padding(
-              padding: const EdgeInsets.only(left: 20.0, right: 20.0),
-              child: Row(
-                children: <Widget>[
-                  Text('Spooky Mode 💀'),
-                  Switch(
-                    activeColor: blue,
-                    value: _isDarkMode =
-                        Theme.of(context).brightness == Brightness.dark,
-                    onChanged: (val) async {
-                      setState(() {
-                        _isDarkMode = !_isDarkMode;
-                      });
-                      toggleBrightness(context);
-                      SharedPreferences prefs =
-                          await SharedPreferences.getInstance();
-                      prefs.setBool('isDark', _isDarkMode);
-                    },
-                  ),
-                ],
-              ),
+            switchWidget('Spooky Mode 💀',
+                _isDarkMode = Theme.of(context).brightness == Brightness.dark,
+                (val) async {
+              setState(() {
+                _isDarkMode = !_isDarkMode;
+              });
+              toggleBrightness(context);
+              SharedPreferences.getInstance().then((prefs) {
+                prefs.setBool('isDark', _isDarkMode);
+              });
+            }),
+            FutureBuilder(
+              future: SharedPreferences.getInstance(),
+              builder: (context, AsyncSnapshot<SharedPreferences> snapshot) {
+                if (snapshot.connectionState == ConnectionState.done) {
+                  SharedPreferences prefs = snapshot.data;
+                  if (!prefs.containsKey('enablePushNotifications'))
+                    prefs.setBool('enablePushNotifications', false);
+                  bool toggle = prefs.getBool('enablePushNotifications');
+                  _enablePushNotifications = toggle;
+                  return switchWidget(
+                      'Push notifications', _enablePushNotifications,
+                      (val) async {
+                    setState(() {
+                      _enablePushNotifications = val;
+                      prefs.setBool('enablePushNotifications', val);
+                    });
+                    if (val) {
+                      await activatePushNotifications();
+                    } else {
+                      await deactivatePushNotifications();
+                    }
+                  });
+                } else {
+                  return switchWidget(
+                      'Push notifications', _enablePushNotifications, (_) {});
+                }
+              },
             ),
             Padding(
               padding: const EdgeInsets.only(top: 20.0),
@@ -123,7 +153,7 @@ class _ProfilePageState extends State<ProfilePage> {
             Padding(
                 padding: const EdgeInsets.only(left: 20.0, right: 20.0),
                 child: RaisedButton(
-                  color: greyGreen,
+                  color: Theme.of(context).errorColor,
                   child: Text('Log Out'),
                   onPressed: () async {
                     await data.deleteCredentials();
@@ -133,19 +163,19 @@ class _ProfilePageState extends State<ProfilePage> {
             Padding(
                 padding: const EdgeInsets.only(left: 20.0, right: 20.0),
                 child: RaisedButton(
-                  color: blue,
-                  child: Text('Clear Database'),
-                  onPressed: () async {
-                    await db.clearAllTables();
+                  color: Theme.of(context).buttonColor,
+                  child: Text('Test crashlytics'),
+                  onPressed: () {
+                    throw Exception('Crashlytics test');
                   },
                 )),
             Padding(
                 padding: const EdgeInsets.only(left: 20.0, right: 20.0),
                 child: RaisedButton(
-                  color: Colors.cyanAccent,
-                  child: Text('Activate notifications'),
+                  color: Theme.of(context).unselectedWidgetColor,
+                  child: Text('Clear Database'),
                   onPressed: () async {
-                    await activatePushNotification();
+                    await db.clearAllTables();
                   },
                 )),
           ],
@@ -153,11 +183,29 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 }
 
-Future<void> activatePushNotification() async {
-  Dio dio = Dio();
-  final storage = FlutterSecureStorage();
+Future<void> activatePushNotifications() async {
   final FirebaseMessaging _firebaseMsg = FirebaseMessaging();
-  var id = await storage.read(key: 'nusnet_id');
-  await dio.get('http://127.0.0.1:3003/api/notification/activate',
-      queryParameters: {'id': id, 'fcm_token': await _firebaseMsg.getToken()});
+  print(await _firebaseMsg.getToken());
+  _firebaseMsg.configure(onMessage: (Map<String, dynamic> msg) async {
+    print("onMessage: $msg");
+  });
+  if (Platform.isIOS) {
+    StreamSubscription iosSubscription;
+    iosSubscription = _firebaseMsg.onIosSettingsRegistered.listen((data) async {
+      // save the token OR subscribe to a topic here
+      // Dio dio = Dio();
+      // final storage = FlutterSecureStorage();
+      // var id = await storage.read(key: 'nusnet_id');
+      // await dio.get('http://127.0.0.1:3003/api/notification/activate',
+      //     queryParameters: {
+      //       'id': id,
+      //       'fcm_token': await _firebaseMsg.getToken()
+      //     });
+    });
+    _firebaseMsg.requestNotificationPermissions(IosNotificationSettings());
+  }
+}
+
+Future<void> deactivatePushNotifications() async {
+  print('deactivated PN');
 }
