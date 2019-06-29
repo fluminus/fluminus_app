@@ -1,5 +1,6 @@
 import 'package:fluminus/file_page.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/material.dart' as prefix0;
 import 'package:luminus_api/luminus_api.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'card.dart';
@@ -62,6 +63,26 @@ Widget itemListView(
   );
 }
 
+// Widget refreshableListView(
+//     RefreshController refreshController,
+//     Function onRefresh,
+//     List itemList,
+//     Function getCardType,
+//     BuildContext context,
+//     Map params,
+//     ) {
+//   return SmartRefresher(
+//       enablePullDown: true,
+//       enablePullUp: true,
+//       controller: refreshController,
+//       onRefresh: onRefresh,
+//       onLoading: (){
+//         refreshController.loadNoData();
+//         refreshController.loadComplete();
+//       },
+//       child: itemListView(itemList, getCardType, context, params));
+// }
+
 Widget refreshableListView(
     RefreshController refreshController,
     Function onRefresh,
@@ -69,14 +90,12 @@ Widget refreshableListView(
     Function getCardType,
     BuildContext context,
     Map params,
-    {bool enablePullDown = true,
-    bool enablePullUp = true}) {
-  return SmartRefresher(
-      enablePullDown: enablePullDown,
-      enablePullUp: enablePullUp,
-      controller: refreshController,
-      onRefresh: onRefresh,
-      child: itemListView(itemList, getCardType, context, params));
+    ) {
+  return Container(
+      child: prefix0.RefreshIndicator(
+        onRefresh: onRefresh,
+      child: itemListView(itemList, getCardType, context, params)
+      ));
 }
 
 Widget dismissibleListView(
@@ -128,11 +147,9 @@ Widget refreshableAndDismissibleListView(
     Function afterSwipingRight,
     BuildContext context,
     Map params) {
-  return SmartRefresher(
-      enablePullDown: true,
-      enablePullUp: true,
-      controller: refreshController,
-      onRefresh: onRefresh,
+  return Container(
+      child: prefix0.RefreshIndicator(
+        onRefresh: onRefresh,
       child: dismissibleListView(itemList, getCardType, afterSwipingLeft,
-          afterSwipingRight, context, params));
+          afterSwipingRight, context, params)));
 }

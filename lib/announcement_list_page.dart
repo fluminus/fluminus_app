@@ -40,16 +40,17 @@ class _AnnouncementListPageState extends State<AnnouncementListPage>
   @override
   Widget build(BuildContext context) {
     Future<void> onRefresh() async {
-      _newAnnouncements = await util.onLoading(
-          _refreshController,
-          _announcements,
-          () => API.getAnnouncements(data.authentication(), widget.module));
+      _newAnnouncements =
+          await API.getAnnouncements(data.authentication(), widget.module);
       sortAnnouncements(_newAnnouncements);
-      _newAnnouncements = _newAnnouncements.takeWhile((x){print(x.createdDate); return (DateTime.parse(x.createdDate).isAfter(lastRefreshedDate));}).toList();
+      _newAnnouncements = _newAnnouncements.takeWhile((x) {
+        return (DateTime.parse(x.createdDate).isAfter(lastRefreshedDate));
+      }).toList();
       if (_newAnnouncements == null) {
+        print('object');
         _refreshController.refreshFailed();
       } else {
-        //print(_newAnnouncements);
+        print(_newAnnouncements);
         if (_newAnnouncements.length == 0) {
           util.snackBar('Already up to date');
         }
@@ -64,18 +65,26 @@ class _AnnouncementListPageState extends State<AnnouncementListPage>
     Widget announcementList(List<dynamic> announcements) {
       return list.refreshableAndDismissibleListView(
           _refreshController,
-          () => onRefresh(), 
+          onRefresh,
           announcements,
           () => list.CardType.announcementCardType, (index) {
         setState(() {
-          Announcement removedAnnouncement = announcements.removeAt(index);
-          Scaffold.of(context).showSnackBar(
-                              util.snackBar('Announcement archived'));
+          Announcement removedOne = announcements.removeAt(index);
+          Scaffold.of(context).showSnackBar(SnackBar(
+              content: Text("Announcement archived"),
+              action: SnackBarAction(
+                  label: "UNDO",
+                  onPressed: () {
+                    //To undo deletion
+                    setState(() {
+                      announcements.insert(index, removedOne);
+                    });
+                  })));
         });
-      }, (index, context) async{
+      }, (index, context) async {
         Announcement announcement = announcements[index];
-        util.showPickerThreeNumber(context, data.smsStartDate, widget.module,announcement);
-        
+        util.showPickerThreeNumber(
+            context, data.smsStartDate, widget.module, announcement);
       }, context, {'module': widget.module});
     }
 
@@ -89,7 +98,7 @@ class _AnnouncementListPageState extends State<AnnouncementListPage>
         future: _read(),
         builder: (context, snapshot) {
           if (snapshot.hasData) {
-            _announcements = snapshot.data; 
+            _announcements = snapshot.data;
             sortAnnouncements(_announcements);
             return announcementList(_announcements);
           } else if (snapshot.hasError) {
@@ -105,12 +114,14 @@ class _AnnouncementListPageState extends State<AnnouncementListPage>
   bool get wantKeepAlive => true;
 
   sortAnnouncements(List<Announcement> announcements) {
-    announcements.sort((a, b) => DateTime.parse(b.createdDate).compareTo(DateTime.parse(a.createdDate)));
+    announcements.sort((a, b) =>
+        DateTime.parse(b.createdDate).compareTo(DateTime.parse(a.createdDate)));
   }
 
   Future<List<dynamic>> _read() async {
     final prefs = await _sprefs;
-    String result = prefs.getString('encodedAnnouncementList' + widget.module.name);
+    String result =
+        prefs.getString('encodedAnnouncementList' + widget.module.name);
     if (result != null) {
       List maps = json.decode(result);
       _announcements = new List();
@@ -130,6 +141,7 @@ class _AnnouncementListPageState extends State<AnnouncementListPage>
       maps.add(announcement.toJson());
     }
     String encodedList = json.encode(maps);
-    prefs.setString('encodedAnnouncementList' + widget.module.name, encodedList);
+    prefs.setString(
+        'encodedAnnouncementList' + widget.module.name, encodedList);
   }
 }

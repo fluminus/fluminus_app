@@ -188,7 +188,8 @@ class _ModuleRootDirectoryPageState extends State<ModuleRootDirectoryPage> {
                 (arg) => list.CardType.moduleDirectoryCardType,
                 context,
                 {"module": widget.module},
-                enablePullUp: false);
+                //enablePullUp: false
+                );
           } else if (snapshot.hasError) {
             return Text(snapshot.error);
           }
@@ -528,7 +529,8 @@ class _SubdirectoryPageState extends State<SubdirectoryPage> {
                 'openFile': openFile,
                 'deleteFile': deleteFile
               },
-              enablePullUp: false);
+              //enablePullUp: false
+              );
         } else if (snapshot.hasError) {
           return Text(snapshot.error.toString());
         }
