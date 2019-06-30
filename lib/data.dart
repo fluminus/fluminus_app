@@ -46,9 +46,9 @@ Future<void> deleteCredentials() async {
 DateTime smsStartDate = DateTime.now();
 
 SharedPreferences sp;
-List<Module> modules;
+List<Module> modules = [];
 Profile profile;
-List<Announcement> archivedAnnouncements;
+List<Announcement> archivedAnnouncements = [];
 
 Profile profilePlaceholder = Profile(
     userID: 'E0261888',
