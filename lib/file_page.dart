@@ -85,14 +85,23 @@ Widget _filePageFloatingActionButton(
   );
 }
 
-BuildContext contextHasScaffold;
 
 class FilePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    contextHasScaffold = context;
     return Scaffold(
-      appBar: AppBar(title: const Text("Files")),
+      body: NestedScrollView(
+                  headerSliverBuilder:
+                      (BuildContext context, bool innerBoxIsScrolled) {
+                    return <Widget>[
+                      SliverAppBar(
+                        title: Text('Files'),  
+                        pinned: true,
+                        floating: true,
+                        forceElevated: innerBoxIsScrolled,
+                      )
+                    ];
+                  },
       body: Container(
         child: _paddedfutureBuilder(db.getAllModules(), (context, snapshot) {
           if (snapshot.hasData) {
@@ -103,7 +112,7 @@ class FilePage extends StatelessWidget {
           return common.progressIndicator;
         }),
       ),
-    );
+    ));
   }
 
   Widget moduleRootDirectoyListView(
