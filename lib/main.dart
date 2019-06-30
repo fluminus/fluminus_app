@@ -38,7 +38,7 @@ void main() async {
   FlutterCrashlytics().initialize().then((val) {
     print('Crashlytics initialized.');
   });
-  runZoned<Future<Null>>(() {
+  runZoned(() {
     runApp(App(
       brightness: brightness,
       hasCredentials: hasCredentials,
@@ -46,7 +46,7 @@ void main() async {
   }, onError: (error, stackTrace) {
     // Whenever an error occurs, call the `reportCrash` function. This will send
     // Dart errors to our dev console or Crashlytics depending on the environment.
-    FlutterCrashlytics().reportCrash(error, stackTrace, forceCrash: true);
+    FlutterCrashlytics().reportCrash(error, stackTrace, forceCrash: false);
   });
 }
 

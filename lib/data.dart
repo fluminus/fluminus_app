@@ -17,6 +17,7 @@ Future<Authentication> authentication() async {
     _auth = Authentication(
         username: await storage.read(key: 'nusnet_id'),
         password: await storage.read(key: 'nusnet_password'));
+    // print(_auth);
   } else if (_updateCreds) {
     // print('updating auth');
     _updateCreds = false;
@@ -37,7 +38,7 @@ Future<void> deleteCredentials() async {
   final storage = FlutterSecureStorage();
   storage.delete(key: 'nusnet_id');
   storage.delete(key: 'nusnet_password');
-  // _auth = null;
+  _auth = null;
   SharedPreferences prefs = await SharedPreferences.getInstance();
   prefs.setBool('hasCred', false);
 }
@@ -45,9 +46,9 @@ Future<void> deleteCredentials() async {
 DateTime smsStartDate = DateTime.now();
 
 SharedPreferences sp;
-List<Module> modules;
+List<Module> modules = [];
 Profile profile;
-List<Announcement> archivedAnnouncements;
+List<Announcement> archivedAnnouncements = [];
 
 Profile profilePlaceholder = Profile(
     userID: 'E0261888',
