@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:luminus_api/luminus_api.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
-import 'announcement_page.dart';
 import 'package:fluminus/widgets/common.dart' as common;
 import 'package:fluminus/widgets/list.dart' as list;
 import 'util.dart' as util;
@@ -39,24 +38,19 @@ class _AnnouncementListPageState extends State<AnnouncementListPage>
     Widget announcementList(List<dynamic> announcements) {
       return list.refreshableAndDismissibleListView(
           () async {
-            _newAnnouncements = await util.refreshWithSnackBars(() => API.getAnnouncements(
-                data.authentication(), widget.module), context);
+            _newAnnouncements = await util.refreshWithSnackBars(
+                () =>
+                    API.getAnnouncements(data.authentication(), widget.module),
+                context);
             sortAnnouncements(_newAnnouncements);
             _newAnnouncements = _newAnnouncements.takeWhile((x) {
               return (DateTime.parse(x.createdDate).isAfter(lastRefreshedDate));
             }).toList();
-            if (_newAnnouncements == null) {
-              print('object');
-            } else {
-              print(_newAnnouncements);
-              if (_newAnnouncements.length == 0) {
-                util.snackBar('Already up to date');
-              }
-              lastRefreshedDate = DateTime.now();
-              setState(() {
-                _announcements.addAll(_newAnnouncements);
-              });
-            }
+
+            lastRefreshedDate = DateTime.now();
+            setState(() {
+              _announcements.addAll(_newAnnouncements);
+            });
           },
           announcements,
           () => list.CardType.announcementCardType,
