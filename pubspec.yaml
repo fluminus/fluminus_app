@@ -20,6 +20,8 @@ dependencies:
   flutter:
     sdk: flutter
   # Firebase
+  firebase_core: ^0.2.5
+  firebase_analytics: ^1.0.4
   firebase_messaging: ^5.0.4
   flutter_crashlytics: ^1.0.0
   # Network

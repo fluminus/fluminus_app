@@ -21,7 +21,12 @@ void main() async {
       (prefs.getBool('isDark') ?? false) ? Brightness.dark : Brightness.light;
   hasCredentials = (prefs.getBool('hasCred') ?? false);
   if (hasCredentials) {
-    await data.loadData();
+    try {
+      await data.loadData();
+    } catch (e) {
+      print(e);
+      // it's likely that we've lost connection
+    }
   }
 
   bool isInDebugMode = false;

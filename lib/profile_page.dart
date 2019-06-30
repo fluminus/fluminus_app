@@ -97,8 +97,12 @@ class _ProfilePageState extends State<ProfilePage> {
                     builder: (context, AsyncSnapshot<Profile> snapshot) {
                       if (snapshot.connectionState == ConnectionState.done) {
                         Profile prof = snapshot.data;
-                        data.profile = prof;
-                        return profileWidget(prof);
+                        if (prof != null) {
+                          data.profile = prof;
+                          return profileWidget(prof);
+                        } else {
+                          return profileWidget(data.profilePlaceholder);
+                        }
                       } else {
                         return profileWidget(data.profilePlaceholder);
                       }
