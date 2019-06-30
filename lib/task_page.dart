@@ -185,9 +185,18 @@ class _TaskPageState extends State<TaskPage> {
     return StoreProvider<TaskListState>(
       store: store,
       child: Scaffold(
-        appBar: AppBar(
-          title: Text('Task'),
-        ),
+        body: NestedScrollView(
+                  headerSliverBuilder:
+                      (BuildContext context, bool innerBoxIsScrolled) {
+                    return <Widget>[
+                      SliverAppBar(
+                        title: Text('Tasks'),  
+                        pinned: true,
+                        floating: true,
+                        forceElevated: innerBoxIsScrolled,
+                      )
+                    ];
+                  },
         body: StoreBuilder<TaskListState>(
           onInit: (store) => store.dispatch(GetTasksAction()),
           builder: (BuildContext context, Store<TaskListState> store) =>
@@ -199,8 +208,8 @@ class _TaskPageState extends State<TaskPage> {
                   }),
         ),
       ),
-    );
-  }
+    )
+    );}
 }
 
 /**

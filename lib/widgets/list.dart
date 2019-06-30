@@ -46,6 +46,7 @@ Widget _certainCard(var item, CardType type, BuildContext context, Map params) {
 Widget itemListView(
     List itemList, Function getCardType, BuildContext context, Map params) {
   return new ListView.builder(
+    
     shrinkWrap: true,
     itemCount: itemList.length,
     itemBuilder: (context, index) {
@@ -84,6 +85,7 @@ Widget dismissibleListView(
     BuildContext context,
     Map params) {
   return new ListView.builder(
+    padding: EdgeInsets.all(0.0),
     shrinkWrap: true,
     itemCount: itemList.length,
     itemBuilder: (context, index) {

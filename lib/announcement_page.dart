@@ -48,50 +48,65 @@ class _AnnouncementPageState extends State<AnnouncementPage>
       return DefaultTabController(
           length: tabBarNames.length,
           child: Scaffold(
-              appBar: AppBar(
-                title: Text(appBarTitle),
-                bottom: TabBar(
-                  isScrollable: true,
-                  tabs: tabBarNames.map((tabName) {
-                    return Tab(
-                      text: tabName,
-                    );
-                  }).toList(),
-                ),
-              ),
-              body: TabBarView(
-                children: new List()
-                  ..addAll(data.modules.map((Module module) {
-                    return AnnouncementListPage(module: module);
-                  }).toList())
-                  ..add(ValueListenableBuilder(
-                    builder: (BuildContext context, List<Announcement> value,
-                        Widget child) {
-                      return dismissibleListView(
-                          value, () => CardType.announcementCardType, (index) {
-                        setState(() {
-                          Announcement removedOne = value.removeAt(index);
-                          Scaffold.of(context).showSnackBar(SnackBar(
-                              content: Text("Announcement deleted"),
-                              action: SnackBarAction(
-                                  label: "UNDO",
-                                  onPressed: () {
-                                    setState(() {
-                                      data.archivedAnnouncements
-                                          .remove(removedOne);
-                                      value.insert(index, removedOne);
-                                    });
-                                  })));
-                        });
-                      }, (index, context) {
-                        Announcement announcement = value[index];
-                        util.showPickerThreeNumber(context, data.smsStartDate,
-                            data.modules.firstWhere((m) => m.id == announcement.parentID), announcement);
-                      }, context, null);
-                    },
-                    valueListenable: _archived,
-                  )),
-              )));
+              body: NestedScrollView(
+                  headerSliverBuilder:
+                      (BuildContext context, bool innerBoxIsScrolled) {
+                    return <Widget>[
+                      SliverAppBar(
+                        title: Text(appBarTitle),
+                        
+                        pinned: true,
+                        floating: true,
+                        forceElevated: innerBoxIsScrolled,
+                        bottom: TabBar(
+                          isScrollable: true,
+                          tabs: tabBarNames.map((tabName) {
+                            return Tab(
+                              text: tabName,
+                            );
+                          }).toList(),
+                        ),
+                      )
+                    ];
+                  },
+                  body: TabBarView(
+                    children: new List()
+                      ..addAll(data.modules.map((Module module) {
+                        return AnnouncementListPage(module: module);
+                      }).toList())
+                      ..add(ValueListenableBuilder(
+                        builder: (BuildContext context,
+                            List<Announcement> value, Widget child) {
+                          return dismissibleListView(
+                              value, () => CardType.announcementCardType,
+                              (index) {
+                            setState(() {
+                              Announcement removedOne = value.removeAt(index);
+                              Scaffold.of(context).showSnackBar(SnackBar(
+                                  content: Text("Announcement deleted"),
+                                  action: SnackBarAction(
+                                      label: "UNDO",
+                                      onPressed: () {
+                                        setState(() {
+                                          data.archivedAnnouncements
+                                              .remove(removedOne);
+                                          value.insert(index, removedOne);
+                                        });
+                                      })));
+                            });
+                          }, (index, context) {
+                            Announcement announcement = value[index];
+                            util.showPickerThreeNumber(
+                                context,
+                                data.smsStartDate,
+                                data.modules.firstWhere(
+                                    (m) => m.id == announcement.parentID),
+                                announcement);
+                          }, context, null);
+                        },
+                        valueListenable: _archived,
+                      )),
+                  ))));
     }
   }
 
