@@ -31,6 +31,9 @@ class _AnnouncementPageState extends State<AnnouncementPage>
     super.dispose();
   }
 
+  ValueNotifier<List<Announcement>> _archived =
+      ValueNotifier<List<Announcement>>(data.archivedAnnouncements);
+
   @override
   Widget build(BuildContext context) {
     super.build(context);
@@ -42,33 +45,51 @@ class _AnnouncementPageState extends State<AnnouncementPage>
       );
     } else {
       return DefaultTabController(
-        length: tabBarNames.length,
-        child: Scaffold(
-          appBar: AppBar(
-            title: Text(appBarTitle),
-            bottom: TabBar(
-              isScrollable: true,
-              tabs: tabBarNames.map((tabName) {
-                return Tab(
-                  text: tabName,
-                );
-              }).toList(),
-            ),
-          ),
-          body: TabBarView(
-              children: new List()
-                ..addAll(data.modules.map((Module module) {
-                  return AnnouncementListPage(module: module);
-                }).toList())
-                ..add(dismissibleListView(
-                    data.archivedAnnouncements,
-                    () => CardType.announcementCardType,
-                    () {},
-                    () {},
-                    context,
-                    null))),
-        ),
-      );
+          length: tabBarNames.length,
+          child: Scaffold(
+              appBar: AppBar(
+                title: Text(appBarTitle),
+                bottom: TabBar(
+                  isScrollable: true,
+                  tabs: tabBarNames.map((tabName) {
+                    return Tab(
+                      text: tabName,
+                    );
+                  }).toList(),
+                ),
+              ),
+              body: TabBarView(
+                children: new List()
+                  ..addAll(data.modules.map((Module module) {
+                    return AnnouncementListPage(module: module);
+                  }).toList())
+                  ..add(ValueListenableBuilder(
+                    builder: (BuildContext context, List<Announcement> value,
+                        Widget child) {
+                      return dismissibleListView(
+                          value,
+                          () => CardType.announcementCardType,
+                          (index) {}, 
+                          (index, context) {
+                        setState(() {
+                          Announcement removedOne = value.removeAt(index);
+                          Scaffold.of(context).showSnackBar(SnackBar(
+                              content: Text("Announcement deleted"),
+                              action: SnackBarAction(
+                                  label: "UNDO",
+                                  onPressed: () {
+                                    setState(() {
+                                      data.archivedAnnouncements
+                                          .remove(removedOne);
+                                      value.insert(index, removedOne);
+                                    });
+                                  })));
+                        });
+                      }, context, null);
+                    },
+                    valueListenable: _archived,
+                  )),
+              )));
     }
   }
 
@@ -80,6 +101,7 @@ class _AnnouncementPageState extends State<AnnouncementPage>
     String encodedList = json.encode(maps);
     data.sp.setString('archivedAnnouncements', encodedList);
   }
+
   @override
   bool get wantKeepAlive => true;
 }

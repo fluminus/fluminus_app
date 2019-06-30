@@ -49,7 +49,6 @@ List<Module> modules;
 Profile profile;
 List<Announcement> archivedAnnouncements;
 
-
 Profile profilePlaceholder = Profile(
     userID: 'E0261888',
     userNameOriginal: 'John Doe',
@@ -63,9 +62,13 @@ Future<void> loadData() async {
   modules = await API.getModules(auth);
   profile = await API.getProfile(auth);
   String result = sp.getString('archivedAnnouncements');
-    if (result != null) {
-      archivedAnnouncements = json.decode(result).map((a) => Announcement.fromJson(a));
-    } else {
-      archivedAnnouncements = new List();
+  if (result != null) {
+    List maps = json.decode(result);
+    archivedAnnouncements = new List();
+    for (int i = 0; i < maps.length; i++) {
+      archivedAnnouncements.add(Announcement.fromJson(maps[i]));
     }
+  } else {
+    archivedAnnouncements = new List();
+  }
 }
