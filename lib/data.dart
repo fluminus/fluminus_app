@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:luminus_api/luminus_api.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -42,8 +44,12 @@ Future<void> deleteCredentials() async {
 
 DateTime smsStartDate = DateTime.now();
 
+SharedPreferences sp;
 List<Module> modules;
 Profile profile;
+List<Announcement> archivedAnnouncements;
+
+
 Profile profilePlaceholder = Profile(
     userID: 'E0261888',
     userNameOriginal: 'John Doe',
@@ -53,7 +59,13 @@ Profile profilePlaceholder = Profile(
 
 Future<void> loadData() async {
   Authentication auth = await authentication();
+  sp = await SharedPreferences.getInstance();
   modules = await API.getModules(auth);
   profile = await API.getProfile(auth);
-  print(profile);
+  String result = sp.getString('archivedAnnouncements');
+    if (result != null) {
+      archivedAnnouncements = json.decode(result).map((a) => Announcement.fromJson(a));
+    } else {
+      archivedAnnouncements = new List();
+    }
 }

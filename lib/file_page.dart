@@ -9,7 +9,6 @@ import 'package:path/path.dart' as path_dart;
 import 'package:path_provider/path_provider.dart';
 import 'package:dio/dio.dart';
 import 'package:open_file/open_file.dart';
-import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
@@ -86,9 +85,12 @@ Widget _filePageFloatingActionButton(
   );
 }
 
+BuildContext contextHasScaffold;
+
 class FilePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    contextHasScaffold = context;
     return Scaffold(
       appBar: AppBar(title: const Text("Files")),
       body: Container(
@@ -124,55 +126,21 @@ class ModuleRootDirectoryPage extends StatefulWidget {
 class _ModuleRootDirectoryPageState extends State<ModuleRootDirectoryPage> {
   List<Directory> _directories;
   List<Directory> _refreshedDirectories;
-  RefreshController _refreshController;
   final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
 
   @override
   void initState() {
     super.initState();
-    _refreshController = RefreshController();
   }
 
   @override
   void dispose() {
-    _refreshController.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    Future<void> onRefresh() async {
-      try {
-        _refreshedDirectories = await util.onLoading(
-            _refreshController,
-            _directories,
-            () => db.refreshAndGetModuleDirectories(widget.module));
-        // print('refreshed');
-        setState(() {
-          _directories = _refreshedDirectories;
-        });
-        _refreshController.refreshCompleted();
-        _scaffoldKey.currentState.showSnackBar(SnackBar(
-          content: Text('Refreshed'),
-          duration: Duration(milliseconds: 500),
-        ));
-      } catch (e) {
-        _refreshController.refreshFailed();
-        _scaffoldKey.currentState.showSnackBar(SnackBar(
-          content: Text('Refresh failed'),
-          duration: Duration(seconds: 2),
-          action: SnackBarAction(
-            label: 'Details',
-            onPressed: () {
-              dialog.displayDialog('Detail', e.toString(), context);
-            },
-          ),
-        ));
-      }
-    }
-
     return Scaffold(
-      key: _scaffoldKey,
       appBar: AppBar(
         title: Text(widget.module.name),
       ),
@@ -182,14 +150,20 @@ class _ModuleRootDirectoryPageState extends State<ModuleRootDirectoryPage> {
           if (snapshot.hasData) {
             _directories = snapshot.data;
             return list.refreshableListView(
-                _refreshController,
-                onRefresh,
-                _directories,
-                (arg) => list.CardType.moduleDirectoryCardType,
-                context,
-                {"module": widget.module},
-                //enablePullUp: false
-                );
+              () async {
+                _refreshedDirectories = await util.refreshWithSnackBars(
+                    () => db.refreshAndGetModuleDirectories(widget.module),
+                    context);
+                setState(() {
+                  _directories = _refreshedDirectories;
+                });
+              },
+              _directories,
+              (arg) => list.CardType.moduleDirectoryCardType,
+              context,
+              {"module": widget.module},
+              //enablePullUp: false
+            );
           } else if (snapshot.hasError) {
             return Text(snapshot.error);
           }
@@ -215,7 +189,6 @@ enum FileStatus { normal, downloading, downloaded, deleted }
 class _SubdirectoryPageState extends State<SubdirectoryPage> {
   Future<List<BasicFile>> _fileListFuture;
   Future<Map<BasicFile, FileStatus>> _statusFuture;
-  RefreshController _refreshController;
   List<BasicFile> _fileList;
   List<BasicFile> _refreshedFileList;
   // TODO: store last used sorting method
@@ -228,12 +201,10 @@ class _SubdirectoryPageState extends State<SubdirectoryPage> {
     super.initState();
     _fileListFuture = db.getItemsFromDirectory(widget.parent);
     _statusFuture = _initStatus(_fileListFuture);
-    _refreshController = RefreshController();
   }
 
   @override
   void dispose() {
-    _refreshController.dispose();
     super.dispose();
   }
 
@@ -301,7 +272,7 @@ class _SubdirectoryPageState extends State<SubdirectoryPage> {
           // TODO: compose a meaningful path
           var path = path_dart.join(dir.path, file.fileName);
           try {
-            await dio.download(url, path, onReceiveProgress: (rec, total) {
+            await dio.download(url, path, onReceiveProgress: (recx, total) {
               // print("Rec: $rec , Total: $total");
               updateStatus(file, FileStatus.downloading);
             });
@@ -352,7 +323,10 @@ class _SubdirectoryPageState extends State<SubdirectoryPage> {
       }
     } catch (e) {
       try {
-        displayDialog("Error", "It looks like the file has been moved or deleted outside of our app...", context);
+        displayDialog(
+            "Error",
+            "It looks like the file has been moved or deleted outside of our app...",
+            context);
         await db.deleteDownloadedFile(file);
         var t = await db.getItemsFromDirectory(widget.parent);
         setState(() {
@@ -369,8 +343,8 @@ class _SubdirectoryPageState extends State<SubdirectoryPage> {
   }
 
   Future<void> refresh() async {
-    _refreshedFileList = await util.onLoading(_refreshController, _fileList,
-        () => db.refreshAndGetItemsFromDirectory(widget.parent));
+    _refreshedFileList = await util.refreshWithSnackBars(
+        () => db.refreshAndGetItemsFromDirectory(widget.parent), context);
     setState(() {
       _fileList = _refreshedFileList;
       _fileListFuture = Future.value(_refreshedFileList);
@@ -381,27 +355,7 @@ class _SubdirectoryPageState extends State<SubdirectoryPage> {
   @override
   Widget build(BuildContext context) {
     Future<void> onRefresh() async {
-      try {
-        await refresh();
-        _refreshController.refreshCompleted();
-        _scaffoldKey.currentState.showSnackBar(SnackBar(
-          content: Text('Refreshed!'),
-          duration: Duration(milliseconds: 500),
-        ));
-        // print('refreshed');
-      } catch (e) {
-        _refreshController.refreshFailed();
-        _scaffoldKey.currentState.showSnackBar(SnackBar(
-          content: Text('Refresh failed!'),
-          duration: Duration(seconds: 2),
-          action: SnackBarAction(
-            label: 'Details',
-            onPressed: () {
-              dialog.displayDialog('Detail', e.toString(), context);
-            },
-          ),
-        ));
-      }
+      await refresh();
     }
 
     void sortItems(BuildContext context,
@@ -500,7 +454,7 @@ class _SubdirectoryPageState extends State<SubdirectoryPage> {
     }
 
     return Scaffold(
-      key: _scaffoldKey,
+      //key: _scaffoldKey,
       floatingActionButton:
           _filePageFloatingActionButton(context, showSortMethods),
       appBar: AppBar(
@@ -516,21 +470,29 @@ class _SubdirectoryPageState extends State<SubdirectoryPage> {
           _fileList = snapshot.data['listFuture'];
           Map<BasicFile, FileStatus> statusMap = snapshot.data['statusFuture'];
           return list.refreshableListView(
-              _refreshController,
-              onRefresh,
-              _fileList,
-              (BasicFile arg) => arg is File
-                  ? list.CardType.fileCardType
-                  : list.CardType.directoryCardType,
-              context,
-              {
-                'status': statusMap,
-                'downloadFile': downloadFile,
-                'openFile': openFile,
-                'deleteFile': deleteFile
-              },
-              //enablePullUp: false
-              );
+            () async {
+              _refreshedFileList = await util.refreshWithSnackBars(
+                  () => db.refreshAndGetItemsFromDirectory(widget.parent),
+                  context);
+              setState(() {
+                _fileList = _refreshedFileList;
+                _fileListFuture = Future.value(_refreshedFileList);
+              });
+              _statusFuture = _initStatus(_fileList);
+            },
+            _fileList,
+            (BasicFile arg) => arg is File
+                ? list.CardType.fileCardType
+                : list.CardType.directoryCardType,
+            context,
+            {
+              'status': statusMap,
+              'downloadFile': downloadFile,
+              'openFile': openFile,
+              'deleteFile': deleteFile
+            },
+            //enablePullUp: false
+          );
         } else if (snapshot.hasError) {
           return Text(snapshot.error.toString());
         }

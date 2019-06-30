@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:luminus_api/luminus_api.dart';
-import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
+import 'announcement_page.dart';
 import 'package:fluminus/widgets/common.dart' as common;
 import 'package:fluminus/widgets/list.dart' as list;
 import 'util.dart' as util;
@@ -20,72 +20,69 @@ class _AnnouncementListPageState extends State<AnnouncementListPage>
     with AutomaticKeepAliveClientMixin<AnnouncementListPage> {
   List<Announcement> _announcements;
   List<Announcement> _newAnnouncements;
-  RefreshController _refreshController;
   Future<SharedPreferences> _sprefs = SharedPreferences.getInstance();
   DateTime lastRefreshedDate = data.smsStartDate;
 
   @override
   void initState() {
     super.initState();
-    _refreshController = RefreshController();
   }
 
   @override
   void dispose() {
-    _refreshController.dispose();
     _write();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    Future<void> onRefresh() async {
-      _newAnnouncements =
-          await API.getAnnouncements(data.authentication(), widget.module);
-      sortAnnouncements(_newAnnouncements);
-      _newAnnouncements = _newAnnouncements.takeWhile((x) {
-        return (DateTime.parse(x.createdDate).isAfter(lastRefreshedDate));
-      }).toList();
-      if (_newAnnouncements == null) {
-        print('object');
-        _refreshController.refreshFailed();
-      } else {
-        print(_newAnnouncements);
-        if (_newAnnouncements.length == 0) {
-          util.snackBar('Already up to date');
-        }
-        lastRefreshedDate = DateTime.now();
-        setState(() {
-          _announcements.addAll(_newAnnouncements);
-        });
-        _refreshController.refreshCompleted();
-      }
-    }
-
     Widget announcementList(List<dynamic> announcements) {
       return list.refreshableAndDismissibleListView(
-          _refreshController,
-          onRefresh,
+          () async {
+            _newAnnouncements = await util.refreshWithSnackBars(() => API.getAnnouncements(
+                data.authentication(), widget.module), context);
+            sortAnnouncements(_newAnnouncements);
+            _newAnnouncements = _newAnnouncements.takeWhile((x) {
+              return (DateTime.parse(x.createdDate).isAfter(lastRefreshedDate));
+            }).toList();
+            if (_newAnnouncements == null) {
+              print('object');
+            } else {
+              print(_newAnnouncements);
+              if (_newAnnouncements.length == 0) {
+                util.snackBar('Already up to date');
+              }
+              lastRefreshedDate = DateTime.now();
+              setState(() {
+                _announcements.addAll(_newAnnouncements);
+              });
+            }
+          },
           announcements,
-          () => list.CardType.announcementCardType, (index) {
-        setState(() {
-          Announcement removedOne = announcements.removeAt(index);
-          Scaffold.of(context).showSnackBar(SnackBar(
-              content: Text("Announcement archived"),
-              action: SnackBarAction(
-                  label: "UNDO",
-                  onPressed: () {
-                    //To undo deletion
-                    setState(() {
-                      announcements.insert(index, removedOne);
-                    });
-                  })));
-        });
-      }, (index, context) async {
-        Announcement announcement = announcements[index];
-        util.showPickerThreeNumber(
-            context, data.smsStartDate, widget.module, announcement);
-      }, context, {'module': widget.module});
+          () => list.CardType.announcementCardType,
+          (index) {
+            setState(() {
+              Announcement removedOne = announcements.removeAt(index);
+              data.archivedAnnouncements.add(removedOne);
+              Scaffold.of(context).showSnackBar(SnackBar(
+                  content: Text("Announcement archived"),
+                  action: SnackBarAction(
+                      label: "UNDO",
+                      onPressed: () {
+                        setState(() {
+                          data.archivedAnnouncements.remove(removedOne);
+                          announcements.insert(index, removedOne);
+                        });
+                      })));
+            });
+          },
+          (index, context) async {
+            Announcement announcement = announcements[index];
+            util.showPickerThreeNumber(
+                context, data.smsStartDate, widget.module, announcement);
+          },
+          context,
+          {'module': widget.module});
     }
 
     super.build(context);

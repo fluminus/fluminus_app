@@ -2,7 +2,6 @@ import 'package:fluminus/file_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/material.dart' as prefix0;
 import 'package:luminus_api/luminus_api.dart';
-import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'card.dart';
 
 enum CardType {
@@ -63,28 +62,7 @@ Widget itemListView(
   );
 }
 
-// Widget refreshableListView(
-//     RefreshController refreshController,
-//     Function onRefresh,
-//     List itemList,
-//     Function getCardType,
-//     BuildContext context,
-//     Map params,
-//     ) {
-//   return SmartRefresher(
-//       enablePullDown: true,
-//       enablePullUp: true,
-//       controller: refreshController,
-//       onRefresh: onRefresh,
-//       onLoading: (){
-//         refreshController.loadNoData();
-//         refreshController.loadComplete();
-//       },
-//       child: itemListView(itemList, getCardType, context, params));
-// }
-
 Widget refreshableListView(
-    RefreshController refreshController,
     Function onRefresh,
     List itemList,
     Function getCardType,
@@ -111,7 +89,6 @@ Widget dismissibleListView(
     itemBuilder: (context, index) {
       final item = itemList[index];
       return Dismissible(
-          //TODO: ensure that item has id =)
           key: Key(item.id),
           onDismissed: (direction) {
             switch (direction) {
@@ -139,7 +116,6 @@ Widget dismissibleListView(
 }
 
 Widget refreshableAndDismissibleListView(
-    RefreshController refreshController,
     Function onRefresh,
     List itemList,
     Function getCardType,
