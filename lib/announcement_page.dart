@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:luminus_api/luminus_api.dart';
 import 'package:fluminus/announcement_list_page.dart';
 import 'package:fluminus/data.dart' as data;
+import 'util.dart' as util;
 
 class AnnouncementPage extends StatefulWidget {
   const AnnouncementPage({Key key}) : super(key: key);
@@ -67,10 +68,7 @@ class _AnnouncementPageState extends State<AnnouncementPage>
                     builder: (BuildContext context, List<Announcement> value,
                         Widget child) {
                       return dismissibleListView(
-                          value,
-                          () => CardType.announcementCardType,
-                          (index) {}, 
-                          (index, context) {
+                          value, () => CardType.announcementCardType, (index) {
                         setState(() {
                           Announcement removedOne = value.removeAt(index);
                           Scaffold.of(context).showSnackBar(SnackBar(
@@ -85,6 +83,10 @@ class _AnnouncementPageState extends State<AnnouncementPage>
                                     });
                                   })));
                         });
+                      }, (index, context) {
+                        Announcement announcement = value[index];
+                        util.showPickerThreeNumber(context, data.smsStartDate,
+                            data.modules.firstWhere((m) => m.id == announcement.parentID), announcement);
                       }, context, null);
                     },
                     valueListenable: _archived,

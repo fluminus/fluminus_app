@@ -100,8 +100,12 @@ showPickerThreeNumber(BuildContext context, DateTime smsStartDate, Module module
                 width: 30.0, alignment: Alignment.center, child: Text("D"))),
       ],
       hideHeader: true,
-      title: new Text("Schedule task in\n(month : week : day)",
-          style: Theme.of(context).textTheme.title),
+      title: ListTile(
+        title: Text("Schedule in",
+         style: Theme.of(context).textTheme.caption),
+         subtitle: Text('month : week : day', 
+         style: Theme.of(context).textTheme.subhead),
+      ),    
       onConfirm: (Picker picker, List value) {
         DateTime date = getPickedDate(value);
         model.onAddTask(
