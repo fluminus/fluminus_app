@@ -160,15 +160,15 @@ class _ProfilePageState extends State<ProfilePage> {
                     Navigator.of(context).pushReplacementNamed(LoginPage.tag);
                   },
                 )),
-            Padding(
-                padding: const EdgeInsets.only(left: 20.0, right: 20.0),
-                child: RaisedButton(
-                  color: Theme.of(context).buttonColor,
-                  child: Text('Test crashlytics'),
-                  onPressed: () {
-                    throw Exception('Crashlytics test');
-                  },
-                )),
+            // Padding(
+            //     padding: const EdgeInsets.only(left: 20.0, right: 20.0),
+            //     child: RaisedButton(
+            //       color: Theme.of(context).buttonColor,
+            //       child: Text('Test crashlytics'),
+            //       onPressed: () {
+            //         throw Exception('Crashlytics test');
+            //       },
+            //     )),
             Padding(
                 padding: const EdgeInsets.only(left: 20.0, right: 20.0),
                 child: RaisedButton(

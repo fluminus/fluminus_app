@@ -188,27 +188,31 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
                                 });
                                 data.modules =
                                     await API.getModules(data.authentication());
+                                // print('module = ${data.modules}');
                                 setState(() {
                                   this._buttonText = "Signed in!";
                                 });
                                 Navigator.pushReplacementNamed(
                                     context, HomePage.tag);
                               } catch (e) {
-                                if (e is RestartAuthException) {
-                                  Navigator.pushReplacementNamed(
-                                      context, HomePage.tag);
+                                setState(() {
+                                  this._buttonText = "Sign in";
+                                });
+                                // TODO: This part is pretty messy
+                                if (e is WrongCredentialsException) {
+                                  displayDialog(
+                                      'Wrong credentials',
+                                      'Please provide correct NUSNET ID and password and try again.',
+                                      context);
+                                } else if (e is RestartAuthException) {
+                                  await prefs.setBool('hasCred', false);
+                                  await data.deleteCredentials();
+                                  displayDialog(
+                                      'Log in error',
+                                      'If you just logged out, you may need to restart the app and log in again.',
+                                      context);
                                 } else {
-                                  setState(() {
-                                    this._buttonText = "Sign in";
-                                  });
-                                  if (e is WrongCredentialsException) {
-                                    displayDialog(
-                                        'Wrong credentials',
-                                        'Please provide correct NUSNET ID and password and try again.',
-                                        context);
-                                  } else {
-                                    rethrow;
-                                  }
+                                  displayDialog('Error', e.toString(), context);
                                 }
                               }
                             },
