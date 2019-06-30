@@ -19,7 +19,6 @@ class ProfilePage extends StatefulWidget {
 }
 
 class _ProfilePageState extends State<ProfilePage> {
-  Profile profile = data.profile;
   bool _isDarkMode;
   bool _enablePushNotifications = false;
 
@@ -91,7 +90,7 @@ class _ProfilePageState extends State<ProfilePage> {
         body: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: <Widget>[
-            profile == null
+            data.profile == null
                 ? FutureBuilder(
                     future: API.getProfile(data.authentication()),
                     builder: (context, AsyncSnapshot<Profile> snapshot) {
@@ -108,7 +107,7 @@ class _ProfilePageState extends State<ProfilePage> {
                       }
                     },
                   )
-                : profileWidget(profile),
+                : profileWidget(data.profile),
             Padding(
               padding: const EdgeInsets.only(top: 20.0),
             ),
