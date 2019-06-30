@@ -17,10 +17,6 @@ class _ForumPageState extends State<ForumPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-          title: Text(
-        'Forum Page',
-      )),
       body: WebView(
         initialUrl: 'https://forum.tyhome.site',
         javascriptMode: JavascriptMode.unrestricted,

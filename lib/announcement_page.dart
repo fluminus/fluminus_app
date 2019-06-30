@@ -48,17 +48,27 @@ class _AnnouncementPageState extends State<AnnouncementPage>
       return DefaultTabController(
           length: tabBarNames.length,
           child: Scaffold(
-              appBar: AppBar(
-                title: Text(appBarTitle),
-                bottom: TabBar(
-                  isScrollable: true,
-                  tabs: tabBarNames.map((tabName) {
-                    return Tab(
-                      text: tabName,
-                    );
-                  }).toList(),
-                ),
-              ),
+              body: NestedScrollView(
+	                  headerSliverBuilder:
+	                      (BuildContext context, bool innerBoxIsScrolled) {
+	                    return <Widget>[
+	                      SliverAppBar(
+	                        title: Text(appBarTitle),
+	
+	                        pinned: true,
+	                        floating: true,
+	                        forceElevated: innerBoxIsScrolled,
+	                        bottom: TabBar(
+	                          isScrollable: true,
+	                          tabs: tabBarNames.map((tabName) {
+	                            return Tab(
+	                              text: tabName,
+	                            );
+	                          }).toList(),
+	                        ),
+	                      )
+	                    ];
+	                  },
               body: TabBarView(
                 children: new List()
                   ..addAll(data.modules.map((Module module) {
@@ -91,8 +101,8 @@ class _AnnouncementPageState extends State<AnnouncementPage>
                     },
                     valueListenable: _archived,
                   )),
-              )));
-    }
+              ))));
+      }
   }
 
   _write() async {
