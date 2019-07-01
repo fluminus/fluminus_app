@@ -39,6 +39,7 @@ ThemeData lightTheme = ThemeData(
     primaryColorDark: darkBlue,
     accentColor: greyGreen,
     backgroundColor: orangeRed,
+    buttonColor: pink,
     unselectedWidgetColor: Colors.blueGrey,
     fontFamily: 'Roboto',
     textTheme: TextTheme(
@@ -50,10 +51,6 @@ ThemeData lightTheme = ThemeData(
       body1: TextStyle(fontSize: 14.0, fontFamily: 'Roboto'),
       body2: TextStyle(fontSize: 16.0, fontFamily: 'Roboto', color: ThemeData.light().primaryColor)
     ),
-    buttonTheme: ButtonThemeData(
-      shape: RoundedRectangleBorder(),
-
-    )
     );
     
 

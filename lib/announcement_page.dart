@@ -54,9 +54,9 @@ class _AnnouncementPageState extends State<AnnouncementPage>
 	                    return <Widget>[
 	                      SliverAppBar(
 	                        title: Text(appBarTitle),
-	
 	                        pinned: true,
 	                        floating: true,
+                          snap: true,
 	                        forceElevated: innerBoxIsScrolled,
 	                        bottom: TabBar(
 	                          isScrollable: true,

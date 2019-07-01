@@ -21,3 +21,17 @@ void toggleBrightness(BuildContext context) {
     DynamicTheme.of(context).setThemeData(theme.darkTheme);
   }
 }
+
+Widget buttom(Color color, Color textColor, String label, Function onPress, BuildContext context) {
+  return MaterialButton(
+    minWidth: MediaQuery.of(context).size.width * 2 / 3,
+    height: 20,
+    child: Text(label),
+    onPressed: onPress,
+     padding: EdgeInsets.all(20.0),
+     color: color,
+     textColor: textColor,
+     highlightElevation: 2,
+     shape: StadiumBorder(),
+  );
+} 
