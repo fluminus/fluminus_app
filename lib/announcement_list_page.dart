@@ -46,10 +46,10 @@ class _AnnouncementListPageState extends State<AnnouncementListPage>
             _newAnnouncements = _newAnnouncements.takeWhile((x) {
               return (DateTime.parse(x.createdDate).isAfter(lastRefreshedDate));
             }).toList();
-
-            lastRefreshedDate = DateTime.now();
             setState(() {
+              lastRefreshedDate = DateTime.now();
               _announcements.addAll(_newAnnouncements);
+              
             });
           },
           announcements,

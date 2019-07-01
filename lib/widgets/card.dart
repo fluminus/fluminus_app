@@ -15,9 +15,9 @@ import '../file_page.dart';
 BorderRadius _borderRadius = BorderRadius.circular(16.0);
 
 Widget _basicCard(Widget child) {
-  return Card(
-    shape: RoundedRectangleBorder(borderRadius: _borderRadius),
-    elevation: 3.0,
+  return Container(
+    //shape: RoundedRectangleBorder(borderRadius: _borderRadius),
+    //elevation: 3.0,
     child: child,
   );
 }
@@ -223,9 +223,9 @@ Widget announcementCard(Announcement announcemnt, BuildContext context) {
   String subtitle = "Expire After: " +
       util.datetimeToFormattedString(DateTime.parse(announcemnt.expireAfter));
   String body = util.parsedHtmlText(announcemnt.description);
-  return Card(
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16.0)),
-      elevation: 3.0,
+  return Container(
+      // shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16.0)),
+      // elevation: 3.0,
       child: Padding(
           padding: const EdgeInsets.all(3.0),
           child: Column(mainAxisSize: MainAxisSize.min, children: <Widget>[

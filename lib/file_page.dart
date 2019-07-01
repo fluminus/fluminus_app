@@ -343,8 +343,8 @@ class _SubdirectoryPageState extends State<SubdirectoryPage> {
   }
 
   Future<void> refresh() async {
-    _refreshedFileList = await 
-        db.refreshAndGetItemsFromDirectory(widget.parent);
+    _refreshedFileList =
+        await db.refreshAndGetItemsFromDirectory(widget.parent);
     setState(() {
       _fileList = _refreshedFileList;
       _fileListFuture = Future.value(_refreshedFileList);
@@ -354,7 +354,6 @@ class _SubdirectoryPageState extends State<SubdirectoryPage> {
 
   @override
   Widget build(BuildContext context) {
-
     void sortItems(BuildContext context,
         {_SortMethod method = _SortMethod.normal, bool isAscend = true}) {
       final c = isAscend ? 1 : -1;
@@ -503,8 +502,8 @@ class SortMethodSelect extends StatefulWidget {
   final List<_SortMethod> choices;
   final Function(_SortMethod) onMethodChanged;
   final Function(bool) onAscendChanged;
-  bool initAscend;
-  _SortMethod initMethod;
+  final bool initAscend;
+  final _SortMethod initMethod;
   SortMethodSelect(
     this.choices, {
     @required this.onMethodChanged,

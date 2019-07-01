@@ -46,8 +46,11 @@ Widget _certainCard(var item, CardType type, BuildContext context, Map params) {
 
 Widget itemListView(
     List itemList, Function getCardType, BuildContext context, Map params) {
-  return new ListView.builder(
-    
+  return new ListView.separated(
+    separatorBuilder: (context, index) => Divider(
+        color: Colors.blueGrey,
+        height: 0.0,
+      ),
     shrinkWrap: true,
     itemCount: itemList.length,
     itemBuilder: (context, index) {
@@ -55,7 +58,7 @@ Widget itemListView(
         mainAxisSize: MainAxisSize.min,
         children: <Widget>[
           Padding(
-              padding: const EdgeInsets.only(top: 6.0),
+              padding: const EdgeInsets.all(0.0),
               child: _certainCard(itemList[index], getCardType(itemList[index]),
                   context, params))
         ],
@@ -87,7 +90,11 @@ Widget dismissibleListView(
     Widget leftHint,
     Widget rightHint,
     Map params) {
-  return new ListView.builder(
+  return new ListView.separated(
+    separatorBuilder: (context, index) => Divider(
+        color: Colors.blueGrey,
+        height: 0.0,
+      ),
     padding: EdgeInsets.all(0.0),
     shrinkWrap: true,
     itemCount: itemList.length,
@@ -113,7 +120,7 @@ Widget dismissibleListView(
             mainAxisSize: MainAxisSize.min,
             children: <Widget>[
               Padding(
-                  padding: const EdgeInsets.only(bottom: 6.0),
+                  padding: const EdgeInsets.only(bottom: 0.0),
                   child: _certainCard(
                       itemList[index], getCardType(), context, params))
             ],
