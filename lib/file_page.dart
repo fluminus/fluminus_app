@@ -343,8 +343,8 @@ class _SubdirectoryPageState extends State<SubdirectoryPage> {
   }
 
   Future<void> refresh() async {
-    _refreshedFileList = await util.refreshWithSnackBars(
-        () => db.refreshAndGetItemsFromDirectory(widget.parent), context);
+    _refreshedFileList =
+        await db.refreshAndGetItemsFromDirectory(widget.parent);
     setState(() {
       _fileList = _refreshedFileList;
       _fileListFuture = Future.value(_refreshedFileList);
@@ -354,10 +354,6 @@ class _SubdirectoryPageState extends State<SubdirectoryPage> {
 
   @override
   Widget build(BuildContext context) {
-    Future<void> onRefresh() async {
-      await refresh();
-    }
-
     void sortItems(BuildContext context,
         {_SortMethod method = _SortMethod.normal, bool isAscend = true}) {
       final c = isAscend ? 1 : -1;
@@ -454,7 +450,7 @@ class _SubdirectoryPageState extends State<SubdirectoryPage> {
     }
 
     return Scaffold(
-      //key: _scaffoldKey,
+      key: _scaffoldKey,
       floatingActionButton:
           _filePageFloatingActionButton(context, showSortMethods),
       appBar: AppBar(
@@ -506,8 +502,8 @@ class SortMethodSelect extends StatefulWidget {
   final List<_SortMethod> choices;
   final Function(_SortMethod) onMethodChanged;
   final Function(bool) onAscendChanged;
-  bool initAscend;
-  _SortMethod initMethod;
+  final bool initAscend;
+  final _SortMethod initMethod;
   SortMethodSelect(
     this.choices, {
     @required this.onMethodChanged,

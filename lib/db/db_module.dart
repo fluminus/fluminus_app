@@ -29,7 +29,7 @@ Future<List<api.Module>> getAllModules() async {
 }
 
 Future<void> refreshAllModules() async {
-  print('refreshing modules');
+  // print('refreshing modules');
   var modules = await api.API.getModules(data.authentication());
   await dbDelete(tableName: DatabaseHelper.moduleTable);
   for (var mod in modules) {
