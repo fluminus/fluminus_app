@@ -1,6 +1,7 @@
 import 'package:fluminus/file_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/material.dart' as prefix0;
+import 'package:io/ansi.dart';
 import 'package:luminus_api/luminus_api.dart';
 import 'card.dart';
 
@@ -83,6 +84,8 @@ Widget dismissibleListView(
     Function afterSwipingLeft,
     Function afterSwipingRight,
     BuildContext context,
+    Widget leftHint,
+    Widget rightHint,
     Map params) {
   return new ListView.builder(
     padding: EdgeInsets.all(0.0),
@@ -91,6 +94,8 @@ Widget dismissibleListView(
     itemBuilder: (context, index) {
       final item = itemList[index];
       return Dismissible(
+          background: new Container(color: Theme.of(context).accentColor, child: leftHint, alignment: Alignment(-0.8,0)),
+          secondaryBackground: new Container(color: Theme.of(context).backgroundColor, child: rightHint,alignment: Alignment(0.8,0)),
           key: Key(item.id),
           onDismissed: (direction) {
             switch (direction) {
@@ -124,10 +129,12 @@ Widget refreshableAndDismissibleListView(
     Function afterSwipingLeft,
     Function afterSwipingRight,
     BuildContext context,
+    Widget leftHint,
+    Widget rightHint,
     Map params) {
   return Container(
       child: prefix0.RefreshIndicator(
         onRefresh: onRefresh,
       child: dismissibleListView(itemList, getCardType, afterSwipingLeft,
-          afterSwipingRight, context, params)));
+          afterSwipingRight, context, leftHint, rightHint, params)));
 }

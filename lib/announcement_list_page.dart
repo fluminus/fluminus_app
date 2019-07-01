@@ -76,6 +76,8 @@ class _AnnouncementListPageState extends State<AnnouncementListPage>
                 context, data.smsStartDate, widget.module, announcement);
           },
           context,
+          Icon(Icons.schedule),
+          Icon(Icons.archive),
           {'module': widget.module});
     }
 

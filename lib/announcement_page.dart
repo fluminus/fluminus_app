@@ -97,7 +97,10 @@ class _AnnouncementPageState extends State<AnnouncementPage>
                         Announcement announcement = value[index];
                         util.showPickerThreeNumber(context, data.smsStartDate,
                             data.modules.firstWhere((m) => m.id == announcement.parentID), announcement);
-                      }, context, null);
+                      }, context, 
+                      Icon(Icons.schedule),
+                      Icon(Icons.delete),
+                      null);
                     },
                     valueListenable: _archived,
                   )),
