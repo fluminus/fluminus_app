@@ -56,7 +56,7 @@ Please look at our [Project board](https://github.com/fluminus/fluminus_app/proj
 
 [Tan Yuanhong](https://github.com/le0tan)
 * Overall architecture of the Fluminus app
-   * Kickstarter of Fluminus by writing and maintaining [luminus_api](https://github.com/fluminus/luminus_api)
+   * Kickstarter of Fluminus app by writing and maintaining [luminus_api](https://github.com/fluminus/luminus_api)
    * Main writer of the file management and push notification sections
    * Maintainer of server-side applications (push notification service & forum)
 * iOS-side platform-specific optimization and distribution
