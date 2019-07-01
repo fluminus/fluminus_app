@@ -1,14 +1,11 @@
-import 'dart:async';
-import 'package:async/async.dart';
-// import 'package:fluminus/widgets/dialog.dart';
+import 'dart:convert';
 
+import 'package:fluminus/widgets/list.dart';
 import 'package:flutter/material.dart';
 import 'package:luminus_api/luminus_api.dart';
 import 'package:fluminus/announcement_list_page.dart';
 import 'package:fluminus/data.dart' as data;
-// import 'package:fluminus/widgets/common.dart' as common;
-import 'package:shared_preferences/shared_preferences.dart';
-// import 'util.dart' as util;
+import 'util.dart' as util;
 
 class AnnouncementPage extends StatefulWidget {
   const AnnouncementPage({Key key}) : super(key: key);
@@ -20,21 +17,23 @@ class _AnnouncementPageState extends State<AnnouncementPage>
     with
         SingleTickerProviderStateMixin,
         AutomaticKeepAliveClientMixin<AnnouncementPage> {
-  // To prevent this page being loaded multiple times:
-  // https://medium.com/saugo360/flutter-my-futurebuilder-keeps-firing-6e774830bc2
-  // I don't know why it doesn't work though...
-  // HEHE
-  final AsyncMemoizer<List<Module>> _memoizer = AsyncMemoizer();
-  FutureOr<List<Module>> _fetchData() async {
-    return this._memoizer.runOnce(() async {
-      SharedPreferences sp = await SharedPreferences.getInstance();
-      List<Module> modules = await API.getModules(data.authentication());
-      sp.setStringList('moduleStrs', modules.map((x) => x.name).toList());
-      return modules;
-    });
+  final String appBarTitle = "Announcements";
+  final List<String> tabBarNames = new List()
+    ..addAll(data.modules.map((m) => m.name))
+    ..add('Archived');
+
+  @override
+  void initState() {
+    super.initState();
   }
 
-  final String appBarTitle = "Announcements";
+  void dispose() {
+    _write();
+    super.dispose();
+  }
+
+  ValueNotifier<List<Announcement>> _archived =
+      ValueNotifier<List<Announcement>>(data.archivedAnnouncements);
 
   @override
   Widget build(BuildContext context) {
@@ -47,68 +46,77 @@ class _AnnouncementPageState extends State<AnnouncementPage>
       );
     } else {
       return DefaultTabController(
-        length: data.modules.length,
-        child: Scaffold(
-          appBar: AppBar(
-            title: Text(appBarTitle),
-            bottom: TabBar(
-              isScrollable: true,
-              tabs: data.modules.map((Module module) {
-                return Tab(
-                  text: module.name,
-                );
-              }).toList(),
-            ),
-          ),
-          body: TabBarView(
-            children: data.modules.map((Module module) {
-              return AnnouncementListPage(module: module);
-            }).toList(),
-          ),
-        ),
-      );
-    }
-    /*return FutureBuilder<List<Module>>(
-        future: this._fetchData(),
-        builder: (context, snapshot) {
-          if (snapshot.hasData) {
-            List<Module> _modules;
-            _modules = snapshot.data;
-            return DefaultTabController(
-              length: _modules.length,
-              child: Scaffold(
-                appBar: AppBar(
-                  title: const Text("Announcements"),
-                  bottom: TabBar(
-                    isScrollable: true,
-                    tabs: _modules.map((Module module) {
-                      return Tab(
-                        text: module.name,
-                      );
-                    }).toList(),
-                  ),
-                ),
-                body: TabBarView(
-                  children: _modules.map((Module module) {
+          length: tabBarNames.length,
+          child: Scaffold(
+              body: NestedScrollView(
+	                  headerSliverBuilder:
+	                      (BuildContext context, bool innerBoxIsScrolled) {
+	                    return <Widget>[
+	                      SliverAppBar(
+	                        title: Text(appBarTitle),
+	                        pinned: true,
+	                        floating: true,
+                          snap: true,
+	                        forceElevated: innerBoxIsScrolled,
+	                        bottom: TabBar(
+	                          isScrollable: true,
+	                          tabs: tabBarNames.map((tabName) {
+	                            return Tab(
+	                              text: tabName,
+	                            );
+	                          }).toList(),
+	                        ),
+	                      )
+	                    ];
+	                  },
+              body: TabBarView(
+                children: new List()
+                  ..addAll(data.modules.map((Module module) {
                     return AnnouncementListPage(module: module);
-                  }).toList(),
-                ),
-              ),
-            );
-          } else if (snapshot.hasError) {
-            // TODO: Error handling
-            return Text(snapshot.error.toString());
-          }
-          return Scaffold(
-            appBar: AppBar(
-              title: const Text("Announcements"),
-            ),
-            body: common.progressIndicator,
-          );
-        });*/
+                  }).toList())
+                  ..add(ValueListenableBuilder(
+                    builder: (BuildContext context, List<Announcement> value,
+                        Widget child) {
+                      return dismissibleListView(
+                          value, () => CardType.announcementCardType, (index) {
+                        setState(() {
+                          Announcement removedOne = value.removeAt(index);
+                          Scaffold.of(context).showSnackBar(SnackBar(
+                              content: Text("Announcement deleted"),
+                              action: SnackBarAction(
+                                  label: "UNDO",
+                                  onPressed: () {
+                                    setState(() {
+                                      data.archivedAnnouncements
+                                          .remove(removedOne);
+                                      value.insert(index, removedOne);
+                                    });
+                                  })));
+                        });
+                      }, (index, context) {
+                        Announcement announcement = value[index];
+                        util.showPickerThreeNumber(context, data.smsStartDate,
+                            data.modules.firstWhere((m) => m.id == announcement.parentID), announcement, index, value);
+                      }, context, 
+                      Icon(Icons.schedule),
+                      Icon(Icons.delete),
+                      null);
+                    },
+                    valueListenable: _archived,
+                  )),
+              ))));
+      }
+  }
+
+  _write() async {
+    List<Map> maps = new List();
+    for (Announcement announcement in data.archivedAnnouncements) {
+      maps.add(announcement.toJson());
+    }
+    String encodedList = json.encode(maps);
+    data.sp.setString('archivedAnnouncements', encodedList);
   }
 
   @override
-  // TODO: implement wantKeepAlive
   bool get wantKeepAlive => true;
 }

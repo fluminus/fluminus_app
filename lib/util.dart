@@ -2,10 +2,11 @@ import 'package:fluminus/redux/store.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:luminus_api/luminus_api.dart';
-import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:collection/collection.dart';
 import 'package:html/parser.dart';
 import 'package:flutter_picker/flutter_picker.dart';
+import 'package:groovin_widgets/groovin_widgets.dart';
+import 'package:fluminus/widgets/dialog.dart' as dialog;
 
 
 Function twoListsAreDeepEqual = const DeepCollectionEquality().equals;
@@ -40,32 +41,29 @@ String formatDateAsDayOfWeek(DateTime date) {
   return DateFormat("E").format(date).substring(0, 3).toUpperCase();
 }
 
-Future<List> onLoading(
-    RefreshController controller, List currList, Function getData) async {
-  // List refreshedList = await getData();
-  // if (twoListsAreDeepEqual(currList, refreshedList)) {
-  //   controller.loadNoData();
-  // } else {
-  //   controller.loadComplete();
-  // }
-  // return refreshedList;
-  return await getData();
-}
-
-Future<List> onLoadingTest(RefreshController controller, List currList) async {
-  List refreshedList;
-  List temp = new List();
-  temp.add(currList[0]);
-  refreshedList = temp;
-  if (twoListsAreDeepEqual(currList, refreshedList)) {
-    // print("load no data");
-    controller.loadNoData();
-  } else {
-    // print("load: got data");
-    controller.loadComplete();
+Future<List> refreshWithSnackBars(Function getData, BuildContext context) async {
+    //final GlobalKey<ScaffoldState> scaffoldKey = new GlobalKey<ScaffoldState>();
+    List refreshedList;
+    try {
+      refreshedList = await getData();
+      Scaffold.of(context).showSnackBar(SnackBar(
+        content: Text('Refreshed'),
+        duration: Duration(milliseconds: 500),
+      ));
+    } catch (e) {
+      Scaffold.of(context).showSnackBar(SnackBar(
+        content: Text('Refresh failed'),
+        duration: Duration(seconds: 2),
+        action: SnackBarAction(
+          label: 'Details',
+          onPressed: () {
+            dialog.displayDialog('Detail', e.toString(), context);
+          },
+        ),
+      ));
+    }
+    return refreshedList;
   }
-  return refreshedList;
-}
 
 String parsedHtmlText(String htmlText) {
   var document = parse(htmlText);
@@ -81,7 +79,7 @@ GestureTapCallback onTapNextPage(Widget nextPage, BuildContext context) {
 }
 
 showPickerThreeNumber(BuildContext context, DateTime smsStartDate, Module module,
-    Announcement announcement) async {
+    Announcement announcement, int index, List<Announcement> targetList) async {
   new Picker(
       adapter: NumberPickerAdapter(data: [
         NumberPickerColumn(begin: 0, end: 4),
@@ -103,8 +101,12 @@ showPickerThreeNumber(BuildContext context, DateTime smsStartDate, Module module
                 width: 30.0, alignment: Alignment.center, child: Text("D"))),
       ],
       hideHeader: true,
-      title: new Text("Schedule task in\n(month : week : day)",
-          style: Theme.of(context).textTheme.title),
+      title: ListTile(
+        title: Text("Schedule in",
+         style: Theme.of(context).textTheme.caption),
+         subtitle: Text('month : week : day', 
+         style: Theme.of(context).textTheme.subhead),
+      ),    
       onConfirm: (Picker picker, List value) {
         DateTime date = getPickedDate(value);
         model.onAddTask(
@@ -115,6 +117,10 @@ showPickerThreeNumber(BuildContext context, DateTime smsStartDate, Module module
             weekNum: weekNum(smsStartDate, date),
             tag:module.name,
             colorIndex: 0);
+            targetList.removeAt(index);
+      },
+      onCancel: (){
+        targetList.insert(index, announcement);
       }).showDialog(context);
 }
 
@@ -159,5 +165,7 @@ SnackBar snackBar(String info, {String actionName, Function action}) {
     ),*/
   );
 }
+
+
 
 

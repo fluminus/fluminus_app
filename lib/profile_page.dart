@@ -19,7 +19,6 @@ class ProfilePage extends StatefulWidget {
 }
 
 class _ProfilePageState extends State<ProfilePage> {
-  Profile profile = data.profile;
   bool _isDarkMode;
   bool _enablePushNotifications = false;
 
@@ -91,20 +90,24 @@ class _ProfilePageState extends State<ProfilePage> {
         body: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: <Widget>[
-            profile == null
+            data.profile == null
                 ? FutureBuilder(
                     future: API.getProfile(data.authentication()),
                     builder: (context, AsyncSnapshot<Profile> snapshot) {
                       if (snapshot.connectionState == ConnectionState.done) {
                         Profile prof = snapshot.data;
-                        data.profile = prof;
-                        return profileWidget(prof);
+                        if (prof != null) {
+                          data.profile = prof;
+                          return profileWidget(prof);
+                        } else {
+                          return profileWidget(data.profilePlaceholder);
+                        }
                       } else {
                         return profileWidget(data.profilePlaceholder);
                       }
                     },
                   )
-                : profileWidget(profile),
+                : profileWidget(data.profile),
             Padding(
               padding: const EdgeInsets.only(top: 20.0),
             ),
@@ -160,15 +163,15 @@ class _ProfilePageState extends State<ProfilePage> {
                     Navigator.of(context).pushReplacementNamed(LoginPage.tag);
                   },
                 )),
-            Padding(
-                padding: const EdgeInsets.only(left: 20.0, right: 20.0),
-                child: RaisedButton(
-                  color: Theme.of(context).buttonColor,
-                  child: Text('Test crashlytics'),
-                  onPressed: () {
-                    throw Exception('Crashlytics test');
-                  },
-                )),
+            // Padding(
+            //     padding: const EdgeInsets.only(left: 20.0, right: 20.0),
+            //     child: RaisedButton(
+            //       color: Theme.of(context).buttonColor,
+            //       child: Text('Test crashlytics'),
+            //       onPressed: () {
+            //         throw Exception('Crashlytics test');
+            //       },
+            //     )),
             Padding(
                 padding: const EdgeInsets.only(left: 20.0, right: 20.0),
                 child: RaisedButton(

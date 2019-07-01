@@ -16,7 +16,6 @@ class TaskPage extends StatefulWidget {
 }
 
 class _TaskPageState extends State<TaskPage> {
-  
   Widget addTaskButton(
       BuildContext context, ScrollController scrollController) {
     double top = 175.0;
@@ -26,7 +25,7 @@ class _TaskPageState extends State<TaskPage> {
       } else {
         top = 5.0;
       }
-    } 
+    }
     return Positioned(
         top: top,
         right: 20.0,
@@ -82,17 +81,15 @@ class _TaskPageState extends State<TaskPage> {
     );
 
     return Stack(children: <Widget>[
-      CustomScrollView(
-          controller: scrollController,
-          slivers: <Widget>[
-            SliverList(
-                delegate: SliverChildListDelegate(new List()
-                  ..add(cardHeader)
-                  ..addAll(keys.map((weekNum) {
-                    return sideHeaderListView(
-                        tasksListByWeekNum[weekNum], headers[weekNum], context);
-                  }).toList())))
-          ]),
+      CustomScrollView(controller: scrollController, slivers: <Widget>[
+        SliverList(
+            delegate: SliverChildListDelegate(new List()
+              ..add(cardHeader)
+              ..addAll(keys.map((weekNum) {
+                return sideHeaderListView(
+                    tasksListByWeekNum[weekNum], headers[weekNum], context);
+              }).toList())))
+      ]),
       addTaskButton(context, _scrollController)
     ]);
   }
@@ -186,7 +183,7 @@ class _TaskPageState extends State<TaskPage> {
       store: store,
       child: Scaffold(
         appBar: AppBar(
-          title: Text('Task'),
+          title: Text('Tasks'),
         ),
         body: StoreBuilder<TaskListState>(
           onInit: (store) => store.dispatch(GetTasksAction()),

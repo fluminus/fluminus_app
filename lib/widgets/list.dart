@@ -1,8 +1,8 @@
 import 'package:fluminus/file_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/material.dart' as prefix0;
+import 'package:io/ansi.dart';
 import 'package:luminus_api/luminus_api.dart';
-import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'card.dart';
 
 enum CardType {
@@ -47,6 +47,7 @@ Widget _certainCard(var item, CardType type, BuildContext context, Map params) {
 Widget itemListView(
     List itemList, Function getCardType, BuildContext context, Map params) {
   return new ListView.builder(
+    
     shrinkWrap: true,
     itemCount: itemList.length,
     itemBuilder: (context, index) {
@@ -63,28 +64,7 @@ Widget itemListView(
   );
 }
 
-// Widget refreshableListView(
-//     RefreshController refreshController,
-//     Function onRefresh,
-//     List itemList,
-//     Function getCardType,
-//     BuildContext context,
-//     Map params,
-//     ) {
-//   return SmartRefresher(
-//       enablePullDown: true,
-//       enablePullUp: true,
-//       controller: refreshController,
-//       onRefresh: onRefresh,
-//       onLoading: (){
-//         refreshController.loadNoData();
-//         refreshController.loadComplete();
-//       },
-//       child: itemListView(itemList, getCardType, context, params));
-// }
-
 Widget refreshableListView(
-    RefreshController refreshController,
     Function onRefresh,
     List itemList,
     Function getCardType,
@@ -104,14 +84,18 @@ Widget dismissibleListView(
     Function afterSwipingLeft,
     Function afterSwipingRight,
     BuildContext context,
+    Widget leftHint,
+    Widget rightHint,
     Map params) {
   return new ListView.builder(
+    padding: EdgeInsets.all(0.0),
     shrinkWrap: true,
     itemCount: itemList.length,
     itemBuilder: (context, index) {
       final item = itemList[index];
       return Dismissible(
-          //TODO: ensure that item has id =)
+          background: new Container(color: Theme.of(context).accentColor, child: leftHint, alignment: Alignment(-0.8,0)),
+          secondaryBackground: new Container(color: Theme.of(context).backgroundColor, child: rightHint,alignment: Alignment(0.8,0)),
           key: Key(item.id),
           onDismissed: (direction) {
             switch (direction) {
@@ -139,17 +123,18 @@ Widget dismissibleListView(
 }
 
 Widget refreshableAndDismissibleListView(
-    RefreshController refreshController,
     Function onRefresh,
     List itemList,
     Function getCardType,
     Function afterSwipingLeft,
     Function afterSwipingRight,
     BuildContext context,
+    Widget leftHint,
+    Widget rightHint,
     Map params) {
   return Container(
       child: prefix0.RefreshIndicator(
         onRefresh: onRefresh,
       child: dismissibleListView(itemList, getCardType, afterSwipingLeft,
-          afterSwipingRight, context, params)));
+          afterSwipingRight, context, leftHint, rightHint, params)));
 }

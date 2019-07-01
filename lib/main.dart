@@ -21,7 +21,12 @@ void main() async {
       (prefs.getBool('isDark') ?? false) ? Brightness.dark : Brightness.light;
   hasCredentials = (prefs.getBool('hasCred') ?? false);
   if (hasCredentials) {
-    await data.loadData();
+    try {
+      await data.loadData();
+    } catch (e) {
+      print(e);
+      // it's likely that we've lost connection
+    }
   }
 
   bool isInDebugMode = false;
@@ -38,7 +43,7 @@ void main() async {
   FlutterCrashlytics().initialize().then((val) {
     print('Crashlytics initialized.');
   });
-  runZoned<Future<Null>>(() {
+  runZoned(() {
     runApp(App(
       brightness: brightness,
       hasCredentials: hasCredentials,
@@ -46,7 +51,7 @@ void main() async {
   }, onError: (error, stackTrace) {
     // Whenever an error occurs, call the `reportCrash` function. This will send
     // Dart errors to our dev console or Crashlytics depending on the environment.
-    FlutterCrashlytics().reportCrash(error, stackTrace, forceCrash: true);
+    FlutterCrashlytics().reportCrash(error, stackTrace, forceCrash: false);
   });
 }
 

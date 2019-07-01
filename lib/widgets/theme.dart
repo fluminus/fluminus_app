@@ -38,6 +38,8 @@ ThemeData lightTheme = ThemeData(
     primaryColorLight: lightBlue,
     primaryColorDark: darkBlue,
     accentColor: greyGreen,
+    backgroundColor: orangeRed,
+    buttonColor: pink,
     unselectedWidgetColor: Colors.blueGrey,
     fontFamily: 'Roboto',
     textTheme: TextTheme(
@@ -49,10 +51,6 @@ ThemeData lightTheme = ThemeData(
       body1: TextStyle(fontSize: 14.0, fontFamily: 'Roboto'),
       body2: TextStyle(fontSize: 16.0, fontFamily: 'Roboto', color: ThemeData.light().primaryColor)
     ),
-    buttonTheme: ButtonThemeData(
-      shape: RoundedRectangleBorder(),
-
-    )
     );
     
 
@@ -62,13 +60,14 @@ ThemeData darkTheme = ThemeData(
     primaryColorLight: lightBlueGrey,
     primaryColorDark: darkBlueGrey,
     accentColor: darkGreyGreen,
+    backgroundColor: greyRed,
     unselectedWidgetColor: Color(0xFFbababa),
     fontFamily: 'Roboto',
     textTheme: TextTheme(
       headline: TextStyle(fontSize: 45.0, fontWeight: FontWeight.bold, color: lightGrey),
       title: TextStyle(fontSize: 40.0, fontStyle: FontStyle.normal, color: lightGrey),
       caption: TextStyle(fontSize: 30.0, fontWeight: FontWeight.bold,color: lightGrey),
-      subhead: TextStyle(fontWeight: FontWeight.bold, fontSize: 20.0, color: lightBlue),
+      subhead: TextStyle(fontWeight: FontWeight.bold, fontSize: 20.0, color:lightBlueGrey),
       subtitle: TextStyle(fontSize: 18.0, color: lightGrey),
       body1: TextStyle(fontSize: 14.0, color: lightGrey),
       body2: TextStyle(fontSize: 16.0, color: lightGrey)
