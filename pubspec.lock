@@ -311,7 +311,7 @@ packages:
       name: luminus_api
       url: "https://pub.flutter-io.cn"
     source: hosted
-    version: "0.1.17"
+    version: "0.1.18"
   matcher:
     dependency: transitive
     description:

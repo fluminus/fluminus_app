@@ -49,7 +49,7 @@ dependencies:
   sqflite: ^1.1.0
   flutter_secure_storage: ^3.2.1+1
   # Utility
-  luminus_api: ^0.1.17
+  luminus_api: ^0.1.18
   collection: ^1.14.11
   # # Permissions
   # permission_handler: '^3.1.0'
