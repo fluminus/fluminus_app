@@ -12,7 +12,7 @@ class _WelcomePageState extends State<WelcomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Swiper(
+      body: Swiper(itemCount: null,
       ),
     );
   }
