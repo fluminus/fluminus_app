@@ -46,11 +46,12 @@ Widget _certainCard(var item, CardType type, BuildContext context, Map params) {
 
 Widget itemListView(
     List itemList, Function getCardType, BuildContext context, Map params) {
-  return new ListView.separated(
-    separatorBuilder: (context, index) => Divider(
-        color: Colors.blueGrey,
-        height: 0.0,
-      ),
+  // //return new ListView.separated(
+  //   separatorBuilder: (context, index) => Divider(
+  //       color: Colors.blueGrey,
+  //       height: 0.0,
+  //     ),
+  return ListView.builder(
     shrinkWrap: true,
     itemCount: itemList.length,
     itemBuilder: (context, index) {

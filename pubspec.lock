@@ -264,12 +264,12 @@ packages:
     source: hosted
     version: "2.1.4"
   image_picker:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: image_picker
       url: "https://pub.flutter-io.cn"
     source: hosted
-    version: "0.5.4+3"
+    version: "0.6.0+17"
   intl:
     dependency: "direct main"
     description:
@@ -354,13 +354,6 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "1.4.4"
-  notus:
-    dependency: transitive
-    description:
-      name: notus
-      url: "https://pub.flutter-io.cn"
-    source: hosted
-    version: "0.1.3"
   open_file:
     dependency: "direct main"
     description:
@@ -395,7 +388,7 @@ packages:
       name: path_provider
       url: "https://pub.flutter-io.cn"
     source: hosted
-    version: "1.1.0"
+    version: "1.1.2"
   pedantic:
     dependency: transitive
     description:
@@ -431,13 +424,6 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "1.4.2"
-  quill_delta:
-    dependency: transitive
-    description:
-      name: quill_delta
-      url: "https://pub.flutter-io.cn"
-    source: hosted
-    version: "1.0.0"
   quiver:
     dependency: transitive
     description:
@@ -445,13 +431,6 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "2.0.3"
-  quiver_hashcode:
-    dependency: transitive
-    description:
-      name: quiver_hashcode
-      url: "https://pub.flutter-io.cn"
-    source: hosted
-    version: "2.0.0"
   redux:
     dependency: transitive
     description:
@@ -604,13 +583,6 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "1.1.6"
-  url_launcher:
-    dependency: transitive
-    description:
-      name: url_launcher
-      url: "https://pub.flutter-io.cn"
-    source: hosted
-    version: "5.0.3"
   vector_math:
     dependency: transitive
     description:
@@ -660,13 +632,6 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "2.1.16"
-  zefyr:
-    dependency: "direct main"
-    description:
-      name: zefyr
-      url: "https://pub.flutter-io.cn"
-    source: hosted
-    version: "0.5.0"
 sdks:
   dart: ">=2.2.2 <3.0.0"
   flutter: ">=1.5.0 <2.0.0"

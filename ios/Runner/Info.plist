@@ -45,7 +45,11 @@
 	<key>LSSupportsOpeningDocumentsInPlace</key>
 	<true/>
 	<key>NSPhotoLibraryUsageDescription</key>
-	<string>Access is needed to realize offline file management.</string>
+	<string>This app requires access to the photo library to upload images.</string>
+	<key>NSCameraUsageDescription</key>
+	<string>This app requires access to the photo library to upload images.</string>
+	<key>NSMicrophoneUsageDescriptio</key>
+	<string>This app requires access to the photo library to upload images.</string>
 	<key>UIFileSharingEnabled</key>
 	<true/>
 	<key>UILaunchStoryboardName</key>

@@ -15,9 +15,9 @@ import '../file_page.dart';
 BorderRadius _borderRadius = BorderRadius.circular(16.0);
 
 Widget _basicCard(Widget child) {
-  return Container(
-    //shape: RoundedRectangleBorder(borderRadius: _borderRadius),
-    //elevation: 3.0,
+  return Card(
+    shape: RoundedRectangleBorder(borderRadius: _borderRadius),
+    elevation: 3.0,
     child: child,
   );
 }
@@ -223,7 +223,12 @@ Widget announcementCard(Announcement announcemnt, BuildContext context) {
   String subtitle = "Expire After: " +
       util.datetimeToFormattedString(DateTime.parse(announcemnt.expireAfter));
   String body = util.parsedHtmlText(announcemnt.description);
-  return Container(
+  return InkWell(
+       onTap: () {
+                _showDetail(context, title, body);
+              },
+              highlightColor: Colors.grey,
+  child: Container(
       // shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16.0)),
       // elevation: 3.0,
       child: Padding(
@@ -232,9 +237,6 @@ Widget announcementCard(Announcement announcemnt, BuildContext context) {
             ListTile(
               title: Text(title),
               subtitle: Text(subtitle),
-              onTap: () {
-                _showDetail(context, title, body);
-              },
             ),
             ListTile(
               subtitle: Text(
@@ -243,11 +245,9 @@ Widget announcementCard(Announcement announcemnt, BuildContext context) {
                 style: Theme.of(context).textTheme.body1,
                 overflow: TextOverflow.ellipsis,
               ),
-              onTap: () {
-                _showDetail(context, title, body);
-              },
             )
-          ])));
+          ]))),
+         );
 }
 
 void _showDetail(BuildContext context, String title, String fullContent) {
