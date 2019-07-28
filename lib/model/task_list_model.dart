@@ -29,7 +29,7 @@ class Task {
       @required this.isAllDay,
       this.location,
       this.tag,
-      this.colorIndex});
+      this.colorIndex, String appBar});
 
   Task copyWith(
       {int id, String title, String detail, String date, String dayOfWeek, int weekNum, String startTime, 

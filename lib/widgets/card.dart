@@ -341,7 +341,7 @@ Widget taskCard(Task task, BuildContext context) {
                       label: Text('EDIT'),
                       onPressed: () => Navigator.push(context,
                               MaterialPageRoute(builder: (context) {
-                            return TaskDetail(task);
+                            return TaskDetail(task,'Editing Task');
                           })))),
             ],
           )

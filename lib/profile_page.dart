@@ -35,7 +35,10 @@ class _ProfilePageState extends State<ProfilePage> {
     super.initState();
     String backgroundPath = data.sp.getString('backgroundPath');
     if(backgroundPath != null) {
-      _background = Image.file(File(backgroundPath), fit: BoxFit.fill);
+      _background = Image.file(File(backgroundPath), fit: BoxFit.cover,
+    height: double.infinity,
+    width: double.infinity,
+    alignment: Alignment.center,);
     }
   }
 

@@ -8,8 +8,9 @@ import 'data.dart' as data;
 
 class TaskDetail extends StatefulWidget {
   final Task task;
+  final String appBarTitle;
 
-  TaskDetail(this.task);
+  TaskDetail(this.task, this.appBarTitle);
   @override
   _TaskDetailState createState() => new _TaskDetailState();
 }
@@ -129,9 +130,10 @@ class _TaskDetailState extends State<TaskDetail> {
 
   @override
   Widget build(BuildContext context) {
+    
     return Scaffold(
         appBar: AppBar(
-          title: Text('New Task'),
+          title: Text(widget.appBarTitle),
           actions: <Widget>[
             Builder(
                 builder: (context) => IconButton(
