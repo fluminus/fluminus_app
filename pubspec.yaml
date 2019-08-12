@@ -27,7 +27,7 @@ dependencies:
   # Network
   http: ^0.12.0+2
   html: ^0.14.0+2
-  dio: ^2.1.3
+  dio: ^2.1.13
   # IO
   io: ^0.3.3
   path_provider: ^1.1.2
@@ -92,6 +92,7 @@ flutter:
    - assets/logo.png
    - assets/tick.png
    - assets/nus_lion.png
+   - assets/login_background.jpeg
    - .env
 
   # An image asset can refer to one or more resolution-specific "variants", see
