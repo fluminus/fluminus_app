@@ -21,6 +21,14 @@ class _AnnouncementListPageState extends State<AnnouncementListPage>
   List<Announcement> _newAnnouncements;
   Future<SharedPreferences> _sprefs = SharedPreferences.getInstance();
   DateTime lastRefreshedDate = data.smsStartDate;
+  bool isLuminusStupid = true;
+  List<Announcement> _defaultList = [Announcement(id:'1', title: 'Welcome to Fluminus!', description: 'The name of Fluminus means the combination of Flutter and Luminus=)',createdDate: '20190812',expireAfter: '20190912'),
+      Announcement(id:'2',title: 'Welcome to Fluminus!!', description: 'The name of Fluminus means the combination of Flutter and Luminus=)',createdDate: '20190812',expireAfter: '20190912'),
+      Announcement(id:'3',title: 'Welcome to Fluminus!!!', description: 'The name of Fluminus means the combination of Flutter and Luminus=)',createdDate: '20190812',expireAfter: '20190912'),
+      Announcement(id:'4',title: 'Welcome to Fluminus!!!!', description: 'The name of Fluminus means the combination of Flutter and Luminus=)',createdDate: '20190812',expireAfter: '20190912'),
+      Announcement(id:'5',title: 'Welcome to Fluminus!!!!!', description: 'The name of Fluminus means the combination of Flutter and Luminus=)',createdDate: '20190812',expireAfter: '20190912'),
+      Announcement(id:'6',title: 'Welcome to Fluminus!!!!!!!', description: 'The name of Fluminus means the combination of Flutter and Luminus=)',createdDate: '20190812',expireAfter: '20190912'),
+      Announcement(id:'7',title: 'Welcome to Fluminus!!!!!!!!!!', description: 'The name of Fluminus means the combination of Flutter and Luminus=)',createdDate: '20190812',expireAfter: '20190912'),];
 
   @override
   void initState() {
@@ -33,8 +41,12 @@ class _AnnouncementListPageState extends State<AnnouncementListPage>
     super.dispose();
   }
 
+
   @override
   Widget build(BuildContext context) {
+    if (isLuminusStupid) {
+      _announcements = _defaultList;
+    }
     Widget announcementList(List<dynamic> announcements) {
       return list.refreshableAndDismissibleListView(
           () async {
