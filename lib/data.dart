@@ -43,7 +43,7 @@ Future<void> deleteCredentials() async {
   prefs.setBool('hasCred', false);
 }
 
-DateTime smsStartDate = DateTime.now();
+DateTime smsStartDate = DateTime.utc(2019, 8, 5);
 
 SharedPreferences sp;
 List<Module> modules = [];

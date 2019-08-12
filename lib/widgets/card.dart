@@ -8,6 +8,7 @@ import 'package:fluminus/new_task_page.dart';
 import 'package:fluminus/redux/store.dart';
 import 'package:groovin_widgets/groovin_widgets.dart';
 import 'package:fluminus/util.dart' as util;
+import 'theme.dart' as theme;
 
 import '../file_page.dart';
 // import 'dart:math';
@@ -223,18 +224,20 @@ Widget announcementCard(Announcement announcemnt, BuildContext context) {
   String subtitle = "Expire After: " +
       util.datetimeToFormattedString(DateTime.parse(announcemnt.expireAfter));
   String body = util.parsedHtmlText(announcemnt.description);
-  return Card(
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16.0)),
-      elevation: 3.0,
+  return InkWell(
+       onTap: () {
+                _showDetail(context, title, body);
+              },
+              highlightColor: Colors.grey,
+  child: Container(
+      // shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16.0)),
+      // elevation: 3.0,
       child: Padding(
           padding: const EdgeInsets.all(3.0),
           child: Column(mainAxisSize: MainAxisSize.min, children: <Widget>[
             ListTile(
               title: Text(title),
               subtitle: Text(subtitle),
-              onTap: () {
-                _showDetail(context, title, body);
-              },
             ),
             ListTile(
               subtitle: Text(
@@ -243,11 +246,9 @@ Widget announcementCard(Announcement announcemnt, BuildContext context) {
                 style: Theme.of(context).textTheme.body1,
                 overflow: TextOverflow.ellipsis,
               ),
-              onTap: () {
-                _showDetail(context, title, body);
-              },
             )
-          ])));
+          ]))),
+         );
 }
 
 void _showDetail(BuildContext context, String title, String fullContent) {
@@ -263,9 +264,17 @@ void _showDetail(BuildContext context, String title, String fullContent) {
           shape:
               RoundedRectangleBorder(borderRadius: BorderRadius.circular(16.0)),
           elevation: 3.0,
-          title: Text(
-            title,
-            style: Theme.of(context).textTheme.subhead,
+          titlePadding: EdgeInsets.all(0),
+          title: Container(
+            decoration: BoxDecoration(
+              color: Theme.of(context).accentColor,
+              borderRadius: BorderRadius.only(topLeft: Radius.circular(16.0), topRight: Radius.circular(16.0)),
+            ),
+            child: Padding(
+              padding: EdgeInsets.all(10.0),
+              child:Text(title,
+            style: Theme.of(context).textTheme.subhead,)
+            )
           ),
           content: SingleChildScrollView(
             child: Text(
@@ -274,12 +283,19 @@ void _showDetail(BuildContext context, String title, String fullContent) {
             ),
           ),
           actions: <Widget>[
-            FlatButton(
-              child: Text("Close"),
+            Row(
+             //width: MediaQuery.of(context).size.width * 3 / 4,
+              children: <Widget>[ 
+                FlatButton(
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6.0)),
+              color: Theme.of(context).accentColor,
+              child: Text("Close", style: Theme.of(context).textTheme.subhead,),
               onPressed: () {
                 Navigator.of(context).pop();
               },
-            )
+            ),
+              ])
+            
           ],
         );
       });
@@ -341,7 +357,7 @@ Widget taskCard(Task task, BuildContext context) {
                       label: Text('EDIT'),
                       onPressed: () => Navigator.push(context,
                               MaterialPageRoute(builder: (context) {
-                            return TaskDetail(task);
+                            return TaskDetail(task,'Editing Task');
                           })))),
             ],
           )

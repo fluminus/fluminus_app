@@ -14,12 +14,13 @@ import 'widgets/common.dart' as common;
 
 const double _signinButtonWidth = 200.0;
 const double _signinButtonHeight = 60.0;
-const Color _signinButtonColor = const Color.fromRGBO(247, 64, 106, 1.0);
+
 var _signinTextStyle =
     (BuildContext context) => Theme.of(context).textTheme.subhead;
+
 DecorationImage logo = DecorationImage(
   image: ExactAssetImage('assets/logo.png'),
-  fit: BoxFit.cover,
+  fit: BoxFit.contain,
 );
 
 class LoginPage extends StatefulWidget {
@@ -81,10 +82,12 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
         onWillPop: _onWillPop,
         child: Scaffold(
           body: Container(
-              decoration: BoxDecoration(
-                  // TODO: background image
-                  // image: backgroundImage,
-                  ),
+            width: MediaQuery.of(context).size.width,
+             decoration: BoxDecoration(
+                  image: new DecorationImage(
+            image: new ExactAssetImage('assets/login_background.jpeg'),
+            fit: BoxFit.fill,
+          )),
               child: Container(
                   child: ListView(
                 padding: const EdgeInsets.all(0.0),
@@ -101,8 +104,8 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
                             child: Column(
                               children: <Widget>[
                                 Container(
-                                  width: 140.0,
-                                  height: 140.0,
+                                  width: 160.0,
+                                  height: 160.0,
                                   alignment: Alignment.center,
                                   decoration: BoxDecoration(
                                     image: logo,
@@ -187,8 +190,7 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
                                 setState(() {
                                   this._buttonText = "Signing in...";
                                 });
-                                data.modules =
-                                    await API.getModules(data.authentication());
+                                await loadData();
                                 // print('module = ${data.modules}');
                                 setState(() {
                                   this._buttonText = "Signed in!";
@@ -219,6 +221,14 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
                             },
                             child: SignInButton(this._buttonText)),
                       ),
+
+                      Padding(
+                        padding: EdgeInsets.only(bottom: 20),
+                        child: Container(
+                          width:MediaQuery.of(context).size.width,
+                          child: Image.asset('decoration.png'),
+                        ),
+                      )
                     ],
                   ),
                 ],
@@ -237,7 +247,7 @@ class SignInButton extends StatelessWidget {
       height: _signinButtonHeight,
       alignment: FractionalOffset.center,
       decoration: BoxDecoration(
-        color: _signinButtonColor,
+        color: Theme.of(context).primaryColor,
         borderRadius:
             BorderRadius.all(const Radius.circular(_signinButtonHeight / 2.0)),
       ),
