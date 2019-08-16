@@ -37,7 +37,7 @@ dependencies:
   side_header_list_view: ^0.0.4
   material_design_icons_flutter: ^3.2.3695
   dynamic_theme: ^1.0.1
-  groovin_widgets: ^1.4.2
+  flutter_speed_dial: ^1.2.1
   # Storage
   shared_preferences: ^0.5.0
   sqflite: ^1.1.0
