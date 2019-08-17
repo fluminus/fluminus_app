@@ -77,7 +77,7 @@ GestureTapCallback onTapNextPage(Widget nextPage, BuildContext context) {
       };
 }
 
- showPickerThreeNumber(BuildContext context, Module module, Announcement announcement, Function onCancel) async {
+ showPickerThreeNumber(BuildContext context, Module module, Announcement announcement, {Function onCancel}) async {
   new Picker(
       adapter: NumberPickerAdapter(data: [
         NumberPickerColumn(begin: 0, end: 4),

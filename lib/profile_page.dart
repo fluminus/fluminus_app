@@ -50,12 +50,9 @@ class _ProfilePageState extends State<ProfilePage> {
     final String appDirPath = appDir.path;
     var fileName = provider.basename(image.path);
     var localImage = await image.copy('$appDirPath/$fileName');
-    print(localImage.path);
     data.sp.setString('backgroundPath', localImage.path);
-
     setState(() {
-      print('call');
-      _background = Image.file(File(localImage.path), fit: BoxFit.fill);
+      _background = FittedBox(child: Image.file(File(localImage.path)), fit: BoxFit.fill);
     });
   }
 
@@ -287,33 +284,9 @@ class _ProfilePageState extends State<ProfilePage> {
           ),
         ],
       )),
-      // body: FutureBuilder(
-      //   future: imageFromURL('url'),
-      //   builder: (context, snapshot) {
-      //     if (snapshot.hasData) {
-      //       return snapshot.data;
-      //     } else if (snapshot.hasError) {
-      //       return Text(snapshot.error.toString());
-      //     }
-      //     return common.progressIndicator;
-      //   },
-      // )
       body: _background == null ? Container(child:defaultBackground(context)) : Container(child: _background),
     );
   }
-}
-
-Future<Image> imageFromURL(String url) async {
-  //String
-  Dio d = Dio();
-  var resp = await d.get("http://modsn.us/s2lKv",
-      options:
-          Options(followRedirects: false, validateStatus: (val) => val <= 500));
-  var redirect = resp.headers.value('location');
-  print(Uri.parse(redirect).queryParameters);
-  print(resp.data);
-  return Image.network(
-      'https://nusmods.com/export/image?data=%7B%22semester%22%3A1%2C%22timetable%22%3A%7B%22CS2103%22%3A%7B%22Tutorial%22%3A%2201%22%2C%22Lecture%22%3A%221%22%7D%2C%22CS2105%22%3A%7B%22Tutorial%22%3A%2213%22%2C%22Lecture%22%3A%221%22%7D%2C%22CS2106%22%3A%7B%22Laboratory%22%3A%2208%22%2C%22Tutorial%22%3A%2209%22%2C%22Lecture%22%3A%221%22%7D%2C%22IS2101%22%3A%7B%22Sectional%20Teaching%22%3A%22G3%22%7D%2C%22ST2131%22%3A%7B%22Lecture%22%3A%221%22%2C%22Tutorial%22%3A%222%22%7D%2C%22GEH1030%22%3A%7B%22Tutorial%22%3A%221%22%2C%22Lecture%22%3A%221%22%7D%2C%22MA2213%22%3A%7B%22Tutorial%22%3A%222%22%2C%22Laboratory%22%3A%224%22%2C%22Lecture%22%3A%221%22%7D%7D%2C%22colors%22%3A%7B%22CS2103%22%3A1%2C%22CS2105%22%3A5%2C%22CS2106%22%3A7%2C%22IS2101%22%3A0%2C%22ST2131%22%3A4%2C%22GEH1030%22%3A6%2C%22MA2213%22%3A2%7D%2C%22hidden%22%3A%5B%5D%2C%22theme%22%3A%7B%22id%22%3A%22eighties%22%2C%22timetableOrientation%22%3A%22HORIZONTAL%22%2C%22showTitle%22%3Afalse%2C%22_persist%22%3A%7B%22version%22%3A-1%2C%22rehydrated%22%3Atrue%7D%7D%2C%22settings%22%3A%7B%22mode%22%3A%22LIGHT%22%7D%7D&pixelRatio=2');
 }
 
 Future<void> activatePushNotifications() async {

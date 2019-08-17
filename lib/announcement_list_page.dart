@@ -74,7 +74,7 @@ class _AnnouncementListPageState extends State<AnnouncementListPage> {
             setState(() {
               removedOne = announcements.removeAt(index);
             });
-            util.showPickerThreeNumber(context, widget.module, announcements[index], (){setState(() {
+            util.showPickerThreeNumber(context, widget.module, announcements[index], onCancel: (){setState(() {
               announcements.insert(index, removedOne);
             });});},
 
