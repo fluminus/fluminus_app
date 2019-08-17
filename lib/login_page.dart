@@ -10,7 +10,6 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:luminus_api/luminus_api.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:fluminus/data.dart' as data;
-import 'widgets/common.dart' as common;
 
 const double _signinButtonWidth = 200.0;
 const double _signinButtonHeight = 60.0;

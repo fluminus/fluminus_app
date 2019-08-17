@@ -8,7 +8,6 @@ import 'package:fluminus/new_task_page.dart';
 import 'package:fluminus/redux/store.dart';
 import 'package:groovin_widgets/groovin_widgets.dart';
 import 'package:fluminus/util.dart' as util;
-import 'theme.dart' as theme;
 
 import '../file_page.dart';
 // import 'dart:math';
@@ -48,18 +47,13 @@ Widget infoCardWithFullBody(
   ));
 }
 
-Widget infoCardWithFixedHeight(
-    String title, String subtitle, String body, BuildContext context) {
-  return infoCardWithFullBody(title, subtitle, _getExcerpt(body), context);
-}
-
-// TODO: Try not to cut words in this function.
-String _getExcerpt(String body, {int excerptLength = 100}) {
-  String withoutNewline = body.replaceAll('\n', ' ');
-  if (withoutNewline.length <= excerptLength) {
-    return withoutNewline;
+String _getExcerpt(String body, {int excerptLength = 220}) {
+  String strWithoutNewline = body.replaceAll('\n', ' ').trim();
+  if (strWithoutNewline.length <= excerptLength) {
+    return strWithoutNewline;
   } else {
-    return withoutNewline.substring(0, excerptLength - 1) + ' ...';
+    String excerptEnd = ' ... [READ MORE]';
+    return strWithoutNewline.substring(0, strWithoutNewline.substring(0, excerptLength - excerptEnd.length).lastIndexOf(' '))  + excerptEnd;
   }
 }
 
@@ -233,7 +227,7 @@ Widget announcementCard(Announcement announcemnt, BuildContext context) {
       // shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16.0)),
       // elevation: 3.0,
       child: Padding(
-          padding: const EdgeInsets.all(3.0),
+          padding: const EdgeInsets.only(bottom: 3.0),
           child: Column(mainAxisSize: MainAxisSize.min, children: <Widget>[
             ListTile(
               title: Text(title),
@@ -241,10 +235,8 @@ Widget announcementCard(Announcement announcemnt, BuildContext context) {
             ),
             ListTile(
               subtitle: Text(
-                body,
-                maxLines: 5,
+                _getExcerpt(body),
                 style: Theme.of(context).textTheme.body1,
-                overflow: TextOverflow.ellipsis,
               ),
             )
           ]))),
@@ -300,8 +292,6 @@ void _showDetail(BuildContext context, String title, String fullContent) {
         );
       });
 }
-
-// return card.infoCardWithFixedHeight(title, subtitle, body, context);
 
 Widget taskCard(Task task, BuildContext context) {
   final TextStyle lableStyle = Theme.of(context).textTheme.body2;
