@@ -229,7 +229,7 @@ class SignInButton extends StatelessWidget {
       decoration: BoxDecoration(
         color: Theme.of(context).primaryColor,
         borderRadius:
-            BorderRadius.all(const Radius.circular(_signinButtonHeight / 2.0)),
+            BorderRadius.all(const Radius.circular(_signinButtonHeight / 2.0)),                                       
       ),
       child: Text(
         content,
@@ -238,3 +238,4 @@ class SignInButton extends StatelessWidget {
     ));
   }
 }
+ 

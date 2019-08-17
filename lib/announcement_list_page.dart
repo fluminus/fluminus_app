@@ -18,7 +18,6 @@ class AnnouncementListPage extends StatefulWidget {
 class _AnnouncementListPageState extends State<AnnouncementListPage> {
   List<Announcement> _announcements;
   List<Announcement> _newAnnouncements;
-  Future<SharedPreferences> _sprefs = SharedPreferences.getInstance();
 
   @override
   void initState() {
@@ -71,16 +70,14 @@ class _AnnouncementListPageState extends State<AnnouncementListPage> {
             });
           },
           afterSwipingRight: (index, context) async {
-            Announcement announcement = announcements[index];
-            bool isCancelled = await util.showPickerThreeNumber(context, widget.module, announcement);
-            print(isCancelled);
+            Announcement removedOne;
             setState(() {
-              Announcement removedOne = announcements.removeAt(index);
-              if (isCancelled) {
-                announcements.insert(index, removedOne);
-              }
+              removedOne = announcements.removeAt(index);
             });
-          },
+            util.showPickerThreeNumber(context, widget.module, announcements[index], (){setState(() {
+              announcements.insert(index, removedOne);
+            });});},
+
           context: context,
           leftHint: Icon(Icons.schedule),
           rightHint: Icon(Icons.archive),
@@ -88,9 +85,11 @@ class _AnnouncementListPageState extends State<AnnouncementListPage> {
     }
 
     if (_announcements != null) {
+      print('not null');
       sortAnnouncements(_announcements);
       return announcementList(_announcements);
     } else {
+      print('is null');
       return FutureBuilder<List<dynamic>>(
         future: _read(),
         builder: (context, snapshot) {
@@ -113,9 +112,8 @@ class _AnnouncementListPageState extends State<AnnouncementListPage> {
   }
 
   Future<List<dynamic>> _read() async {
-    final prefs = await _sprefs;
     String result =
-        prefs.getString('encodedAnnouncementList' + widget.module.name);
+        data.sp.getString('encodedAnnouncementList' + widget.module.name);
     if (result != null) {
       List maps = json.decode(result);
       _announcements = new List();
@@ -129,13 +127,12 @@ class _AnnouncementListPageState extends State<AnnouncementListPage> {
   }
 
   _write() async {
-    final prefs = await _sprefs;
     List<Map> maps = new List();
     for (Announcement announcement in _announcements) {
       maps.add(announcement.toJson());
     }
     String encodedList = json.encode(maps);
-    prefs.setString(
+    data.sp.setString(
         'encodedAnnouncementList' + widget.module.name, encodedList);
   }
 }

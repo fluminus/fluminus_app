@@ -148,8 +148,12 @@ class _ProfilePageState extends State<ProfilePage> {
             style: TextStyle(fontSize: 30, fontFamily: 'Hanalei'),
           ),
           Text(
-            'You can upload your timetable here!\n',
+            'You can upload your timetable here!',
             style: Theme.of(context).textTheme.subhead,
+          ),
+          Text(
+            '(Swipe left to see more functions!)\n',
+            style: Theme.of(context).textTheme.subtitle,
           ),
           Padding(
             padding: EdgeInsets.only(bottom: MediaQuery.of(context).size.height/6),
@@ -205,7 +209,7 @@ class _ProfilePageState extends State<ProfilePage> {
           Padding(
             padding: const EdgeInsets.only(top: 20.0),
           ),
-          switchWidget('Spooky Mode',
+          switchWidget('Dark Mode',
               _isDarkMode = Theme.of(context).brightness == Brightness.dark,
               (val) async {
             setState(() {

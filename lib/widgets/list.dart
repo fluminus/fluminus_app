@@ -154,7 +154,7 @@ Widget refreshableAndDismissibleListView(
               Container(
                 height: MediaQuery.of(context).size.height * 3 / 4,
                 alignment: Alignment(0.0, 0.0),
-                child: Text('Empty'),
+                child: Text('No new announcement.'),
               )
             )));
   } else {
