@@ -13,10 +13,7 @@ class AnnouncementPage extends StatefulWidget {
   _AnnouncementPageState createState() => new _AnnouncementPageState();
 }
 
-class _AnnouncementPageState extends State<AnnouncementPage>
-    with
-        SingleTickerProviderStateMixin,
-        AutomaticKeepAliveClientMixin<AnnouncementPage> {
+class _AnnouncementPageState extends State<AnnouncementPage> {
   final String appBarTitle = "Announcements";
   final List<String> tabBarNames = new List()
     ..addAll(data.modules.map((m) => m.name))
@@ -37,7 +34,6 @@ class _AnnouncementPageState extends State<AnnouncementPage>
 
   @override
   Widget build(BuildContext context) {
-    super.build(context);
     if (data.modules == null) {
       return Scaffold(
         appBar: AppBar(
@@ -95,8 +91,8 @@ class _AnnouncementPageState extends State<AnnouncementPage>
                         });
                       }, (index, context) {
                         Announcement announcement = value[index];
-                        util.showPickerThreeNumber(context, data.smsStartDate,
-                            data.modules.firstWhere((m) => m.id == announcement.parentID), announcement, index, value);
+                        util.showPickerThreeNumber(context,
+                            data.modules.firstWhere((m) => m.id == announcement.parentID), announcement);
                       }, context, 
                       Icon(Icons.schedule),
                       Icon(Icons.delete),
@@ -116,7 +112,4 @@ class _AnnouncementPageState extends State<AnnouncementPage>
     String encodedList = json.encode(maps);
     data.sp.setString('archivedAnnouncements', encodedList);
   }
-
-  @override
-  bool get wantKeepAlive => true;
 }

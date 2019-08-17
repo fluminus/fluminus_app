@@ -6,6 +6,7 @@ import 'package:collection/collection.dart';
 import 'package:html/parser.dart';
 import 'package:flutter_picker/flutter_picker.dart';
 import 'package:fluminus/widgets/dialog.dart' as dialog;
+import 'data.dart' as data;
 
 
 Function twoListsAreDeepEqual = const DeepCollectionEquality().equals;
@@ -41,7 +42,6 @@ String formatDateAsDayOfWeek(DateTime date) {
 }
 
 Future<List> refreshWithSnackBars(Function getData, BuildContext context) async {
-    //final GlobalKey<ScaffoldState> scaffoldKey = new GlobalKey<ScaffoldState>();
     List refreshedList;
     try {
       refreshedList = await getData();
@@ -77,8 +77,7 @@ GestureTapCallback onTapNextPage(Widget nextPage, BuildContext context) {
       };
 }
 
-showPickerThreeNumber(BuildContext context, DateTime smsStartDate, Module module,
-    Announcement announcement, int index, List<Announcement> targetList) async {
+Future<bool> showPickerThreeNumber(BuildContext context, Module module, Announcement announcement) async {
   new Picker(
       adapter: NumberPickerAdapter(data: [
         NumberPickerColumn(begin: 0, end: 4),
@@ -113,14 +112,15 @@ showPickerThreeNumber(BuildContext context, DateTime smsStartDate, Module module
             detail: parsedHtmlText(announcement.description),
             date: formatDate(date),
             dayOfWeek: formatDateAsDayOfWeek(date),
-            weekNum: weekNum(smsStartDate, date),
+            weekNum: weekNum(data.smsStartDate, date),
             tag:module.name,
             colorIndex: 0);
-            targetList.removeAt(index);
+            return false;
       },
       onCancel: (){
-        targetList.insert(index, announcement);
+        return true;
       }).showDialog(context);
+      
 }
 
 DateTime getPickedDate(List diffOfMWD) {

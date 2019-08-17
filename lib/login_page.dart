@@ -80,158 +80,139 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
     return (WillPopScope(
         onWillPop: _onWillPop,
         child: Scaffold(
-          body: Container(
-            width: MediaQuery.of(context).size.width,
-             decoration: BoxDecoration(
-                  image: new DecorationImage(
-            image: new ExactAssetImage('assets/login_background.jpeg'),
-            fit: BoxFit.fill,
-          )),
-              child: Container(
-                  child: ListView(
-                padding: const EdgeInsets.all(0.0),
+          body: SingleChildScrollView(
+            padding: EdgeInsets.all(0.0),
+              physics: const NeverScrollableScrollPhysics(),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
-                  Stack(
-                    alignment: AlignmentDirectional.bottomCenter,
-                    children: <Widget>[
-                      Column(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: <Widget>[
-                          Padding(
-                            padding:
-                                const EdgeInsets.only(top: 60.0, bottom: 20.0),
+                  Padding(
+                    padding: const EdgeInsets.only(top: 60.0, bottom: 20.0),
+                    child: Column(
+                      children: <Widget>[
+                        Container(
+                          width: 160.0,
+                          height: 160.0,
+                          alignment: Alignment.center,
+                          decoration: BoxDecoration(
+                            image: logo,
+                          ),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.only(top: 20.0),
+                          child: Text(
+                            'Welcome to Fluminus!',
+                            style: Theme.of(context).textTheme.caption,
+                          ),
+                        )
+                      ],
+                    ),
+                  ),
+                  Container(
+                    margin: EdgeInsets.symmetric(horizontal: 20.0),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: <Widget>[
+                        Form(
+                            key: _formKey,
                             child: Column(
+                              mainAxisAlignment: MainAxisAlignment.spaceAround,
                               children: <Widget>[
-                                Container(
-                                  width: 160.0,
-                                  height: 160.0,
-                                  alignment: Alignment.center,
-                                  decoration: BoxDecoration(
-                                    image: logo,
+                                TextFormField(
+                                  obscureText: false,
+                                  autofocus: true,
+                                  decoration: InputDecoration(
+                                    labelText: 'NUSNET ID',
+                                    hintText: 'e.g. nusstu\\e0261888',
+                                    icon: Icon(Icons.person_outline),
                                   ),
+                                  onSaved: (value) {
+                                    setState(() {
+                                      _id = value;
+                                    });
+                                  },
                                 ),
                                 Padding(
                                   padding: const EdgeInsets.only(top: 20.0),
-                                  child: Text(
-                                    'Welcome to Fluminus!',
-                                    style: Theme.of(context).textTheme.caption,
+                                ),
+                                TextFormField(
+                                  obscureText: true,
+                                  decoration: InputDecoration(
+                                    labelText: 'PASSWORD',
+                                    hintText: 'Password',
+                                    icon: Icon(Icons.lock_outline),
                                   ),
-                                )
+                                  onSaved: (value) {
+                                    setState(() {
+                                      _password = value;
+                                    });
+                                  },
+                                ),
                               ],
-                            ),
-                          ),
-                          Container(
-                            margin: EdgeInsets.symmetric(horizontal: 20.0),
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                              children: <Widget>[
-                                Form(
-                                    key: _formKey,
-                                    child: Column(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceAround,
-                                      children: <Widget>[
-                                        TextFormField(
-                                          obscureText: false,
-                                          autofocus: true,
-                                          decoration: InputDecoration(
-                                            labelText: 'NUSNET ID',
-                                            hintText: 'e.g. e0261888',
-                                            icon: Icon(Icons.person_outline),
-                                          ),
-                                          onSaved: (value) {
-                                            setState(() {
-                                              _id = value;
-                                            });
-                                          },
-                                        ),
-                                        Padding(
-                                          padding:
-                                              const EdgeInsets.only(top: 20.0),
-                                        ),
-                                        TextFormField(
-                                          obscureText: true,
-                                          decoration: InputDecoration(
-                                            labelText: 'PASSWORD',
-                                            hintText: 'Password',
-                                            icon: Icon(Icons.lock_outline),
-                                          ),
-                                          onSaved: (value) {
-                                            setState(() {
-                                              _password = value;
-                                            });
-                                          },
-                                        ),
-                                      ],
-                                    )),
-                              ],
-                            ),
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.only(top: 160.0),
-                          )
-                        ],
+                            )),
+                            Padding(
+                        padding: const EdgeInsets.only(top: 20.0),
                       ),
-                      Padding(
-                        padding: const EdgeInsets.only(bottom: 50.0),
-                        child: InkWell(
-                            onTap: () async {
-                              final storage = FlutterSecureStorage();
-                              this._formKey.currentState.save();
-                              await storage.write(key: 'nusnet_id', value: _id);
-                              await storage.write(
-                                  key: 'nusnet_password', value: _password);
-                              updateCredentials();
-                              SharedPreferences prefs =
-                                  await SharedPreferences.getInstance();
-                              prefs.setBool('hasCred', true);
-                              try {
-                                setState(() {
-                                  this._buttonText = "Signing in...";
-                                });
-                                await loadData();
-                                // print('module = ${data.modules}');
-                                setState(() {
-                                  this._buttonText = "Signed in!";
-                                });
-                                Navigator.pushReplacementNamed(
-                                    context, HomePage.tag);
-                              } catch (e) {
-                                setState(() {
-                                  this._buttonText = "Sign in";
-                                });
-                                // TODO: This part is pretty messy
-                                if (e is WrongCredentialsException) {
-                                  displayDialog(
-                                      'Wrong credentials',
-                                      'Please provide correct NUSNET ID and password and try again.',
-                                      context);
-                                } else if (e is RestartAuthException) {
-                                  await prefs.setBool('hasCred', false);
-                                  await data.deleteCredentials();
-                                  displayDialog(
-                                      'Log in error',
-                                      'If you just logged out, you may need to restart the app and log in again.',
-                                      context);
-                                } else {
-                                  displayDialog('Error', e.toString(), context);
+                        Padding(
+                          padding: const EdgeInsets.only(bottom: 50.0),
+                          child: InkWell(
+                              onTap: () async {
+                                final storage = FlutterSecureStorage();
+                                this._formKey.currentState.save();
+                                await storage.write(
+                                    key: 'nusnet_id', value: _id);
+                                await storage.write(
+                                    key: 'nusnet_password', value: _password);
+                                updateCredentials();
+                                SharedPreferences prefs =
+                                    await SharedPreferences.getInstance();
+                                prefs.setBool('hasCred', true);
+                                try {
+                                  setState(() {
+                                    this._buttonText = "Signing in...";
+                                  });
+                                  await loadData();
+                                  // print('module = ${data.modules}');
+                                  setState(() {
+                                    this._buttonText = "Signed in!";
+                                  });
+                                  Navigator.pushReplacementNamed(
+                                      context, HomePage.tag);
+                                } catch (e) {
+                                  setState(() {
+                                    this._buttonText = "Sign in";
+                                  });
+                                  // TODO: This part is pretty messy
+                                  if (e is WrongCredentialsException) {
+                                    displayDialog(
+                                        'Wrong credentials',
+                                        'Please provide correct NUSNET ID and password and try again.',
+                                        context);
+                                  } else if (e is RestartAuthException) {
+                                    await prefs.setBool('hasCred', false);
+                                    await data.deleteCredentials();
+                                    displayDialog(
+                                        'Log in error',
+                                        'If you just logged out, you may need to restart the app and log in again.',
+                                        context);
+                                  } else {
+                                    displayDialog(
+                                        'Error', e.toString(), context);
+                                  }
                                 }
-                              }
-                            },
-                            child: SignInButton(this._buttonText)),
-                      ),
-
-                      Padding(
-                        padding: EdgeInsets.only(bottom: 20),
-                        child: Container(
-                          width:MediaQuery.of(context).size.width,
-                          child: Image.asset('decoration.png'),
+                              },
+                              child: SignInButton(this._buttonText)),
                         ),
-                      )
-                    ],
+                      ],
+                    ),
                   ),
+                  Container(
+                          alignment: Alignment.bottomCenter,
+                          width: MediaQuery.of(context).size.width,
+                          child: Image.asset('assets/decoration.png'),
+                        ),
                 ],
-              ))),
+              )),
         )));
   }
 }

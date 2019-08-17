@@ -254,13 +254,13 @@ void _showDetail(BuildContext context, String title, String fullContent) {
         //   height: height,
         return AlertDialog(
           shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(16.0)),
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.0)),
           elevation: 3.0,
           titlePadding: EdgeInsets.all(0),
           title: Container(
             decoration: BoxDecoration(
-              color: Theme.of(context).accentColor,
-              borderRadius: BorderRadius.only(topLeft: Radius.circular(16.0), topRight: Radius.circular(16.0)),
+              color: Theme.of(context).primaryColor,
+              borderRadius: BorderRadius.only(topLeft: Radius.circular(8.0), topRight: Radius.circular(8.0)),
             ),
             child: Padding(
               padding: EdgeInsets.all(10.0),
@@ -280,7 +280,7 @@ void _showDetail(BuildContext context, String title, String fullContent) {
               children: <Widget>[ 
                 FlatButton(
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6.0)),
-              color: Theme.of(context).accentColor,
+              color: Theme.of(context).primaryColor,
               child: Text("Close", style: Theme.of(context).textTheme.subhead,),
               onPressed: () {
                 Navigator.of(context).pop();

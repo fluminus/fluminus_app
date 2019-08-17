@@ -15,13 +15,11 @@ class AnnouncementListPage extends StatefulWidget {
   _AnnouncementListPageState createState() => new _AnnouncementListPageState();
 }
 
-class _AnnouncementListPageState extends State<AnnouncementListPage>
-    with AutomaticKeepAliveClientMixin<AnnouncementListPage> {
+class _AnnouncementListPageState extends State<AnnouncementListPage> {
   List<Announcement> _announcements;
   List<Announcement> _newAnnouncements;
   Future<SharedPreferences> _sprefs = SharedPreferences.getInstance();
-  DateTime lastRefreshedDate = data.smsStartDate;
-  
+
   @override
   void initState() {
     super.initState();
@@ -33,29 +31,30 @@ class _AnnouncementListPageState extends State<AnnouncementListPage>
     super.dispose();
   }
 
-
   @override
   Widget build(BuildContext context) {
     Widget announcementList(List<dynamic> announcements) {
       return list.refreshableAndDismissibleListView(
-          () async {
+          onRefresh: () async {
             _newAnnouncements = await util.refreshWithSnackBars(
                 () =>
                     API.getAnnouncements(data.authentication(), widget.module),
                 context);
             sortAnnouncements(_newAnnouncements);
+            String lastRefreshedDateStr = data.sp.getString(widget.module.name + 'lastRefreshedDateStr');
+            DateTime lastRefreshedDate;
+            lastRefreshedDateStr == null ? lastRefreshedDate = DateTime.now() : lastRefreshedDate = DateTime.parse(lastRefreshedDateStr);
             _newAnnouncements = _newAnnouncements.takeWhile((x) {
-              return (DateTime.parse(x.createdDate).isAfter(lastRefreshedDate));
+              return (DateTime.parse(x.createdDate).isAfter(lastRefreshedDate ?? DateTime.now()));
             }).toList();
             setState(() {
-              lastRefreshedDate = DateTime.now();
-              _announcements.addAll(_newAnnouncements);
-              
+              data.sp.setString(widget.module.name + 'lastRefreshedDateStr', DateTime.now().toString());
+              announcements.addAll(_newAnnouncements);
             });
           },
-          announcements,
-          () => list.CardType.announcementCardType,
-          (index) {
+          itemList: announcements,
+          getCardType: () => list.CardType.announcementCardType,
+          afterSwipingLeft: (index) {
             setState(() {
               Announcement removedOne = announcements.removeAt(index);
               data.archivedAnnouncements.add(removedOne);
@@ -71,18 +70,22 @@ class _AnnouncementListPageState extends State<AnnouncementListPage>
                       })));
             });
           },
-          (index, context) async {
+          afterSwipingRight: (index, context) async {
             Announcement announcement = announcements[index];
-            util.showPickerThreeNumber(
-                context, data.smsStartDate, widget.module, announcement, index, _announcements);
+            bool isCancelled = await util.showPickerThreeNumber(context, widget.module, announcement);
+            print(isCancelled);
+            setState(() {
+              Announcement removedOne = announcements.removeAt(index);
+              if (isCancelled) {
+                announcements.insert(index, removedOne);
+              }
+            });
           },
-          context,
-          Icon(Icons.schedule),
-          Icon(Icons.archive),
-          {'module': widget.module});
+          context: context,
+          leftHint: Icon(Icons.schedule),
+          rightHint: Icon(Icons.archive),
+          params: {'module': widget.module});
     }
-
-    super.build(context);
 
     if (_announcements != null) {
       sortAnnouncements(_announcements);
@@ -103,9 +106,6 @@ class _AnnouncementListPageState extends State<AnnouncementListPage>
       );
     }
   }
-
-  @override
-  bool get wantKeepAlive => true;
 
   sortAnnouncements(List<Announcement> announcements) {
     announcements.sort((a, b) =>

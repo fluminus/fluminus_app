@@ -92,7 +92,7 @@ flutter:
    - assets/logo.png
    - assets/tick.png
    - assets/nus_lion.png
-   - assets/login_background.jpeg
+   - assets/decoration.png
    - .env
 
   # An image asset can refer to one or more resolution-specific "variants", see
