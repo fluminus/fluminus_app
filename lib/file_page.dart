@@ -149,6 +149,8 @@ class _ModuleRootDirectoryPageState extends State<ModuleRootDirectoryPage> {
         (context, snapshot) {
           if (snapshot.hasData) {
             _directories = snapshot.data;
+
+            // print(_directories.length);
             return list.refreshableListView(
               () async {
                 _refreshedDirectories = await util.refreshWithSnackBars(
@@ -165,7 +167,7 @@ class _ModuleRootDirectoryPageState extends State<ModuleRootDirectoryPage> {
               //enablePullUp: false
             );
           } else if (snapshot.hasError) {
-            return Text(snapshot.error);
+            return Text(snapshot.error.toString());
           }
           return common.progressIndicator;
         },

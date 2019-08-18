@@ -85,11 +85,11 @@ class _AnnouncementListPageState extends State<AnnouncementListPage> {
     }
 
     if (_announcements != null) {
-      print('not null');
+      // print('not null');
       sortAnnouncements(_announcements);
       return announcementList(_announcements);
     } else {
-      print('is null');
+      // print('is null');
       return FutureBuilder<List<dynamic>>(
         future: _read(),
         builder: (context, snapshot) {

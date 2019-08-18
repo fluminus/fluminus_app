@@ -149,7 +149,7 @@ class _ProfilePageState extends State<ProfilePage> {
             style: Theme.of(context).textTheme.subhead,
           ),
           Text(
-            '(Swipe left to see more functions!)\n',
+            '(Swipe from the left edge to see more functions!)\n',
             style: Theme.of(context).textTheme.subtitle,
           ),
           Padding(
@@ -177,32 +177,11 @@ class _ProfilePageState extends State<ProfilePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      //appBar: AppBar(title: const Text("Profile")),
       drawer: Drawer(
           child: ListView(
         padding: EdgeInsets.zero,
         children: <Widget>[
           userInfoHeader(),
-          // crossAxisAlignment: CrossAxisAlignment.stretch,
-          // children: <Widget>[
-          //   data.profile == null
-          //       ? FutureBuilder(
-          //           future: API.getProfile(data.authentication()),
-          //           builder: (context, AsyncSnapshot<Profile> snapshot) {
-          //             if (snapshot.connectionState == ConnectionState.done) {
-          //               Profile prof = snapshot.data;
-          //               if (prof != null) {
-          //                 data.profile = prof;
-          //                 return profileWidget(prof);
-          //               } else {
-          //                 return profileWidget(data.profilePlaceholder);
-          //               }
-          //             } else {
-          //               return profileWidget(data.profilePlaceholder);
-          //             }
-          //           },
-          //         )
-          //       : profileWidget(data.profile),
           Padding(
             padding: const EdgeInsets.only(top: 20.0),
           ),
@@ -217,34 +196,34 @@ class _ProfilePageState extends State<ProfilePage> {
               prefs.setBool('isDark', _isDarkMode);
             });
           }),
-          FutureBuilder(
-            future: SharedPreferences.getInstance(),
-            builder: (context, AsyncSnapshot<SharedPreferences> snapshot) {
-              if (snapshot.connectionState == ConnectionState.done) {
-                SharedPreferences prefs = snapshot.data;
-                if (!prefs.containsKey('enablePushNotifications'))
-                  prefs.setBool('enablePushNotifications', false);
-                bool toggle = prefs.getBool('enablePushNotifications');
-                _enablePushNotifications = toggle;
-                return switchWidget(
-                    'Push notifications', _enablePushNotifications,
-                    (val) async {
-                  setState(() {
-                    _enablePushNotifications = val;
-                    prefs.setBool('enablePushNotifications', val);
-                  });
-                  if (val) {
-                    await activatePushNotifications();
-                  } else {
-                    await deactivatePushNotifications();
-                  }
-                });
-              } else {
-                return switchWidget(
-                    'Push notifications', _enablePushNotifications, (_) {});
-              }
-            },
-          ),
+          // FutureBuilder(
+          //   future: SharedPreferences.getInstance(),
+          //   builder: (context, AsyncSnapshot<SharedPreferences> snapshot) {
+          //     if (snapshot.connectionState == ConnectionState.done) {
+          //       SharedPreferences prefs = snapshot.data;
+          //       if (!prefs.containsKey('enablePushNotifications'))
+          //         prefs.setBool('enablePushNotifications', false);
+          //       bool toggle = prefs.getBool('enablePushNotifications');
+          //       _enablePushNotifications = toggle;
+          //       return switchWidget(
+          //           'Push notifications', _enablePushNotifications,
+          //           (val) async {
+          //         setState(() {
+          //           _enablePushNotifications = val;
+          //           prefs.setBool('enablePushNotifications', val);
+          //         });
+          //         if (val) {
+          //           await activatePushNotifications();
+          //         } else {
+          //           await deactivatePushNotifications();
+          //         }
+          //       });
+          //     } else {
+          //       return switchWidget(
+          //           'Push notifications', _enablePushNotifications, (_) {});
+          //     }
+          //   },
+          // ),
           Padding(
               padding: EdgeInsets.only(left: 10, right: 10),
               child: Divider(

@@ -81,8 +81,7 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
         onWillPop: _onWillPop,
         child: Scaffold(
           body: SingleChildScrollView(
-            padding: EdgeInsets.all(0.0),
-              physics: const NeverScrollableScrollPhysics(),
+              padding: EdgeInsets.all(0.0),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
@@ -150,9 +149,9 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
                                 ),
                               ],
                             )),
-                            Padding(
-                        padding: const EdgeInsets.only(top: 20.0),
-                      ),
+                        Padding(
+                          padding: const EdgeInsets.only(top: 20.0),
+                        ),
                         Padding(
                           padding: const EdgeInsets.only(bottom: 50.0),
                           child: InkWell(
@@ -207,10 +206,10 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
                     ),
                   ),
                   Container(
-                          alignment: Alignment.bottomCenter,
-                          width: MediaQuery.of(context).size.width,
-                          child: Image.asset('assets/decoration.png'),
-                        ),
+                    alignment: Alignment.bottomCenter,
+                    width: MediaQuery.of(context).size.width,
+                    child: Image.asset('assets/decoration.png'),
+                  ),
                 ],
               )),
         )));
@@ -229,7 +228,7 @@ class SignInButton extends StatelessWidget {
       decoration: BoxDecoration(
         color: Theme.of(context).primaryColor,
         borderRadius:
-            BorderRadius.all(const Radius.circular(_signinButtonHeight / 2.0)),                                       
+            BorderRadius.all(const Radius.circular(_signinButtonHeight / 2.0)),
       ),
       child: Text(
         content,
@@ -238,4 +237,3 @@ class SignInButton extends StatelessWidget {
     ));
   }
 }
- 

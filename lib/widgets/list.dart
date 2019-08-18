@@ -45,26 +45,36 @@ Widget _certainCard(var item, CardType type, BuildContext context, Map params) {
 
 Widget itemListView(
     List itemList, Function getCardType, BuildContext context, Map params) {
-  // //return new ListView.separated(
-  //   separatorBuilder: (context, index) => Divider(
-  //       color: Colors.blueGrey,
-  //       height: 0.0,
-  //     ),
-  return ListView.builder(
-    shrinkWrap: true,
-    itemCount: itemList.length,
-    itemBuilder: (context, index) {
-      return new Column(
-        mainAxisSize: MainAxisSize.min,
-        children: <Widget>[
-          Padding(
-              padding: const EdgeInsets.all(0.0),
-              child: _certainCard(itemList[index], getCardType(itemList[index]),
-                  context, params))
-        ],
-      );
-    },
-  );
+  if (itemList.length == 0) {
+    return ListView(
+      children: <Widget>[
+        Container(
+          height: MediaQuery.of(context).size.height * 3 / 4,
+          alignment: Alignment(0.0, 0.0),
+          child: Text(
+            'No new items here.\n(You may pull down to refresh tho...)',
+            textAlign: TextAlign.center,
+          ),
+        )
+      ],
+    );
+  } else {
+    return ListView.builder(
+      shrinkWrap: true,
+      itemCount: itemList.length,
+      itemBuilder: (context, index) {
+        return new Column(
+          mainAxisSize: MainAxisSize.min,
+          children: <Widget>[
+            Padding(
+                padding: const EdgeInsets.all(0.0),
+                child: _certainCard(itemList[index],
+                    getCardType(itemList[index]), context, params))
+          ],
+        );
+      },
+    );
+  }
 }
 
 Widget refreshableListView(
@@ -91,9 +101,9 @@ Widget dismissibleListView(
     Map params) {
   return new ListView.separated(
     separatorBuilder: (context, index) => Divider(
-          color: Colors.blueGrey,
-          height: 0.0,
-        ),
+      color: Colors.blueGrey,
+      height: 0.0,
+    ),
     padding: EdgeInsets.all(0.0),
     shrinkWrap: true,
     itemCount: itemList.length,
@@ -149,14 +159,14 @@ Widget refreshableAndDismissibleListView(
         child: RefreshIndicator(
             onRefresh: onRefresh,
             child: SingleChildScrollView(
-              physics: const NeverScrollableScrollPhysics(),
-              child:
-              Container(
-                height: MediaQuery.of(context).size.height * 3 / 4,
-                alignment: Alignment(0.0, 0.0),
-                child: Text('No new announcement.'),
-              )
-            )));
+                physics: const NeverScrollableScrollPhysics(),
+                child: Container(
+                  height: MediaQuery.of(context).size.height * 3 / 4,
+                  alignment: Alignment(0.0, 0.0),
+                  child: Text(itemList is List<Announcement>
+                      ? 'No new announcements.'
+                      : 'No new items.'),
+                ))));
   } else {
     return Container(
         child: RefreshIndicator(

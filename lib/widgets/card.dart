@@ -227,7 +227,7 @@ Widget announcementCard(Announcement announcemnt, BuildContext context) {
       // shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16.0)),
       // elevation: 3.0,
       child: Padding(
-          padding: const EdgeInsets.only(bottom: 3.0),
+          padding: const EdgeInsets.only(bottom: 10.0),
           child: Column(mainAxisSize: MainAxisSize.min, children: <Widget>[
             ListTile(
               title: Text(title),
