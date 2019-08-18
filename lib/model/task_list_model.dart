@@ -18,15 +18,15 @@ class Task {
   final int colorIndex;
 
   Task(
-      {@required this.id,
-      @required this.title,
+      {this.id,
+      this.title,
       this.detail,
-      @required this.date,
-      @required this.dayOfWeek,
-      @required this.weekNum,
+      this.date,
+      this.dayOfWeek,
+      this.weekNum,
       this.startTime,
       this.endTime,
-      @required this.isAllDay,
+      this.isAllDay,
       this.location,
       this.tag,
       this.colorIndex, String appBar});

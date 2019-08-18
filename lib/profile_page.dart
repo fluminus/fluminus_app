@@ -1,13 +1,9 @@
 import 'dart:async';
 import 'dart:io';
 
-// import 'package:dio/dio.dart';
-import 'package:dio/dio.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:fluminus/login_page.dart';
-// import 'package:fluminus/widgets/theme.dart';
 import 'package:flutter/material.dart';
-// import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:luminus_api/luminus_api.dart' as luminus;
 import 'package:fluminus/widgets/common.dart';
@@ -24,7 +20,6 @@ class ProfilePage extends StatefulWidget {
 
 class _ProfilePageState extends State<ProfilePage> {
   bool _isDarkMode;
-  bool _enablePushNotifications = false;
   Widget _background;
   
   
@@ -275,18 +270,18 @@ Future<void> activatePushNotifications() async {
     print("onMessage: $msg");
   });
   if (Platform.isIOS) {
-    StreamSubscription iosSubscription;
-    iosSubscription = _firebaseMsg.onIosSettingsRegistered.listen((data) async {
-      // save the token OR subscribe to a topic here
-      // Dio dio = Dio();
-      // final storage = FlutterSecureStorage();
-      // var id = await storage.read(key: 'nusnet_id');
-      // await dio.get('http://127.0.0.1:3003/api/notification/activate',
-      //     queryParameters: {
-      //       'id': id,
-      //       'fcm_token': await _firebaseMsg.getToken()
-      //     });
-    });
+    // StreamSubscription iosSubscription;
+    // iosSubscription = _firebaseMsg.onIosSettingsRegistered.listen((data) async {
+    //   save the token OR subscribe to a topic here
+    //   Dio dio = Dio();
+    //   final storage = FlutterSecureStorage();
+    //   var id = await storage.read(key: 'nusnet_id');
+    //   await dio.get('http://127.0.0.1:3003/api/notification/activate',
+    //       queryParameters: {
+    //         'id': id,
+    //         'fcm_token': await _firebaseMsg.getToken()
+    //       });
+    // });
     _firebaseMsg.requestNotificationPermissions(IosNotificationSettings());
   }
 }

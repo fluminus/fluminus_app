@@ -1,5 +1,4 @@
 import 'package:fluminus/file_page.dart';
-import 'package:fluminus/widgets/placeholder.dart';
 import 'package:flutter/material.dart';
 import 'package:luminus_api/luminus_api.dart';
 import 'card.dart';

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:luminus_api/luminus_api.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
 import 'package:fluminus/widgets/common.dart' as common;
 import 'package:fluminus/widgets/list.dart' as list;
@@ -73,6 +72,7 @@ class _AnnouncementListPageState extends State<AnnouncementListPage> {
             Announcement removedOne;
             setState(() {
               removedOne = announcements.removeAt(index);
+              announcements.insert(index, removedOne);
             });
             util.showPickerThreeNumber(context, widget.module, announcements[index], onCancel: (){setState(() {
               announcements.insert(index, removedOne);
