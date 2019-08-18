@@ -239,6 +239,7 @@ class _ProfilePageState extends State<ProfilePage> {
             title: Text('Clear Database'),
             onTap: () async {
               await db.clearAllTables();
+              data.sp.clear();
             },
           ),
           ListTile(
