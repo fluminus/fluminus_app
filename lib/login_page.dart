@@ -120,6 +120,7 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
                                 TextFormField(
                                   obscureText: false,
                                   autofocus: true,
+                                  autocorrect: false,
                                   decoration: InputDecoration(
                                     labelText: 'NUSNET ID',
                                     hintText: 'e.g. nusstu\\e0261888',
