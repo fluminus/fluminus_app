@@ -35,7 +35,8 @@ class _TaskPageState extends State<TaskPage> {
           onPressed: () {
             Navigator.push(
               context,
-              MaterialPageRoute(builder: (context) => TaskDetail(new Task(), 'New Task')),
+              MaterialPageRoute(
+                  builder: (context) => TaskDetail(new Task(), 'New Task')),
             );
           },
         ));

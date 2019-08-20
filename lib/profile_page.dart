@@ -1,13 +1,9 @@
 import 'dart:async';
 import 'dart:io';
 
-// import 'package:dio/dio.dart';
-import 'package:dio/dio.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:fluminus/login_page.dart';
-// import 'package:fluminus/widgets/theme.dart';
 import 'package:flutter/material.dart';
-// import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:luminus_api/luminus_api.dart' as luminus;
 import 'package:fluminus/widgets/common.dart';
@@ -24,25 +20,22 @@ class ProfilePage extends StatefulWidget {
 
 class _ProfilePageState extends State<ProfilePage> {
   bool _isDarkMode;
-  bool _enablePushNotifications = false;
   Widget _background;
-  
-  
-
 
   @override
   void initState() {
     super.initState();
     String backgroundPath = data.sp.getString('backgroundPath');
-    if(backgroundPath != null) {
-      _background = Image.file(File(backgroundPath), fit: BoxFit.cover,
-    height: double.infinity,
-    width: double.infinity,
-    alignment: Alignment.center,);
+    if (backgroundPath != null) {
+      _background = Image.file(
+        File(backgroundPath),
+        fit: BoxFit.cover,
+        height: double.infinity,
+        width: double.infinity,
+        alignment: Alignment.center,
+      );
     }
   }
-
-  
 
   Future getImage() async {
     var image = await ImagePicker.pickImage(source: ImageSource.gallery);
@@ -50,15 +43,12 @@ class _ProfilePageState extends State<ProfilePage> {
     final String appDirPath = appDir.path;
     var fileName = provider.basename(image.path);
     var localImage = await image.copy('$appDirPath/$fileName');
-    print(localImage.path);
     data.sp.setString('backgroundPath', localImage.path);
-
     setState(() {
-      print('call');
-      _background = Image.file(File(localImage.path), fit: BoxFit.fill);
+      _background =
+          FittedBox(child: Image.file(File(localImage.path)), fit: BoxFit.fill);
     });
   }
-
 
   Widget displayName(String name) {
     return Text(
@@ -136,76 +126,56 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 
   Widget defaultBackground(BuildContext context) {
- 
-      return Center(
-          child: Column(
-        children: <Widget>[
-          Expanded(
-            child: Image.asset('assets/nus_lion.png', fit: BoxFit.contain),
-          ),
-          Text(
-            'Happy new semester !' + '\n',
-            style: TextStyle(fontSize: 30, fontFamily: 'Hanalei'),
-          ),
-          Text(
-            'You can upload your timetable here!\n',
-            style: Theme.of(context).textTheme.subhead,
-          ),
-          Padding(
-            padding: EdgeInsets.only(bottom: MediaQuery.of(context).size.height/6),
-          child:
-          OutlineButton(
-            borderSide: BorderSide(
-              color: Theme.of(context).primaryColor, //Color of the border
-              style: BorderStyle.solid, //Style of the border
-              width: 1.5, //width of the border
-            ),
-            highlightColor: Theme.of(context).primaryColor,
-            child: Text('Upload Image'),
-            shape: StadiumBorder(),
-            onPressed: () async{
-              await getImage();
-            },
-          )
+    return Center(
+        child: Column(
+      children: <Widget>[
+        Expanded(
+          child: Image.asset('assets/nus_lion.png', fit: BoxFit.contain),
         ),
-        ],
-      ));
-    
+        Text(
+          'Happy new semester !' + '\n',
+          style: TextStyle(fontSize: 30, fontFamily: 'Hanalei'),
+        ),
+        Text(
+          'You can upload your timetable here!',
+          style: Theme.of(context).textTheme.subhead,
+        ),
+        Text(
+          '(Swipe from the left edge to see more functions!)\n',
+          style: Theme.of(context).textTheme.subtitle,
+        ),
+        Padding(
+            padding:
+                EdgeInsets.only(bottom: MediaQuery.of(context).size.height / 6),
+            child: OutlineButton(
+              borderSide: BorderSide(
+                color: Theme.of(context).primaryColor, // Color of the border
+                style: BorderStyle.solid, // Style of the border
+                width: 1.5, // width of the border
+              ),
+              highlightColor: Theme.of(context).primaryColor,
+              child: Text('Upload Image'),
+              shape: StadiumBorder(),
+              onPressed: () async {
+                await getImage();
+              },
+            )),
+      ],
+    ));
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      //appBar: AppBar(title: const Text("Profile")),
       drawer: Drawer(
           child: ListView(
         padding: EdgeInsets.zero,
         children: <Widget>[
           userInfoHeader(),
-          // crossAxisAlignment: CrossAxisAlignment.stretch,
-          // children: <Widget>[
-          //   data.profile == null
-          //       ? FutureBuilder(
-          //           future: API.getProfile(data.authentication()),
-          //           builder: (context, AsyncSnapshot<Profile> snapshot) {
-          //             if (snapshot.connectionState == ConnectionState.done) {
-          //               Profile prof = snapshot.data;
-          //               if (prof != null) {
-          //                 data.profile = prof;
-          //                 return profileWidget(prof);
-          //               } else {
-          //                 return profileWidget(data.profilePlaceholder);
-          //               }
-          //             } else {
-          //               return profileWidget(data.profilePlaceholder);
-          //             }
-          //           },
-          //         )
-          //       : profileWidget(data.profile),
           Padding(
             padding: const EdgeInsets.only(top: 20.0),
           ),
-          switchWidget('Spooky Mode',
+          switchWidget('Dark Mode',
               _isDarkMode = Theme.of(context).brightness == Brightness.dark,
               (val) async {
             setState(() {
@@ -216,54 +186,45 @@ class _ProfilePageState extends State<ProfilePage> {
               prefs.setBool('isDark', _isDarkMode);
             });
           }),
-          FutureBuilder(
-            future: SharedPreferences.getInstance(),
-            builder: (context, AsyncSnapshot<SharedPreferences> snapshot) {
-              if (snapshot.connectionState == ConnectionState.done) {
-                SharedPreferences prefs = snapshot.data;
-                if (!prefs.containsKey('enablePushNotifications'))
-                  prefs.setBool('enablePushNotifications', false);
-                bool toggle = prefs.getBool('enablePushNotifications');
-                _enablePushNotifications = toggle;
-                return switchWidget(
-                    'Push notifications', _enablePushNotifications,
-                    (val) async {
-                  setState(() {
-                    _enablePushNotifications = val;
-                    prefs.setBool('enablePushNotifications', val);
-                  });
-                  if (val) {
-                    await activatePushNotifications();
-                  } else {
-                    await deactivatePushNotifications();
-                  }
-                });
-              } else {
-                return switchWidget(
-                    'Push notifications', _enablePushNotifications, (_) {});
-              }
-            },
-          ),
+          // FutureBuilder(
+          //   future: SharedPreferences.getInstance(),
+          //   builder: (context, AsyncSnapshot<SharedPreferences> snapshot) {
+          //     if (snapshot.connectionState == ConnectionState.done) {
+          //       SharedPreferences prefs = snapshot.data;
+          //       if (!prefs.containsKey('enablePushNotifications'))
+          //         prefs.setBool('enablePushNotifications', false);
+          //       bool toggle = prefs.getBool('enablePushNotifications');
+          //       _enablePushNotifications = toggle;
+          //       return switchWidget(
+          //           'Push notifications', _enablePushNotifications,
+          //           (val) async {
+          //         setState(() {
+          //           _enablePushNotifications = val;
+          //           prefs.setBool('enablePushNotifications', val);
+          //         });
+          //         if (val) {
+          //           await activatePushNotifications();
+          //         } else {
+          //           await deactivatePushNotifications();
+          //         }
+          //       });
+          //     } else {
+          //       return switchWidget(
+          //           'Push notifications', _enablePushNotifications, (_) {});
+          //     }
+          //   },
+          // ),
           Padding(
               padding: EdgeInsets.only(left: 10, right: 10),
               child: Divider(
                 color: Colors.black,
               )),
-
-          // Padding(
-          //     padding: const EdgeInsets.only(left: 20.0, right: 20.0),
-          //     child: RaisedButton(
-          //       color: Theme.of(context).buttonColor,
-          //       child: Text('Test crashlytics'),
-          //       onPressed: () {
-          //         throw Exception('Crashlytics test');
-          //       },
-          //     )),
           ListTile(
             leading: Icon(Icons.clear_all),
             title: Text('Clear Database'),
             onTap: () async {
               await db.clearAllTables();
+              data.sp.clear();
             },
           ),
           ListTile(
@@ -283,33 +244,11 @@ class _ProfilePageState extends State<ProfilePage> {
           ),
         ],
       )),
-      // body: FutureBuilder(
-      //   future: imageFromURL('url'),
-      //   builder: (context, snapshot) {
-      //     if (snapshot.hasData) {
-      //       return snapshot.data;
-      //     } else if (snapshot.hasError) {
-      //       return Text(snapshot.error.toString());
-      //     }
-      //     return common.progressIndicator;
-      //   },
-      // )
-      body: _background == null ? Container(child:defaultBackground(context)) : Container(child: _background),
+      body: _background == null
+          ? Container(child: defaultBackground(context))
+          : Container(child: _background),
     );
   }
-}
-
-Future<Image> imageFromURL(String url) async {
-  //String
-  Dio d = Dio();
-  var resp = await d.get("http://modsn.us/s2lKv",
-      options:
-          Options(followRedirects: false, validateStatus: (val) => val <= 500));
-  var redirect = resp.headers.value('location');
-  print(Uri.parse(redirect).queryParameters);
-  print(resp.data);
-  return Image.network(
-      'https://nusmods.com/export/image?data=%7B%22semester%22%3A1%2C%22timetable%22%3A%7B%22CS2103%22%3A%7B%22Tutorial%22%3A%2201%22%2C%22Lecture%22%3A%221%22%7D%2C%22CS2105%22%3A%7B%22Tutorial%22%3A%2213%22%2C%22Lecture%22%3A%221%22%7D%2C%22CS2106%22%3A%7B%22Laboratory%22%3A%2208%22%2C%22Tutorial%22%3A%2209%22%2C%22Lecture%22%3A%221%22%7D%2C%22IS2101%22%3A%7B%22Sectional%20Teaching%22%3A%22G3%22%7D%2C%22ST2131%22%3A%7B%22Lecture%22%3A%221%22%2C%22Tutorial%22%3A%222%22%7D%2C%22GEH1030%22%3A%7B%22Tutorial%22%3A%221%22%2C%22Lecture%22%3A%221%22%7D%2C%22MA2213%22%3A%7B%22Tutorial%22%3A%222%22%2C%22Laboratory%22%3A%224%22%2C%22Lecture%22%3A%221%22%7D%7D%2C%22colors%22%3A%7B%22CS2103%22%3A1%2C%22CS2105%22%3A5%2C%22CS2106%22%3A7%2C%22IS2101%22%3A0%2C%22ST2131%22%3A4%2C%22GEH1030%22%3A6%2C%22MA2213%22%3A2%7D%2C%22hidden%22%3A%5B%5D%2C%22theme%22%3A%7B%22id%22%3A%22eighties%22%2C%22timetableOrientation%22%3A%22HORIZONTAL%22%2C%22showTitle%22%3Afalse%2C%22_persist%22%3A%7B%22version%22%3A-1%2C%22rehydrated%22%3Atrue%7D%7D%2C%22settings%22%3A%7B%22mode%22%3A%22LIGHT%22%7D%7D&pixelRatio=2');
 }
 
 Future<void> activatePushNotifications() async {
@@ -319,18 +258,18 @@ Future<void> activatePushNotifications() async {
     print("onMessage: $msg");
   });
   if (Platform.isIOS) {
-    StreamSubscription iosSubscription;
-    iosSubscription = _firebaseMsg.onIosSettingsRegistered.listen((data) async {
-      // save the token OR subscribe to a topic here
-      // Dio dio = Dio();
-      // final storage = FlutterSecureStorage();
-      // var id = await storage.read(key: 'nusnet_id');
-      // await dio.get('http://127.0.0.1:3003/api/notification/activate',
-      //     queryParameters: {
-      //       'id': id,
-      //       'fcm_token': await _firebaseMsg.getToken()
-      //     });
-    });
+    // StreamSubscription iosSubscription;
+    // iosSubscription = _firebaseMsg.onIosSettingsRegistered.listen((data) async {
+    //   save the token OR subscribe to a topic here
+    //   Dio dio = Dio();
+    //   final storage = FlutterSecureStorage();
+    //   var id = await storage.read(key: 'nusnet_id');
+    //   await dio.get('http://127.0.0.1:3003/api/notification/activate',
+    //       queryParameters: {
+    //         'id': id,
+    //         'fcm_token': await _firebaseMsg.getToken()
+    //       });
+    // });
     _firebaseMsg.requestNotificationPermissions(IosNotificationSettings());
   }
 }

@@ -11,7 +11,7 @@ description: A cross platform mobile app for LumiNUS based on Flutter and Flumin
 # In iOS, build-name is used as CFBundleShortVersionString while build-number used as CFBundleVersion.
 # Read more about iOS versioning at
 # https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
-version: 0.5.6+6
+version: 0.6.1+1
 
 environment:
   sdk: ">=2.2.2 <3.0.0"
@@ -32,11 +32,14 @@ dependencies:
   io: ^0.3.3
   path_provider: ^1.1.2
   open_file: ^2.0.1+2
+  url_launcher: ^5.1.2
   # UI
   intl: ^0.15.8
   flutter_picker: ^1.0.11
   flutter_redux: ^0.5.3
   flutter_redux_dev_tools: ^0.3.0
+  flutter_html: ^0.10.4
+  photo_view: ^0.4.2
   # zefyr: ^0.6.0
   material_design_icons_flutter: ^3.2.3695
   dynamic_theme: ^1.0.1
@@ -50,7 +53,7 @@ dependencies:
   sqflite: ^1.1.0
   flutter_secure_storage: ^3.2.1+1
   # Utility
-  luminus_api: ^0.2.0
+  luminus_api: ^0.2.2
   collection: ^1.14.11
   # # Permissions
   # permission_handler: '^3.1.0'
@@ -92,7 +95,7 @@ flutter:
    - assets/logo.png
    - assets/tick.png
    - assets/nus_lion.png
-   - assets/login_background.jpeg
+   - assets/decoration.png
    - .env
 
   # An image asset can refer to one or more resolution-specific "variants", see

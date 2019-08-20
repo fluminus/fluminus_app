@@ -2,14 +2,10 @@ import 'package:fluminus/redux/store.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:luminus_api/luminus_api.dart';
-import 'package:collection/collection.dart';
 import 'package:html/parser.dart';
 import 'package:flutter_picker/flutter_picker.dart';
-import 'package:groovin_widgets/groovin_widgets.dart';
 import 'package:fluminus/widgets/dialog.dart' as dialog;
-
-
-Function twoListsAreDeepEqual = const DeepCollectionEquality().equals;
+import 'data.dart' as data;
 
 String datetimeToFormattedString(DateTime time) {
   return DateFormat('EEE, d/M/y ').format(time) + DateFormat.jm().format(time);
@@ -28,7 +24,9 @@ String formatDate(DateTime date) {
 }
 
 String formatDateAsTitle(DateTime date) {
-  return new DateFormat("dd MMMM  yyyy").format(date) + "\n" + new DateFormat("EEEE").format(date);
+  return new DateFormat("dd MMMM  yyyy").format(date) +
+      "\n" +
+      new DateFormat("EEEE").format(date);
 }
 
 String formatTowDates(DateTime startDate, DateTime endDate) {
@@ -41,29 +39,29 @@ String formatDateAsDayOfWeek(DateTime date) {
   return DateFormat("E").format(date).substring(0, 3).toUpperCase();
 }
 
-Future<List> refreshWithSnackBars(Function getData, BuildContext context) async {
-    //final GlobalKey<ScaffoldState> scaffoldKey = new GlobalKey<ScaffoldState>();
-    List refreshedList;
-    try {
-      refreshedList = await getData();
-      Scaffold.of(context).showSnackBar(SnackBar(
-        content: Text('Refreshed'),
-        duration: Duration(milliseconds: 500),
-      ));
-    } catch (e) {
-      Scaffold.of(context).showSnackBar(SnackBar(
-        content: Text('Refresh failed'),
-        duration: Duration(seconds: 2),
-        action: SnackBarAction(
-          label: 'Details',
-          onPressed: () {
-            dialog.displayDialog('Detail', e.toString(), context);
-          },
-        ),
-      ));
-    }
-    return refreshedList;
+Future<List> refreshWithSnackBars(
+    Function getData, BuildContext context) async {
+  List refreshedList;
+  try {
+    refreshedList = await getData();
+    Scaffold.of(context).showSnackBar(SnackBar(
+      content: Text('Refreshed'),
+      duration: Duration(milliseconds: 500),
+    ));
+  } catch (e) {
+    Scaffold.of(context).showSnackBar(SnackBar(
+      content: Text('Refresh failed'),
+      duration: Duration(seconds: 2),
+      action: SnackBarAction(
+        label: 'Details',
+        onPressed: () {
+          dialog.displayDialog('Detail', e.toString(), context);
+        },
+      ),
+    ));
   }
+  return refreshedList;
+}
 
 String parsedHtmlText(String htmlText) {
   var document = parse(htmlText);
@@ -78,50 +76,55 @@ GestureTapCallback onTapNextPage(Widget nextPage, BuildContext context) {
       };
 }
 
-showPickerThreeNumber(BuildContext context, DateTime smsStartDate, Module module,
-    Announcement announcement, int index, List<Announcement> targetList) async {
+showPickerThreeNumber(
+    BuildContext context, Module module, Announcement announcement,
+    {Function onCancel}) async {
   new Picker(
-      adapter: NumberPickerAdapter(data: [
-        NumberPickerColumn(begin: 0, end: 4),
-        NumberPickerColumn(begin: 0, end: 10),
-        NumberPickerColumn(begin: 0, end: 20),
-      ]),
-      delimiter: [
-        PickerDelimiter(
-            column: 1,
-            child: Container(
-                width: 30.0, alignment: Alignment.center, child: Text("M"))),
-        PickerDelimiter(
-            column: 3,
-            child: Container(
-                width: 30.0, alignment: Alignment.center, child: Text("W"))),
-        PickerDelimiter(
-            column: 5,
-            child: Container(
-                width: 30.0, alignment: Alignment.center, child: Text("D"))),
-      ],
-      hideHeader: true,
-      title: ListTile(
-        title: Text("Schedule in",
-         style: Theme.of(context).textTheme.caption),
-         subtitle: Text('month : week : day', 
-         style: Theme.of(context).textTheme.subhead),
-      ),    
-      onConfirm: (Picker picker, List value) {
-        DateTime date = getPickedDate(value);
-        model.onAddTask(
-            title: announcement.title,
-            detail: parsedHtmlText(announcement.description),
-            date: formatDate(date),
-            dayOfWeek: formatDateAsDayOfWeek(date),
-            weekNum: weekNum(smsStartDate, date),
-            tag:module.name,
-            colorIndex: 0);
-            targetList.removeAt(index);
-      },
-      onCancel: (){
-        targetList.insert(index, announcement);
-      }).showDialog(context);
+          adapter: NumberPickerAdapter(data: [
+            NumberPickerColumn(begin: 0, end: 4),
+            NumberPickerColumn(begin: 0, end: 10),
+            NumberPickerColumn(begin: 0, end: 20),
+          ]),
+          delimiter: [
+            PickerDelimiter(
+                column: 1,
+                child: Container(
+                    width: 30.0,
+                    alignment: Alignment.center,
+                    child: Text("M"))),
+            PickerDelimiter(
+                column: 3,
+                child: Container(
+                    width: 30.0,
+                    alignment: Alignment.center,
+                    child: Text("W"))),
+            PickerDelimiter(
+                column: 5,
+                child: Container(
+                    width: 30.0,
+                    alignment: Alignment.center,
+                    child: Text("D"))),
+          ],
+          hideHeader: true,
+          title: ListTile(
+            title:
+                Text("Schedule in", style: Theme.of(context).textTheme.caption),
+            subtitle: Text('month : week : day',
+                style: Theme.of(context).textTheme.subhead),
+          ),
+          onConfirm: (Picker picker, List value) {
+            DateTime date = getPickedDate(value);
+            model.onAddTask(
+                title: announcement.title,
+                detail: parsedHtmlText(announcement.description),
+                date: formatDate(date),
+                dayOfWeek: formatDateAsDayOfWeek(date),
+                weekNum: weekNum(data.smsStartDate, date),
+                tag: module.name,
+                colorIndex: 0);
+          },
+          onCancel: onCancel)
+      .showDialog(context);
 }
 
 DateTime getPickedDate(List diffOfMWD) {
@@ -158,14 +161,9 @@ Future<String> showPickerTwoNumber(BuildContext context) async {
 
 SnackBar snackBar(String info, {String actionName, Function action}) {
   return SnackBar(
-    content: Text(info, textAlign: TextAlign.center,),
-    /*action: SnackBarAction(
-      label: actionName,
-      onPressed: action
-    ),*/
+    content: Text(
+      info,
+      textAlign: TextAlign.center,
+    ),
   );
 }
-
-
-
-

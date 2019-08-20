@@ -20,7 +20,8 @@ import 'package:fluminus/data.dart' as data;
 import 'package:fluminus/widgets/dialog.dart' as dialog;
 import 'package:fluminus/db/db_helper.dart' as db;
 
-final EdgeInsets _padding = const EdgeInsets.only(left: 14.0, right: 14.0);
+final EdgeInsets _padding =
+    const EdgeInsets.only(left: 14.0, right: 14.0, top: 10.0);
 Widget _paddedfutureBuilder(Future future, AsyncWidgetBuilder builder) {
   return Padding(
     padding: _padding,
@@ -149,6 +150,8 @@ class _ModuleRootDirectoryPageState extends State<ModuleRootDirectoryPage> {
         (context, snapshot) {
           if (snapshot.hasData) {
             _directories = snapshot.data;
+
+            // print(_directories.length);
             return list.refreshableListView(
               () async {
                 _refreshedDirectories = await util.refreshWithSnackBars(
@@ -165,7 +168,7 @@ class _ModuleRootDirectoryPageState extends State<ModuleRootDirectoryPage> {
               //enablePullUp: false
             );
           } else if (snapshot.hasError) {
-            return Text(snapshot.error);
+            return Text(snapshot.error.toString());
           }
           return common.progressIndicator;
         },

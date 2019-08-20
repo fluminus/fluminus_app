@@ -1,7 +1,4 @@
-// import 'dart:convert';
-
 import 'package:flutter/material.dart';
-// import 'package:luminus_api/luminus_api.dart';
 
 class Task {
   final int id;
@@ -18,36 +15,47 @@ class Task {
   final int colorIndex;
 
   Task(
-      {@required this.id,
-      @required this.title,
+      {this.id,
+      this.title,
       this.detail,
-      @required this.date,
-      @required this.dayOfWeek,
-      @required this.weekNum,
+      this.date,
+      this.dayOfWeek,
+      this.weekNum,
       this.startTime,
       this.endTime,
-      @required this.isAllDay,
+      this.isAllDay,
       this.location,
       this.tag,
-      this.colorIndex, String appBar});
+      this.colorIndex,
+      String appBar});
 
   Task copyWith(
-      {int id, String title, String detail, String date, String dayOfWeek, int weekNum, String startTime, 
-      String endTime, bool, isAllDay, String location, String tag, int color}) {
+      {int id,
+      String title,
+      String detail,
+      String date,
+      String dayOfWeek,
+      int weekNum,
+      String startTime,
+      String endTime,
+      bool,
+      isAllDay,
+      String location,
+      String tag,
+      int color}) {
     return Task(
         id: id ?? this.id,
         title: title ?? this.title,
-        detail: detail??this.detail,
+        detail: detail ?? this.detail,
         date: date ?? this.date,
-        dayOfWeek: dayOfWeek??this.dayOfWeek,
-        weekNum: weekNum??this.weekNum,
-        startTime: startTime??this.startTime,
-        endTime: endTime??this.endTime,
-        isAllDay: isAllDay??this.isAllDay,
-        location: location??this.location,
-        tag: tag??this.tag,
-        colorIndex: color??this.colorIndex
-        );
+        dayOfWeek: dayOfWeek ?? this.dayOfWeek,
+        weekNum: weekNum ?? this.weekNum,
+        startTime: startTime ?? this.startTime,
+        endTime: endTime ?? this.endTime,
+        isAllDay: isAllDay ?? this.isAllDay,
+        location: location ?? this.location,
+        tag: tag ?? this.tag,
+        colorIndex: color ?? this.colorIndex);
   }
 
   Task.fromJson(Map<String, dynamic> json)
@@ -68,16 +76,16 @@ class Task {
     final Map<String, dynamic> map = new Map<String, dynamic>();
     map['id'] = this.id;
     map['title'] = this.title;
-    map['detail'] = this.detail??'';
+    map['detail'] = this.detail ?? '';
     map['date'] = this.date;
     map['dayOfWeek'] = this.dayOfWeek;
     map['weekNum'] = this.weekNum;
-    map['startTime'] = this.startTime??'';
-    map['endTime'] = this.endTime??'';
+    map['startTime'] = this.startTime ?? '';
+    map['endTime'] = this.endTime ?? '';
     map['isAllDay'] = this.isAllDay;
-    map['location'] = this.location??'';
-    map['tag'] = this.tag??'';
-    map['color'] = this.colorIndex??0;
+    map['location'] = this.location ?? '';
+    map['tag'] = this.tag ?? '';
+    map['color'] = this.colorIndex ?? 0;
     return map;
   }
 }
