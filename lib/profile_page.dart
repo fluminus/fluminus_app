@@ -21,23 +21,21 @@ class ProfilePage extends StatefulWidget {
 class _ProfilePageState extends State<ProfilePage> {
   bool _isDarkMode;
   Widget _background;
-  
-  
-
 
   @override
   void initState() {
     super.initState();
     String backgroundPath = data.sp.getString('backgroundPath');
-    if(backgroundPath != null) {
-      _background = Image.file(File(backgroundPath), fit: BoxFit.cover,
-    height: double.infinity,
-    width: double.infinity,
-    alignment: Alignment.center,);
+    if (backgroundPath != null) {
+      _background = Image.file(
+        File(backgroundPath),
+        fit: BoxFit.cover,
+        height: double.infinity,
+        width: double.infinity,
+        alignment: Alignment.center,
+      );
     }
   }
-
-  
 
   Future getImage() async {
     var image = await ImagePicker.pickImage(source: ImageSource.gallery);
@@ -47,10 +45,10 @@ class _ProfilePageState extends State<ProfilePage> {
     var localImage = await image.copy('$appDirPath/$fileName');
     data.sp.setString('backgroundPath', localImage.path);
     setState(() {
-      _background = FittedBox(child: Image.file(File(localImage.path)), fit: BoxFit.fill);
+      _background =
+          FittedBox(child: Image.file(File(localImage.path)), fit: BoxFit.fill);
     });
   }
-
 
   Widget displayName(String name) {
     return Text(
@@ -128,45 +126,42 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 
   Widget defaultBackground(BuildContext context) {
- 
-      return Center(
-          child: Column(
-        children: <Widget>[
-          Expanded(
-            child: Image.asset('assets/nus_lion.png', fit: BoxFit.contain),
-          ),
-          Text(
-            'Happy new semester !' + '\n',
-            style: TextStyle(fontSize: 30, fontFamily: 'Hanalei'),
-          ),
-          Text(
-            'You can upload your timetable here!',
-            style: Theme.of(context).textTheme.subhead,
-          ),
-          Text(
-            '(Swipe from the left edge to see more functions!)\n',
-            style: Theme.of(context).textTheme.subtitle,
-          ),
-          Padding(
-            padding: EdgeInsets.only(bottom: MediaQuery.of(context).size.height/6),
-          child:
-          OutlineButton(
-            borderSide: BorderSide(
-              color: Theme.of(context).primaryColor, //Color of the border
-              style: BorderStyle.solid, //Style of the border
-              width: 1.5, //width of the border
-            ),
-            highlightColor: Theme.of(context).primaryColor,
-            child: Text('Upload Image'),
-            shape: StadiumBorder(),
-            onPressed: () async{
-              await getImage();
-            },
-          )
+    return Center(
+        child: Column(
+      children: <Widget>[
+        Expanded(
+          child: Image.asset('assets/nus_lion.png', fit: BoxFit.contain),
         ),
-        ],
-      ));
-    
+        Text(
+          'Happy new semester !' + '\n',
+          style: TextStyle(fontSize: 30, fontFamily: 'Hanalei'),
+        ),
+        Text(
+          'You can upload your timetable here!',
+          style: Theme.of(context).textTheme.subhead,
+        ),
+        Text(
+          '(Swipe from the left edge to see more functions!)\n',
+          style: Theme.of(context).textTheme.subtitle,
+        ),
+        Padding(
+            padding:
+                EdgeInsets.only(bottom: MediaQuery.of(context).size.height / 6),
+            child: OutlineButton(
+              borderSide: BorderSide(
+                color: Theme.of(context).primaryColor, // Color of the border
+                style: BorderStyle.solid, // Style of the border
+                width: 1.5, // width of the border
+              ),
+              highlightColor: Theme.of(context).primaryColor,
+              child: Text('Upload Image'),
+              shape: StadiumBorder(),
+              onPressed: () async {
+                await getImage();
+              },
+            )),
+      ],
+    ));
   }
 
   @override
@@ -224,16 +219,6 @@ class _ProfilePageState extends State<ProfilePage> {
               child: Divider(
                 color: Colors.black,
               )),
-
-          // Padding(
-          //     padding: const EdgeInsets.only(left: 20.0, right: 20.0),
-          //     child: RaisedButton(
-          //       color: Theme.of(context).buttonColor,
-          //       child: Text('Test crashlytics'),
-          //       onPressed: () {
-          //         throw Exception('Crashlytics test');
-          //       },
-          //     )),
           ListTile(
             leading: Icon(Icons.clear_all),
             title: Text('Clear Database'),
@@ -259,7 +244,9 @@ class _ProfilePageState extends State<ProfilePage> {
           ),
         ],
       )),
-      body: _background == null ? Container(child:defaultBackground(context)) : Container(child: _background),
+      body: _background == null
+          ? Container(child: defaultBackground(context))
+          : Container(child: _background),
     );
   }
 }

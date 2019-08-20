@@ -39,14 +39,19 @@ class _AnnouncementListPageState extends State<AnnouncementListPage> {
                     API.getAnnouncements(data.authentication(), widget.module),
                 context);
             sortAnnouncements(_newAnnouncements);
-            String lastRefreshedDateStr = data.sp.getString(widget.module.name + 'lastRefreshedDateStr');
+            String lastRefreshedDateStr =
+                data.sp.getString(widget.module.name + 'lastRefreshedDateStr');
             DateTime lastRefreshedDate;
-            lastRefreshedDateStr == null ? lastRefreshedDate = DateTime.now() : lastRefreshedDate = DateTime.parse(lastRefreshedDateStr);
+            lastRefreshedDateStr == null
+                ? lastRefreshedDate = DateTime.now()
+                : lastRefreshedDate = DateTime.parse(lastRefreshedDateStr);
             _newAnnouncements = _newAnnouncements.takeWhile((x) {
-              return (DateTime.parse(x.createdDate).isAfter(lastRefreshedDate ?? DateTime.now()));
+              return (DateTime.parse(x.createdDate)
+                  .isAfter(lastRefreshedDate ?? DateTime.now()));
             }).toList();
             setState(() {
-              data.sp.setString(widget.module.name + 'lastRefreshedDateStr', DateTime.now().toString());
+              data.sp.setString(widget.module.name + 'lastRefreshedDateStr',
+                  DateTime.now().toString());
               announcements.addAll(_newAnnouncements);
             });
           },
@@ -74,10 +79,13 @@ class _AnnouncementListPageState extends State<AnnouncementListPage> {
               removedOne = announcements.removeAt(index);
               announcements.insert(index, removedOne);
             });
-            util.showPickerThreeNumber(context, widget.module, announcements[index], onCancel: (){setState(() {
-              announcements.insert(index, removedOne);
-            });});},
-
+            util.showPickerThreeNumber(
+                context, widget.module, announcements[index], onCancel: () {
+              setState(() {
+                announcements.insert(index, removedOne);
+              });
+            });
+          },
           context: context,
           leftHint: Icon(Icons.schedule),
           rightHint: Icon(Icons.archive),
@@ -132,7 +140,7 @@ class _AnnouncementListPageState extends State<AnnouncementListPage> {
       maps.add(announcement.toJson());
     }
     String encodedList = json.encode(maps);
-    data.sp.setString(
-        'encodedAnnouncementList' + widget.module.name, encodedList);
+    data.sp
+        .setString('encodedAnnouncementList' + widget.module.name, encodedList);
   }
 }

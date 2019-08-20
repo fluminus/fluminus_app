@@ -127,10 +127,8 @@ class _TaskDetailState extends State<TaskDetail> {
     ..addAll(data.modules.map((module) => module.name).toList())
     ..add('General');
 
-
   @override
   Widget build(BuildContext context) {
-    
     return Scaffold(
         appBar: AppBar(
           title: Text(widget.appBarTitle),
@@ -167,8 +165,10 @@ class _TaskDetailState extends State<TaskDetail> {
             shrinkWrap: true,
             itemCount: 1,
             itemBuilder: (context, index) {
-              List<Color> colors = Theme.of(context).brightness == Brightness.light?
-              lightColors : darkColors;
+              List<Color> colors =
+                  Theme.of(context).brightness == Brightness.light
+                      ? lightColors
+                      : darkColors;
 
               return Column(children: <Widget>[
                 basicField('TITLE', basicTextField(titleTextController)),
@@ -193,61 +193,61 @@ class _TaskDetailState extends State<TaskDetail> {
                 basicField('LOCATION', basicTextField(locationTextController)),
                 Padding(
                   padding: EdgeInsets.only(left: 20),
-                child: Row(
-                  children: <Widget>[
-                    Expanded(
-                      flex: 1,
-                    child: Row(children: <Widget>[
-                      Text('TAG     '),
-                      DropdownButton<String>(
-                        style: Theme.of(context).textTheme.subtitle,
-                        value: tag,
-                        onChanged: (String newValue) {
-                          setState(() {
-                            tag = newValue;
-                          });
-                        },
-                        items: tags
-                            .map((tag) => DropdownMenuItem<String>(
-                                value: tag,
-                                child: Container(
-                                  width: 80.0,
-                                  height: 20.0,
-                                  child: Text(tag),
-                                )))
-                            .toList(),
-                      )
-                    ])),
-                     
-                     Expanded(
-                      flex: 1,
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children:<Widget>[
-                        Text('COLOR     '),
-                        DropdownButton<int>(
-                          style: Theme.of(context).textTheme.subtitle,
-                          value: colorIndex,
-                          onChanged: (int newColorIndex) {
-                            setState(() {
-                              colorIndex = newColorIndex;
-                            });
-                          },
-                          items: colors
-                              .map((color) => DropdownMenuItem<int>(
-                                    value: colors.indexOf(color),
-                                    child: Container(
-                                      width: 40.0,
-                                      height: 20.0,
-                                      color: color,
-                                    ),
-                                  ))
-                              .toList(),
-                        )]
-                        )
-                     )],
-                ),
-              )]);
+                  child: Row(
+                    children: <Widget>[
+                      Expanded(
+                          flex: 1,
+                          child: Row(children: <Widget>[
+                            Text('TAG     '),
+                            DropdownButton<String>(
+                              style: Theme.of(context).textTheme.subtitle,
+                              value: tag,
+                              onChanged: (String newValue) {
+                                setState(() {
+                                  tag = newValue;
+                                });
+                              },
+                              items: tags
+                                  .map((tag) => DropdownMenuItem<String>(
+                                      value: tag,
+                                      child: Container(
+                                        width: 80.0,
+                                        height: 20.0,
+                                        child: Text(tag),
+                                      )))
+                                  .toList(),
+                            )
+                          ])),
+                      Expanded(
+                          flex: 1,
+                          child: Row(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              children: <Widget>[
+                                Text('COLOR     '),
+                                DropdownButton<int>(
+                                  style: Theme.of(context).textTheme.subtitle,
+                                  value: colorIndex,
+                                  onChanged: (int newColorIndex) {
+                                    setState(() {
+                                      colorIndex = newColorIndex;
+                                    });
+                                  },
+                                  items: colors
+                                      .map((color) => DropdownMenuItem<int>(
+                                            value: colors.indexOf(color),
+                                            child: Container(
+                                              width: 40.0,
+                                              height: 20.0,
+                                              color: color,
+                                            ),
+                                          ))
+                                      .toList(),
+                                )
+                              ]))
+                    ],
+                  ),
+                )
+              ]);
             }));
   }
 }

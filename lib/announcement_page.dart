@@ -109,13 +109,13 @@ class _AnnouncementPageState extends State<AnnouncementPage> {
                           },
                           valueListenable: _archived,
                         ))
-                        ..add(FutureBuilder<Map<Module, Announcement>>(
+                        ..add(FutureBuilder<List<Announcement>>(
                           future:
                               API.getActiveAnnouncements(data.authentication()),
                           builder: (context, snapshot) {
                             List<Announcement> allAnnouncements;
                             if (snapshot.hasData) {
-                              //TODO: allAnnouncements = snapshot.data;
+                              allAnnouncements = snapshot.data;
                               data.sp.setString('lastRefreshedDateStr',
                                   DateTime.now().toString());
                               return refreshableListView(() async {

@@ -13,7 +13,6 @@ class ForumPage extends StatefulWidget {
 }
 
 class _ForumPageState extends State<ForumPage> {
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
