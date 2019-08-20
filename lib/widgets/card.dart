@@ -1,5 +1,6 @@
 import 'package:fluminus/db/db_file.dart';
 import 'package:fluminus/widgets/modal_bottom_sheet.dart';
+import 'package:fluminus/widgets/photo_viewer.dart';
 import 'package:fluminus/widgets/theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
@@ -285,11 +286,17 @@ void _showDetail(BuildContext context, String title, String fullContent) {
               });
             },
             onImageTap: (url) {
-              canLaunch(url).then((can) {
-                if (can) {
-                  launch(url);
-                }
-              });
+              // canLaunch(url).then((can) {
+              //   if (can) {
+              //     launch(url);
+              //   }
+              // });
+              Navigator.of(context)
+                  .push(MaterialPageRoute(builder: (BuildContext context) {
+                return Container(
+                  child: PhotoViewer(url),
+                );
+              }));
             },
           )),
           actions: <Widget>[
