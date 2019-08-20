@@ -45,8 +45,7 @@ class _ProfilePageState extends State<ProfilePage> {
     var localImage = await image.copy('$appDirPath/$fileName');
     data.sp.setString('backgroundPath', localImage.path);
     setState(() {
-      _background =
-          FittedBox(child: Image.file(File(localImage.path)), fit: BoxFit.fill);
+      _background = Image.file(File(localImage.path),fit: BoxFit.fitWidth);
     });
   }
 

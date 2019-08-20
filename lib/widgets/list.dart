@@ -87,7 +87,7 @@ Widget itemListView(
               Padding(
                   padding: const EdgeInsets.all(0.0),
                   child: _certainCard(
-                      itemList[index], getCardType(), context, params))
+                      itemList[index], getCardType(itemList[index]), context, params))
             ],
           );
         },
@@ -139,13 +139,15 @@ Widget dismissibleListView(
               child: rightHint,
               alignment: Alignment(0.8, 0)),
           key: Key(item.id),
-          onDismissed: (direction) {
+          confirmDismiss: (direction) async {
             switch (direction) {
               case DismissDirection.endToStart:
                 afterSwipingLeft(index);
+                return true;
                 break;
               case DismissDirection.startToEnd:
                 afterSwipingRight(index, context);
+                return false;
                 break;
               default:
                 break;
