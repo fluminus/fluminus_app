@@ -146,7 +146,7 @@ class _AnnouncementPageState extends State<AnnouncementPage> {
                                   allAnnouncements,
                                   () => CardType.announcementCardType,
                                   context,
-                                  null);
+                                null, isSeparated: true);
                             } else if (snapshot.hasError) {
                               return Text(snapshot.error.toString());
                             }

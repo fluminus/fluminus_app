@@ -1,5 +1,6 @@
 import 'package:fluminus/file_page.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/material.dart' as prefix0;
 import 'package:luminus_api/luminus_api.dart';
 import 'card.dart';
 
@@ -43,7 +44,8 @@ Widget _certainCard(var item, CardType type, BuildContext context, Map params) {
 }
 
 Widget itemListView(
-    List itemList, Function getCardType, BuildContext context, Map params) {
+    List itemList, Function getCardType, BuildContext context, Map params,
+    {bool isSeparated = false}) {
   if (itemList.length == 0) {
     return ListView(
       children: <Widget>[
@@ -58,21 +60,39 @@ Widget itemListView(
       ],
     );
   } else {
-    return ListView.builder(
-      shrinkWrap: true,
-      itemCount: itemList.length,
-      itemBuilder: (context, index) {
-        return new Column(
-          mainAxisSize: MainAxisSize.min,
-          children: <Widget>[
-            Padding(
-                padding: const EdgeInsets.all(0.0),
-                child: _certainCard(itemList[index],
-                    getCardType(itemList[index]), context, params))
-          ],
-        );
-      },
-    );
+    if (isSeparated) {
+      return ListView.separated(
+        separatorBuilder: (context, index) => Divider(
+              color: Colors.blueGrey,
+              height: 0.0,
+            ),
+        padding: EdgeInsets.all(0.0),
+        shrinkWrap: true,
+        itemCount: itemList.length,
+        itemBuilder: (context, index) {
+          return Padding(
+              padding: const EdgeInsets.only(bottom: 0.0),
+              child: _certainCard(
+                  itemList[index], getCardType(), context, params));
+        },
+      );
+    } else {
+      return ListView.builder(
+        shrinkWrap: true,
+        itemCount: itemList.length,
+        itemBuilder: (context, index) {
+          return new Column(
+            mainAxisSize: MainAxisSize.min,
+            children: <Widget>[
+              Padding(
+                  padding: const EdgeInsets.all(0.0),
+                  child: _certainCard(
+                      itemList[index], getCardType(), context, params))
+            ],
+          );
+        },
+      );
+    }
   }
 }
 
@@ -82,11 +102,12 @@ Widget refreshableListView(
   Function getCardType,
   BuildContext context,
   Map params,
+  {bool isSeparated = false}
 ) {
   return Container(
       child: RefreshIndicator(
           onRefresh: onRefresh,
-          child: itemListView(itemList, getCardType, context, params)));
+          child: itemListView(itemList, getCardType, context, params, isSeparated: isSeparated)));
 }
 
 Widget dismissibleListView(
@@ -100,9 +121,9 @@ Widget dismissibleListView(
     Map params) {
   return new ListView.separated(
     separatorBuilder: (context, index) => Divider(
-      color: Colors.blueGrey,
-      height: 0.0,
-    ),
+          color: Colors.blueGrey,
+          height: 0.0,
+        ),
     padding: EdgeInsets.all(0.0),
     shrinkWrap: true,
     itemCount: itemList.length,
