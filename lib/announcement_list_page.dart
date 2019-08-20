@@ -114,7 +114,7 @@ class _AnnouncementListPageState extends State<AnnouncementListPage> {
     }
   }
 
-  sortAnnouncements(List<Announcement> announcements) {
+  void sortAnnouncements(List<Announcement> announcements) {
     announcements.sort((a, b) =>
         DateTime.parse(b.createdDate).compareTo(DateTime.parse(a.createdDate)));
   }
@@ -134,7 +134,7 @@ class _AnnouncementListPageState extends State<AnnouncementListPage> {
     }
   }
 
-  _write() async {
+  void _write() async {
     List<Map> maps = new List();
     for (Announcement announcement in _announcements) {
       maps.add(announcement.toJson());

@@ -32,11 +32,13 @@ dependencies:
   io: ^0.3.3
   path_provider: ^1.1.2
   open_file: ^2.0.1+2
+  url_launcher: ^5.1.2
   # UI
   intl: ^0.15.8
   flutter_picker: ^1.0.11
   flutter_redux: ^0.5.3
   flutter_redux_dev_tools: ^0.3.0
+  flutter_html: ^0.10.4
   # zefyr: ^0.6.0
   material_design_icons_flutter: ^3.2.3695
   dynamic_theme: ^1.0.1
