@@ -1,13 +1,16 @@
 import 'package:fluminus/db/db_file.dart';
 import 'package:fluminus/widgets/modal_bottom_sheet.dart';
+import 'package:fluminus/widgets/photo_viewer.dart';
 import 'package:fluminus/widgets/theme.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_html/flutter_html.dart';
 import 'package:luminus_api/luminus_api.dart';
 import 'package:fluminus/model/task_list_model.dart';
 import 'package:fluminus/new_task_page.dart';
 import 'package:fluminus/redux/store.dart';
 import 'package:groovin_widgets/groovin_widgets.dart';
 import 'package:fluminus/util.dart' as util;
+import 'package:url_launcher/url_launcher.dart';
 
 import '../file_page.dart';
 // import 'dart:math';
@@ -48,12 +51,18 @@ Widget infoCardWithFullBody(
 }
 
 String _getExcerpt(String body, {int excerptLength = 220}) {
+  body = util.parsedHtmlText(body);
   String strWithoutNewline = body.replaceAll('\n', ' ').trim();
   if (strWithoutNewline.length <= excerptLength) {
     return strWithoutNewline;
   } else {
     String excerptEnd = ' ... [READ MORE]';
-    return strWithoutNewline.substring(0, strWithoutNewline.substring(0, excerptLength - excerptEnd.length).lastIndexOf(' '))  + excerptEnd;
+    return strWithoutNewline.substring(
+            0,
+            strWithoutNewline
+                .substring(0, excerptLength - excerptEnd.length)
+                .lastIndexOf(' ')) +
+        excerptEnd;
   }
 }
 
@@ -217,77 +226,96 @@ Widget announcementCard(Announcement announcemnt, BuildContext context) {
   String title = announcemnt.title;
   String subtitle = "Expire After: " +
       util.datetimeToFormattedString(DateTime.parse(announcemnt.expireAfter));
-  String body = util.parsedHtmlText(announcemnt.description);
+  String body = announcemnt.description;
   return InkWell(
-       onTap: () {
-                _showDetail(context, title, body);
-              },
-              highlightColor: Colors.grey,
-  child: Container(
-      // shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16.0)),
-      // elevation: 3.0,
-      child: Padding(
-          padding: const EdgeInsets.only(bottom: 10.0),
-          child: Column(mainAxisSize: MainAxisSize.min, children: <Widget>[
-            ListTile(
-              title: Text(title),
-              subtitle: Text(subtitle),
-            ),
-            ListTile(
-              subtitle: Text(
-                _getExcerpt(body),
-                style: Theme.of(context).textTheme.body1,
+    onTap: () {
+      _showDetail(context, title, body);
+    },
+    highlightColor: Colors.grey,
+    child: Container(
+        // shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16.0)),
+        // elevation: 3.0,
+        child: Padding(
+            padding: const EdgeInsets.only(bottom: 10.0),
+            child: Column(mainAxisSize: MainAxisSize.min, children: <Widget>[
+              ListTile(
+                title: Text(title),
+                subtitle: Text(subtitle),
               ),
-            )
-          ]))),
-         );
+              ListTile(
+                subtitle: Text(
+                  _getExcerpt(body),
+                  style: Theme.of(context).textTheme.body1,
+                ),
+              )
+            ]))),
+  );
 }
 
 void _showDetail(BuildContext context, String title, String fullContent) {
   showDialog(
       context: context,
       builder: (BuildContext context) {
-        // double width = MediaQuery.of(context).size.width * 6 / 7;
-        // double height = MediaQuery.of(context).size.height * 2 / 3;
-        // return Container(
-        //   width: width,
-        //   height: height,
         return AlertDialog(
           shape:
               RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.0)),
           elevation: 3.0,
           titlePadding: EdgeInsets.all(0),
           title: Container(
-            decoration: BoxDecoration(
-              color: Theme.of(context).primaryColor,
-              borderRadius: BorderRadius.only(topLeft: Radius.circular(8.0), topRight: Radius.circular(8.0)),
-            ),
-            child: Padding(
-              padding: EdgeInsets.all(10.0),
-              child:Text(title,
-            style: Theme.of(context).textTheme.subhead,)
-            )
-          ),
+              decoration: BoxDecoration(
+                color: Theme.of(context).primaryColor,
+                borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(8.0),
+                    topRight: Radius.circular(8.0)),
+              ),
+              child: Padding(
+                  padding: EdgeInsets.all(10.0),
+                  child: Text(
+                    title,
+                    style: Theme.of(context).textTheme.subhead,
+                  ))),
           content: SingleChildScrollView(
-            child: Text(
-              fullContent,
-              style: Theme.of(context).textTheme.body1,
-            ),
-          ),
+              child: Html(
+            data: fullContent,
+            defaultTextStyle: Theme.of(context).textTheme.body1,
+            onLinkTap: (url) {
+              canLaunch(url).then((can) {
+                if (can) {
+                  launch(url);
+                }
+              });
+            },
+            onImageTap: (url) {
+              // canLaunch(url).then((can) {
+              //   if (can) {
+              //     launch(url);
+              //   }
+              // });
+              Navigator.of(context)
+                  .push(MaterialPageRoute(builder: (BuildContext context) {
+                return Container(
+                  child: PhotoViewer(url),
+                );
+              }));
+            },
+          )),
           actions: <Widget>[
             Row(
-             //width: MediaQuery.of(context).size.width * 3 / 4,
-              children: <Widget>[ 
-                FlatButton(
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6.0)),
-              color: Theme.of(context).primaryColor,
-              child: Text("Close", style: Theme.of(context).textTheme.subhead,),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-            ),
-              ])
-            
+                //width: MediaQuery.of(context).size.width * 3 / 4,
+                children: <Widget>[
+                  FlatButton(
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(6.0)),
+                    color: Theme.of(context).primaryColor,
+                    child: Text(
+                      "Close",
+                      style: Theme.of(context).textTheme.subhead,
+                    ),
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                  ),
+                ])
           ],
         );
       });
@@ -347,7 +375,7 @@ Widget taskCard(Task task, BuildContext context) {
                       label: Text('EDIT'),
                       onPressed: () => Navigator.push(context,
                               MaterialPageRoute(builder: (context) {
-                            return TaskDetail(task,'Editing Task');
+                            return TaskDetail(task, 'Editing Task');
                           })))),
             ],
           )
