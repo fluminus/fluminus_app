@@ -64,7 +64,7 @@ class _HomePageState extends State<HomePage> {
                 MdiIcons.calendarCheck, MdiIcons.calendarCheckOutline, 'Task'),
             _navBarItem(MdiIcons.forum, MdiIcons.forumOutline, 'Forum'),
             _navBarItem(MdiIcons.fileFind, MdiIcons.fileFindOutline, 'File'),
-            _navBarItem(MdiIcons.settings, MdiIcons.settingsOutline, 'Profile'),
+            _navBarItem(MdiIcons.calendar, MdiIcons.calendarOutline, 'Profile'),
           ]),
       body: _pages[_currentIndex],
     );

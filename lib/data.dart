@@ -40,7 +40,7 @@ DateTime smsStartDate = DateTime.utc(2019, 8, 5);
 
 SharedPreferences sp;
 List<Module> modules = [];
-Profile profile;
+Profile profile = profilePlaceholder;
 List<Announcement> archivedAnnouncements = [];
 
 Profile profilePlaceholder = Profile(

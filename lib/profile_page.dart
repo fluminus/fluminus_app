@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:fluminus/login_page.dart';
 import 'package:flutter/material.dart';
+import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:luminus_api/luminus_api.dart' as luminus;
 import 'package:fluminus/widgets/common.dart';
@@ -45,7 +46,7 @@ class _ProfilePageState extends State<ProfilePage> {
     var localImage = await image.copy('$appDirPath/$fileName');
     data.sp.setString('backgroundPath', localImage.path);
     setState(() {
-      _background = Image.file(File(localImage.path),fit: BoxFit.fitWidth);
+      _background = Image.file(File(localImage.path), fit: BoxFit.fitWidth);
     });
   }
 
@@ -70,29 +71,6 @@ class _ProfilePageState extends State<ProfilePage> {
     );
   }
 
-  Widget profileWidget(luminus.Profile profile) {
-    return Padding(
-      padding: const EdgeInsets.only(top: 10.0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: <Widget>[
-          Padding(
-              padding:
-                  const EdgeInsets.only(left: 20.0, right: 20.0, top: 10.0),
-              child: displayName(profile.userNameOriginal)),
-          Padding(
-            padding: const EdgeInsets.only(left: 20.0),
-            child: displayMatricNumber(profile.userMatricNo),
-          ),
-          Padding(
-            padding: const EdgeInsets.only(left: 20.0, top: 20.0, right: 20.0),
-            child: displayPersonalParticular(profile.email),
-          ),
-        ],
-      ),
-    );
-  }
-
   Widget switchWidget(
       String text, bool defaultValue, void Function(bool) onChanged) {
     return Padding(
@@ -112,8 +90,8 @@ class _ProfilePageState extends State<ProfilePage> {
 
   Widget userInfoHeader() {
     return UserAccountsDrawerHeader(
-      accountName: Text(data.profile.userNameOriginal),
-      accountEmail: Text(data.profile.email),
+      accountName: Text(data.profile?.userNameOriginal ?? "Disconnected"),
+      accountEmail: Text(data.profile?.email ?? "Disconnected"),
       currentAccountPicture: CircleAvatar(
         backgroundColor: Colors.white,
         child: Text(
@@ -163,9 +141,20 @@ class _ProfilePageState extends State<ProfilePage> {
     ));
   }
 
+  GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      key: _scaffoldKey,
+      appBar: AppBar(
+        leading: IconButton(
+          icon: Icon(MdiIcons.settings),
+          onPressed: () {
+            _scaffoldKey.currentState.openDrawer();
+          },
+        ),
+      ),
       drawer: Drawer(
           child: ListView(
         padding: EdgeInsets.zero,
