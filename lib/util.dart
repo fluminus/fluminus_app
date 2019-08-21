@@ -77,8 +77,7 @@ GestureTapCallback onTapNextPage(Widget nextPage, BuildContext context) {
 }
 
 showPickerThreeNumber(
-    BuildContext context, Module module, Announcement announcement,
-    {Function onCancel}) async {
+    BuildContext context, Module module, Announcement announcement) async {
   new Picker(
           adapter: NumberPickerAdapter(data: [
             NumberPickerColumn(begin: 0, end: 4),
@@ -122,8 +121,7 @@ showPickerThreeNumber(
                 weekNum: weekNum(data.smsStartDate, date),
                 tag: module.name,
                 colorIndex: 0);
-          },
-          onCancel: onCancel)
+          },)
       .showDialog(context);
 }
 

@@ -74,17 +74,10 @@ class _AnnouncementListPageState extends State<AnnouncementListPage> {
             });
           },
           afterSwipingRight: (index, context) async {
-            Announcement removedOne;
-            setState(() {
-              removedOne = announcements.removeAt(index);
-              announcements.insert(index, removedOne);
-            });
+      
             util.showPickerThreeNumber(
-                context, widget.module, announcements[index], onCancel: () {
-              setState(() {
-                announcements.insert(index, removedOne);
-              });
-            });
+                context, widget.module, announcements[index]
+            );
           },
           context: context,
           leftHint: Icon(Icons.schedule),
