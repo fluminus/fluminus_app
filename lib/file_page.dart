@@ -1,27 +1,27 @@
 import 'dart:async';
 import 'dart:io' as prefix0;
 
+import 'package:dio/dio.dart';
+import 'package:fluminus/data.dart' as data;
+import 'package:fluminus/db/db_helper.dart' as db;
+import 'package:fluminus/util.dart' as util;
+import 'package:fluminus/widgets/common.dart' as common;
 import 'package:fluminus/widgets/dialog.dart';
+import 'package:fluminus/widgets/dialog.dart' as dialog;
+import 'package:fluminus/widgets/list.dart' as list;
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter_speed_dial/flutter_speed_dial.dart';
+import 'package:luminus_api/luminus_api.dart';
+import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import 'package:open_file/open_file.dart';
 import 'package:path/path.dart' as path_dart;
 import 'package:path_provider/path_provider.dart';
-import 'package:dio/dio.dart';
-import 'package:open_file/open_file.dart';
-import 'package:flutter_speed_dial/flutter_speed_dial.dart';
-import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
-
-import 'package:luminus_api/luminus_api.dart';
-import 'package:fluminus/widgets/list.dart' as list;
-import 'package:fluminus/widgets/common.dart' as common;
-import 'package:fluminus/util.dart' as util;
-import 'package:fluminus/data.dart' as data;
-import 'package:fluminus/widgets/dialog.dart' as dialog;
-import 'package:fluminus/db/db_helper.dart' as db;
 
 final EdgeInsets _padding =
     const EdgeInsets.only(left: 14.0, right: 14.0, top: 10.0);
+
 Widget _paddedfutureBuilder(Future future, AsyncWidgetBuilder builder) {
   return Padding(
     padding: _padding,
@@ -153,7 +153,7 @@ class _ModuleRootDirectoryPageState extends State<ModuleRootDirectoryPage> {
 
             // print(_directories.length);
             return list.refreshableListView(
-              () async {
+              onRefresh: () async {
                 _refreshedDirectories = await util.refreshWithSnackBars(
                     () => db.refreshAndGetModuleDirectories(widget.module),
                     context);
@@ -161,10 +161,10 @@ class _ModuleRootDirectoryPageState extends State<ModuleRootDirectoryPage> {
                   _directories = _refreshedDirectories;
                 });
               },
-              _directories,
-              (arg) => list.CardType.moduleDirectoryCardType,
-              context,
-              {"module": widget.module},
+              itemList: _directories,
+              getCardType: (arg) => list.CardType.moduleDirectoryCardType,
+              context: context,
+              params: {"module": widget.module},
               //enablePullUp: false
             );
           } else if (snapshot.hasError) {
@@ -194,6 +194,7 @@ class _SubdirectoryPageState extends State<SubdirectoryPage> {
   Future<Map<BasicFile, FileStatus>> _statusFuture;
   List<BasicFile> _fileList;
   List<BasicFile> _refreshedFileList;
+
   // TODO: store last used sorting method
   _SortMethod _sortMethod = _SortMethod.normal;
   bool _sortAscend = true;
@@ -469,7 +470,7 @@ class _SubdirectoryPageState extends State<SubdirectoryPage> {
           _fileList = snapshot.data['listFuture'];
           Map<BasicFile, FileStatus> statusMap = snapshot.data['statusFuture'];
           return list.refreshableListView(
-            () async {
+            onRefresh: () async {
               _refreshedFileList = await util.refreshWithSnackBars(
                   () => db.refreshAndGetItemsFromDirectory(widget.parent),
                   context);
@@ -479,12 +480,13 @@ class _SubdirectoryPageState extends State<SubdirectoryPage> {
               });
               _statusFuture = _initStatus(_fileList);
             },
-            _fileList,
-            (BasicFile arg) => arg is File
+            itemList: _fileList,
+            getCardType: (BasicFile arg) =>
+            arg is File
                 ? list.CardType.fileCardType
                 : list.CardType.directoryCardType,
-            context,
-            {
+            context: context,
+            params: {
               'status': statusMap,
               'downloadFile': downloadFile,
               'openFile': openFile,
@@ -507,6 +509,7 @@ class SortMethodSelect extends StatefulWidget {
   final Function(bool) onAscendChanged;
   final bool initAscend;
   final _SortMethod initMethod;
+
   SortMethodSelect(
     this.choices, {
     @required this.onMethodChanged,
@@ -514,6 +517,7 @@ class SortMethodSelect extends StatefulWidget {
     @required this.initAscend,
     @required this.initMethod,
   });
+
   @override
   _SortMethodSelectState createState() =>
       _SortMethodSelectState(initMethod, initAscend);
@@ -522,7 +526,9 @@ class SortMethodSelect extends StatefulWidget {
 class _SortMethodSelectState extends State<SortMethodSelect> {
   _SortMethod selectedChoice;
   bool checked;
+
   _SortMethodSelectState(this.selectedChoice, this.checked);
+
   // this function will build and return the choice list
   _buildChoiceList() {
     List<Widget> choices = List();

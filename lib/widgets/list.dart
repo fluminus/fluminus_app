@@ -1,7 +1,7 @@
 import 'package:fluminus/file_page.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/material.dart' as prefix0;
 import 'package:luminus_api/luminus_api.dart';
+
 import 'card.dart';
 
 enum CardType {
@@ -63,9 +63,9 @@ Widget itemListView(
     if (isSeparated) {
       return ListView.separated(
         separatorBuilder: (context, index) => Divider(
-              color: Colors.blueGrey,
-              height: 0.0,
-            ),
+          color: Colors.blueGrey,
+          height: 0.0,
+        ),
         padding: EdgeInsets.all(0.0),
         shrinkWrap: true,
         itemCount: itemList.length,
@@ -96,34 +96,32 @@ Widget itemListView(
   }
 }
 
-Widget refreshableListView(
-  Function onRefresh,
-  List itemList,
-  Function getCardType,
-  BuildContext context,
-  Map params,
-  {bool isSeparated = false}
-) {
+Widget refreshableListView({@required Function onRefresh,
+  @required List itemList,
+  @required Function getCardType,
+  @required BuildContext context,
+  @required Map params,
+  bool isSeparated = false}) {
   return Container(
       child: RefreshIndicator(
           onRefresh: onRefresh,
-          child: itemListView(itemList, getCardType, context, params, isSeparated: isSeparated)));
+          child: itemListView(itemList, getCardType, context, params,
+              isSeparated: isSeparated)));
 }
 
-Widget dismissibleListView(
-    List itemList,
-    Function getCardType,
-    Function afterSwipingLeft,
-    Function afterSwipingRight,
-    BuildContext context,
-    Widget leftHint,
-    Widget rightHint,
-    Map params) {
+Widget dismissibleListView({@required List itemList,
+  @required Function getCardType,
+  @required Function afterSwipingLeft,
+  @required Function afterSwipingRight,
+  @required BuildContext context,
+  @required Widget leftHint,
+  @required Widget rightHint,
+  @required Map params}) {
   return new ListView.separated(
     separatorBuilder: (context, index) => Divider(
-          color: Colors.blueGrey,
-          height: 0.0,
-        ),
+      color: Colors.blueGrey,
+      height: 0.0,
+    ),
     padding: EdgeInsets.all(0.0),
     shrinkWrap: true,
     itemCount: itemList.length,
@@ -164,16 +162,15 @@ Widget dismissibleListView(
   );
 }
 
-Widget refreshableAndDismissibleListView(
-    {Function onRefresh,
-    List itemList,
-    Function getCardType,
-    Function afterSwipingLeft,
-    Function afterSwipingRight,
-    BuildContext context,
-    Widget leftHint,
-    Widget rightHint,
-    Map params}) {
+Widget refreshableAndDismissibleListView({@required Function onRefresh,
+  @required List itemList,
+  @required Function getCardType,
+  @required Function afterSwipingLeft,
+  @required Function afterSwipingRight,
+  @required BuildContext context,
+  @required Widget leftHint,
+  @required Widget rightHint,
+  @required Map params}) {
   if (itemList.length == 0) {
     return Container(
         child: RefreshIndicator(
@@ -191,7 +188,14 @@ Widget refreshableAndDismissibleListView(
     return Container(
         child: RefreshIndicator(
             onRefresh: onRefresh,
-            child: dismissibleListView(itemList, getCardType, afterSwipingLeft,
-                afterSwipingRight, context, leftHint, rightHint, params)));
+            child: dismissibleListView(
+                itemList: itemList,
+                getCardType: getCardType,
+                afterSwipingLeft: afterSwipingLeft,
+                afterSwipingRight: afterSwipingRight,
+                context: context,
+                leftHint: leftHint,
+                rightHint: rightHint,
+                params: params)));
   }
 }

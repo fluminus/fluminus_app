@@ -1,15 +1,17 @@
 import 'dart:convert';
 
+import 'package:fluminus/announcement_list_page.dart';
+import 'package:fluminus/data.dart' as data;
 import 'package:fluminus/widgets/list.dart';
 import 'package:flutter/material.dart';
 import 'package:luminus_api/luminus_api.dart';
-import 'package:fluminus/announcement_list_page.dart';
-import 'package:fluminus/data.dart' as data;
+
 import 'util.dart' as util;
 import 'widgets/common.dart' as common;
 
 class AnnouncementPage extends StatefulWidget {
   const AnnouncementPage({Key key}) : super(key: key);
+
   @override
   _AnnouncementPageState createState() => new _AnnouncementPageState();
 }
@@ -81,31 +83,39 @@ class _AnnouncementPageState extends State<AnnouncementPage> {
                           builder: (BuildContext context,
                               List<Announcement> value, Widget child) {
                             return dismissibleListView(
-                                value, () => CardType.announcementCardType,
-                                (index) {
-                              setState(() {
-                                Announcement removedOne = value.removeAt(index);
-                                Scaffold.of(context).showSnackBar(SnackBar(
-                                    content: Text("Announcement deleted"),
-                                    action: SnackBarAction(
-                                        label: "UNDO",
-                                        onPressed: () {
-                                          setState(() {
-                                            data.archivedAnnouncements
-                                                .remove(removedOne);
-                                            value.insert(index, removedOne);
-                                          });
-                                        })));
-                              });
-                            }, (index, context) {
-                              Announcement announcement = value[index];
-                              util.showPickerThreeNumber(
-                                  context,
-                                  data.modules.firstWhere(
-                                      (m) => m.id == announcement.parentID),
-                                  announcement);
-                            }, context, Icon(Icons.schedule),
-                                Icon(Icons.delete), null);
+                                itemList: value,
+                                getCardType: () =>
+                                CardType.announcementCardType,
+                                afterSwipingLeft: (index) {
+                                  setState(() {
+                                    Announcement removedOne =
+                                    value.removeAt(index);
+                                    Scaffold.of(context).showSnackBar(SnackBar(
+                                        content: Text("Announcement deleted"),
+                                        action: SnackBarAction(
+                                            label: "UNDO",
+                                            onPressed: () {
+                                              setState(() {
+                                                data.archivedAnnouncements
+                                                    .remove(removedOne);
+                                                value.insert(index, removedOne);
+                                              });
+                                            })));
+                                  });
+                                },
+                                afterSwipingRight: (index, context) {
+                                  Announcement announcement = value[index];
+                                  util.showPickerThreeNumber(
+                                      context,
+                                      data.modules.firstWhere(
+                                              (m) =>
+                                          m.id == announcement.parentID),
+                                      announcement);
+                                },
+                                context: context,
+                                leftHint: Icon(Icons.schedule),
+                                rightHint: Icon(Icons.delete),
+                                params: null);
                           },
                           valueListenable: _archived,
                         ))
@@ -118,35 +128,41 @@ class _AnnouncementPageState extends State<AnnouncementPage> {
                               allAnnouncements = snapshot.data;
                               data.sp.setString('lastRefreshedDateStr',
                                   DateTime.now().toString());
-                              return refreshableListView(() async {
-                                List<Announcement> _newAnnouncements =
+                              return refreshableListView(
+                                  onRefresh: () async {
+                                    List<Announcement> _newAnnouncements =
                                     await util.refreshWithSnackBars(
-                                        () => API.getActiveAnnouncements(
-                                            data.authentication()),
+                                            () =>
+                                            API.getActiveAnnouncements(
+                                                data.authentication()),
                                         context);
-                                sortAnnouncements(_newAnnouncements);
-                                String lastRefreshedDateStr =
-                                    data.sp.getString('lastRefreshedDateStr');
-                                DateTime lastRefreshedDate;
-                                lastRefreshedDateStr == null
-                                    ? lastRefreshedDate = DateTime.now()
-                                    : lastRefreshedDate =
-                                        DateTime.parse(lastRefreshedDateStr);
-                                _newAnnouncements =
-                                    _newAnnouncements.takeWhile((x) {
-                                  return (DateTime.parse(x.createdDate).isAfter(
-                                      lastRefreshedDate ?? DateTime.now()));
-                                }).toList();
-                                setState(() {
-                                  data.sp.setString('lastRefreshedDateStr',
-                                      DateTime.now().toString());
-                                  allAnnouncements.addAll(_newAnnouncements);
-                                });
-                              },
-                                  allAnnouncements,
-                                  () => CardType.announcementCardType,
-                                  context,
-                                null, isSeparated: true);
+                                    sortAnnouncements(_newAnnouncements);
+                                    String lastRefreshedDateStr = data.sp
+                                        .getString('lastRefreshedDateStr');
+                                    DateTime lastRefreshedDate;
+                                    lastRefreshedDateStr == null
+                                        ? lastRefreshedDate = DateTime.now()
+                                        : lastRefreshedDate = DateTime.parse(
+                                        lastRefreshedDateStr);
+                                    _newAnnouncements =
+                                        _newAnnouncements.takeWhile((x) {
+                                          return (DateTime.parse(x.createdDate)
+                                              .isAfter(lastRefreshedDate ??
+                                              DateTime.now()));
+                                        }).toList();
+                                    setState(() {
+                                      data.sp.setString('lastRefreshedDateStr',
+                                          DateTime.now().toString());
+                                      allAnnouncements
+                                          .addAll(_newAnnouncements);
+                                    });
+                                  },
+                                  itemList: allAnnouncements,
+                                  getCardType: () =>
+                                  CardType.announcementCardType,
+                                  context: context,
+                                  params: null,
+                                  isSeparated: true);
                             } else if (snapshot.hasError) {
                               return Text(snapshot.error.toString());
                             }
