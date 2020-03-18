@@ -6,6 +6,8 @@
 
 An overall much better LMS (Learning management system) experience on [LumiNUS](https://luminus.nus.edu.sg/), and more to truly *illuminate your learning path*, written in [Dart](https://dart.dev/), built with [Flutter](https://flutter.dev/), available on **both** iOS and Android.
 
+Naming courtesy to https://github.com/indocomsoft/fluminus
+
 ## Features
 
 *Features implemented by milestone 2 are labeled with a ✔*
